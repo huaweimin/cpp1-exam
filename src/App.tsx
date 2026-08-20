@@ -4,8 +4,9 @@ import HomePage from './pages/HomePage'
 import ExamPage from './pages/ExamPage'
 import ResultPage from './pages/ResultPage'
 import TeacherPage from './pages/TeacherPage'
+import RecordsPage from './pages/RecordsPage'
 
-type Page = 'home' | 'exam' | 'result' | 'teacher'
+type Page = 'home' | 'exam' | 'result' | 'teacher' | 'records'
 
 export default function App() {
   const [page, setPage] = useState<Page>('home')
@@ -31,7 +32,13 @@ export default function App() {
 
   return (
     <>
-      {page === 'home' && <HomePage onStart={startExam} onTeacher={() => setPage('teacher')} />}
+      {page === 'home' && (
+        <HomePage
+          onStart={startExam}
+          onTeacher={() => setPage('teacher')}
+          onRecords={() => setPage('records')}
+        />
+      )}
       {page === 'exam' && exam && (
         <ExamPage exam={exam} studentName={studentName} onFinish={finishExam} onExit={backToHome} />
       )}
@@ -39,6 +46,7 @@ export default function App() {
         <ResultPage result={result} exam={exam} onBack={backToHome} />
       )}
       {page === 'teacher' && <TeacherPage onBack={backToHome} />}
+      {page === 'records' && <RecordsPage onBack={backToHome} />}
     </>
   )
 }

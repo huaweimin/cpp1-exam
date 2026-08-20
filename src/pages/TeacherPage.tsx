@@ -1,8 +1,9 @@
-import { Table, Button, Typography, Empty, Card, Tag } from 'antd'
-import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons'
+import { useEffect, useMemo, useState } from 'react'
+import { Table, Button, Typography, Empty, Card, Tag, Statistic, Row, Col, Space, message } from 'antd'
+import { ArrowLeftOutlined, DownloadOutlined, CloudOutlined, SyncOutlined } from '@ant-design/icons'
 import type { ExamResult } from '../types/exam'
-import { getAllResults, exportResultsToCSV } from '../utils/storage'
-import { useState } from 'react'
+import { getAllResults, exportResultsToCSV, importResults } from '../utils/storage'
+import { pullRecords } from '../utils/gistSync'
 
 const { Title, Text } = Typography
 
@@ -11,14 +12,51 @@ interface TeacherPageProps {
 }
 
 export default function TeacherPage({ onBack }: TeacherPageProps) {
-  const [results] = useState<ExamResult[]>(getAllResults())
+  const [results, setResults] = useState<ExamResult[]>(getAllResults())
+  const [syncing, setSyncing] = useState(false)
+  const [cloudStatus, setCloudStatus] = useState<'idle' | 'ok' | 'fail'>('idle')
+
+  // 同步云端记录：拉取 → 合并导入本地 → 刷新
+  const syncFromCloud = async (silent = false) => {
+    setSyncing(true)
+    const cloud = await pullRecords()
+    setSyncing(false)
+    if (cloud === null) {
+      setCloudStatus('fail')
+      if (!silent) message.warning('云端暂时连不上，展示的是本地记录，稍后可重试')
+      return
+    }
+    const imported = importResults(cloud)
+    setResults(getAllResults())
+    setCloudStatus('ok')
+    if (!silent) {
+      message.success(imported > 0 ? `已从云端同步 ${imported} 条新记录` : '云端没有新记录，已是最新')
+    }
+  }
+
+  // 进入页面自动同步一次（静默）
+  useEffect(() => {
+    syncFromCloud(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // 按考试分组
-  const examGroups = results.reduce((acc, r) => {
-    if (!acc[r.examId]) acc[r.examId] = []
-    acc[r.examId].push(r)
-    return acc
-  }, {} as Record<string, ExamResult[]>)
+  const examGroups = useMemo(() => {
+    return results.reduce((acc, r) => {
+      if (!acc[r.examId]) acc[r.examId] = []
+      acc[r.examId].push(r)
+      return acc
+    }, {} as Record<string, ExamResult[]>)
+  }, [results])
+
+  // 全局统计（所有学生所有考试）
+  const studentCount = new Set(results.map((r) => r.studentName)).size
+  const passRate = results.length > 0
+    ? Math.round((results.filter((r) => r.passed).length / results.length) * 100)
+    : 0
+  const avgScore = results.length > 0
+    ? (results.reduce((s, r) => s + r.totalScore, 0) / results.length).toFixed(1)
+    : '0'
 
   const columns = [
     {
@@ -29,7 +67,7 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
     {
       title: '客观题得分',
       key: 'objectiveScore',
-      render: (_: any, record: ExamResult) => {
+      render: (_: unknown, record: ExamResult) => {
         const objective = record.details.filter((d) => d.type !== 'programming')
         const earned = objective.reduce((s, d) => s + d.score, 0)
         const max = objective.reduce((s, d) => s + d.maxScore, 0)
@@ -39,7 +77,7 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
     {
       title: '总分',
       key: 'totalScore',
-      render: (_: any, record: ExamResult) => (
+      render: (_: unknown, record: ExamResult) => (
         <span className={`font-bold ${record.passed ? 'text-green-600' : 'text-red-500'}`}>
           {record.totalScore} / {record.maxScore}
         </span>
@@ -48,7 +86,7 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
     {
       title: '是否及格',
       key: 'passed',
-      render: (_: any, record: ExamResult) =>
+      render: (_: unknown, record: ExamResult) =>
         record.passed ? <Tag color="green">及格</Tag> : <Tag color="red">不及格</Tag>,
     },
     {
@@ -60,7 +98,7 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
     {
       title: '用时',
       key: 'duration',
-      render: (_: any, record: ExamResult) => `${(record.duration / 60).toFixed(1)} 分钟`,
+      render: (_: unknown, record: ExamResult) => `${(record.duration / 60).toFixed(1)} 分钟`,
     },
   ]
 
@@ -72,19 +110,51 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
             <Button icon={<ArrowLeftOutlined />} onClick={onBack}>
               返回
             </Button>
-            <Title level={3} className="!mb-0">成绩管理</Title>
+            <Title level={3} className="!mb-0">
+              成绩管理
+            </Title>
           </div>
+          <Space>
+            {cloudStatus === 'ok' && <Tag icon={<CloudOutlined />} color="success">云端已同步</Tag>}
+            {cloudStatus === 'fail' && <Tag icon={<CloudOutlined />} color="warning">云端未连接</Tag>}
+            <Button icon={<SyncOutlined />} loading={syncing} onClick={() => syncFromCloud(false)}>
+              同步云端
+            </Button>
+          </Space>
         </div>
+
+        {/* 全局统计 */}
+        <Card className="mb-6">
+          <Row gutter={[16, 16]}>
+            <Col xs={12} md={6}>
+              <Statistic title="学生总数" value={studentCount} suffix="人" />
+            </Col>
+            <Col xs={12} md={6}>
+              <Statistic title="练习总次数" value={results.length} suffix="次" />
+            </Col>
+            <Col xs={12} md={6}>
+              <Statistic title="及格率" value={passRate} suffix="%" valueStyle={{ color: '#52c41a' }} />
+            </Col>
+            <Col xs={12} md={6}>
+              <Statistic title="平均分" value={avgScore} />
+            </Col>
+          </Row>
+          <Text type="secondary" className="text-xs mt-2 block">
+            数据来源：本地记录 + 云端（GitHub Gist）自动合并，学生换设备考试也能汇总到这里
+          </Text>
+        </Card>
 
         {results.length === 0 ? (
           <Card>
-            <Empty description="暂无考试记录" />
+            <Empty description="暂无考试记录，等学生交卷后这里会自动汇总" />
           </Card>
         ) : (
           Object.entries(examGroups).map(([examId, examResults]) => (
             <Card key={examId} className="mb-6">
               <div className="flex items-center justify-between mb-4">
-                <Title level={4} className="!mb-0">{examResults[0].examName}</Title>
+                <Title level={4} className="!mb-0">
+                  {examResults[0].examName}
+                </Title>
                 <Button
                   icon={<DownloadOutlined />}
                   onClick={() => exportResultsToCSV(examId, examResults[0].examName)}
@@ -100,14 +170,11 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
                 size="middle"
               />
               <div className="mt-4 flex gap-6 text-sm">
+                <Text type="secondary">参考人次：{examResults.length}</Text>
+                <Text type="secondary">及格人次：{examResults.filter((r) => r.passed).length}</Text>
                 <Text type="secondary">
-                  参考人数：{examResults.length}
-                </Text>
-                <Text type="secondary">
-                  及格人数：{examResults.filter((r) => r.passed).length}
-                </Text>
-                <Text type="secondary">
-                  平均分：{(examResults.reduce((s, r) => s + r.totalScore, 0) / examResults.length).toFixed(1)}
+                  平均分：
+                  {(examResults.reduce((s, r) => s + r.totalScore, 0) / examResults.length).toFixed(1)}
                 </Text>
               </div>
             </Card>

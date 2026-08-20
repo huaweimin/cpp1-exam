@@ -1,17 +1,18 @@
 import { useState } from 'react'
-import { Card, Input, Button, Space, Typography, Tag, Table, Divider } from 'antd'
-import { UserOutlined, PlayCircleOutlined, BarChartOutlined } from '@ant-design/icons'
+import { Card, Input, Button, Space, Typography, Tag, Divider } from 'antd'
+import { UserOutlined, PlayCircleOutlined, BarChartOutlined, HistoryOutlined } from '@ant-design/icons'
 import type { Exam } from '../types/exam'
 import { allExams } from '../data/exams'
 
-const { Title, Text, Paragraph } = Typography
+const { Title, Text } = Typography
 
 interface HomePageProps {
   onStart: (name: string, exam: Exam) => void
   onTeacher: () => void
+  onRecords: () => void
 }
 
-export default function HomePage({ onStart, onTeacher }: HomePageProps) {
+export default function HomePage({ onStart, onTeacher, onRecords }: HomePageProps) {
   const [name, setName] = useState('')
   const [selectedExam, setSelectedExam] = useState<Exam | null>(allExams[0] || null)
 
@@ -100,7 +101,15 @@ export default function HomePage({ onStart, onTeacher }: HomePageProps) {
         </Card>
 
         {/* 底部按钮 */}
-        <div className="text-center mt-6">
+        <div className="text-center mt-6 flex items-center justify-center gap-4">
+          <Button
+            type="text"
+            icon={<HistoryOutlined />}
+            onClick={onRecords}
+            className="text-white/80 hover:text-white"
+          >
+            我的练习记录
+          </Button>
           <Button
             type="text"
             icon={<BarChartOutlined />}
