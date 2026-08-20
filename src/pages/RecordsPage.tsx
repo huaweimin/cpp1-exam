@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  Button, Card, Input, Typography, Empty, Tag, Statistic, Row, Col, Collapse, message, Select, Spin,
+  Button, Card, Input, Typography, Empty, Tag, Statistic, Row, Col, Collapse, Select,
 } from 'antd'
 import {
-  ArrowLeftOutlined, UserOutlined, TrophyOutlined, CloudOutlined,
+  ArrowLeftOutlined, UserOutlined, TrophyOutlined, CloudOutlined, FileSearchOutlined,
 } from '@ant-design/icons'
 import type { Exam, ExamResult } from '../types/exam'
 import { allExams } from '../data/exams'
 import { getResultsByStudent, getAllStudentNames, importResults } from '../utils/storage'
 import { pullRecords } from '../utils/gistSync'
+import RecordDetail from '../components/RecordDetail'
 
 const { Title, Text } = Typography
 
@@ -21,6 +22,8 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
   const [version, setVersion] = useState(0)
   const [cloudSyncing, setCloudSyncing] = useState(false)
   const [cloudMsg, setCloudMsg] = useState<string | null>(null)
+  // 当前正在查看完整试卷的历史记录，null = 显示列表
+  const [viewing, setViewing] = useState<ExamResult | null>(null)
 
   const allNames = useMemo(() => getAllStudentNames(), [version])
 
@@ -73,6 +76,17 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
   }
 
   const scoreColor = (score: number, passed: boolean) => (passed ? '#52c41a' : '#ff4d4f')
+
+  // 查看某次记录的完整试卷（和交卷后的成绩页一样）
+  if (viewing) {
+    return (
+      <RecordDetail
+        result={viewing}
+        exam={findExam(viewing.examId)}
+        onBack={() => setViewing(null)}
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen p-6 bg-gray-50">
@@ -172,7 +186,7 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
             </Row>
 
             {/* 记录列表（可展开看逐题成绩） */}
-            <Card title={`共 ${records.length} 次练习`} extra={<Text type="secondary">点击展开查看每次详情</Text>}>
+            <Card title={`共 ${records.length} 次练习`} extra={<Text type="secondary">点击展开看逐题成绩</Text>}>
               <Collapse
                 items={records.map((r, idx) => {
                   const exam = findExam(r.examId)
@@ -207,13 +221,22 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
                           </div>
                         ))}
                         <Button
-                          type="link"
+                          type="primary"
                           size="small"
-                          className="mt-2 p-0"
-                          onClick={() => message.info('详细解析可在「重新考试」同套卷后于成绩页查看')}
+                          className="mt-3"
+                          icon={<FileSearchOutlined />}
+                          onClick={() => {
+                            setViewing(r)
+                            window.scrollTo(0, 0)
+                          }}
                         >
-                          想看完整解析？
+                          查看完整试卷（含逐题解析）
                         </Button>
+                        {exam === undefined && (
+                          <Text type="warning" className="block mt-2 text-xs">
+                            注：这套试卷已不在系统中，只能查看成绩概览
+                          </Text>
+                        )}
                       </div>
                     ),
                   }
