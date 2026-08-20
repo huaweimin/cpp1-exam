@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  Button, Card, Input, Typography, Empty, Tag, Statistic, Row, Col, Collapse, Select,
+  Button, Card, Input, Typography, Empty, Tag, Statistic, Row, Col, Collapse, Select, Popconfirm, message,
 } from 'antd'
 import {
-  ArrowLeftOutlined, UserOutlined, TrophyOutlined, CloudOutlined, FileSearchOutlined,
+  ArrowLeftOutlined, UserOutlined, TrophyOutlined, CloudOutlined, FileSearchOutlined, DeleteOutlined,
 } from '@ant-design/icons'
 import type { Exam, ExamResult } from '../types/exam'
 import { allExams } from '../data/exams'
-import { getResultsByStudent, getAllStudentNames, importResults } from '../utils/storage'
-import { pullRecords } from '../utils/gistSync'
+import { getResultsByStudent, getAllStudentNames, importResults, deleteResult } from '../utils/storage'
+import { pullRecords, deleteRecordOnCloud } from '../utils/gistSync'
 import RecordDetail from '../components/RecordDetail'
 
 const { Title, Text } = Typography
@@ -24,6 +24,7 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
   const [cloudMsg, setCloudMsg] = useState<string | null>(null)
   // 当前正在查看完整试卷的历史记录，null = 显示列表
   const [viewing, setViewing] = useState<ExamResult | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   const allNames = useMemo(() => getAllStudentNames(), [version])
 
@@ -76,6 +77,20 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
   }
 
   const scoreColor = (score: number, passed: boolean) => (passed ? '#52c41a' : '#ff4d4f')
+
+  // 删除一条记录：本地必删，云端尽力删（失败提示，下次同步可能恢复）
+  const handleDelete = async (r: ExamResult) => {
+    setDeleting(true)
+    deleteResult(r.studentName, r.examId, r.submittedAt)
+    const cloudOk = await deleteRecordOnCloud(r.studentName, r.examId, r.submittedAt)
+    setDeleting(false)
+    setVersion((v) => v + 1)
+    if (cloudOk) {
+      message.success('已删除该条记录（本地 + 云端）')
+    } else {
+      message.warning('本地已删除；云端删除失败（网络原因），下次同步云端时这条记录可能会回来，可稍后重试删除')
+    }
+  }
 
   // 查看某次记录的完整试卷（和交卷后的成绩页一样）
   if (viewing) {
@@ -220,18 +235,36 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
                             </Text>
                           </div>
                         ))}
-                        <Button
-                          type="primary"
-                          size="small"
-                          className="mt-3"
-                          icon={<FileSearchOutlined />}
-                          onClick={() => {
-                            setViewing(r)
-                            window.scrollTo(0, 0)
-                          }}
-                        >
-                          查看完整试卷（含逐题解析）
-                        </Button>
+                        <div className="flex flex-wrap items-center gap-2 mt-3">
+                          <Button
+                            type="primary"
+                            size="small"
+                            icon={<FileSearchOutlined />}
+                            onClick={() => {
+                              setViewing(r)
+                              window.scrollTo(0, 0)
+                            }}
+                          >
+                            查看完整试卷（含逐题解析）
+                          </Button>
+                          <Popconfirm
+                            title="删除这条记录？"
+                            description="会同时从本地和云端删除，删除后无法恢复"
+                            okText="删除"
+                            okButtonProps={{ danger: true }}
+                            cancelText="取消"
+                            onConfirm={() => handleDelete(r)}
+                          >
+                            <Button
+                              danger
+                              size="small"
+                              icon={<DeleteOutlined />}
+                              loading={deleting}
+                            >
+                              删除
+                            </Button>
+                          </Popconfirm>
+                        </div>
                         {exam === undefined && (
                           <Text type="warning" className="block mt-2 text-xs">
                             注：这套试卷已不在系统中，只能查看成绩概览

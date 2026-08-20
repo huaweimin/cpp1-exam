@@ -91,6 +91,41 @@ export async function pushResult(result: ExamResult): Promise<boolean> {
   return pushRecords(local)
 }
 
+/**
+ * 从云端真正删除一条记录（拉取 → 过滤 → 覆盖写）。
+ * 注意不能走 pushRecords 的合并逻辑，否则被删的记录会被云端副本"复活"。
+ */
+export async function deleteRecordOnCloud(
+  studentName: string,
+  examId: string,
+  submittedAt: string
+): Promise<boolean> {
+  try {
+    const cloud = await pullRecords()
+    if (cloud === null) return false
+    const remaining = cloud.filter(
+      (r) => !(r.studentName === studentName && r.examId === examId && r.submittedAt === submittedAt)
+    )
+    const res = await fetchWithTimeout(API_URL, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        files: {
+          [FILE_NAME]: { content: JSON.stringify({ records: remaining }, null, 2) },
+        },
+      }),
+    })
+    return res.ok
+  } catch (err) {
+    console.warn('[gistSync] 云端删除失败（本地不受影响）:', err)
+    return false
+  }
+}
+
 /** 合并两组记录并按 (studentName, examId, submittedAt) 去重。 */
 export function mergeRecords(a: ExamResult[], b: ExamResult[]): ExamResult[] {
   const map = new Map<string, ExamResult>()
