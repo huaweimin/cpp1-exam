@@ -77,15 +77,13 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
   return (
     <div className="min-h-screen p-6 bg-gray-50">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Button icon={<ArrowLeftOutlined />} onClick={onBack}>
-              返回
-            </Button>
-            <Title level={3} className="!mb-0">
-              我的练习记录
-            </Title>
-          </div>
+        <div className="flex items-center gap-3 mb-6">
+          <Button icon={<ArrowLeftOutlined />} onClick={onBack}>
+            返回
+          </Button>
+          <Title level={3} className="!m-0 leading-none flex-1">
+            我的练习记录
+          </Title>
           <Button
             icon={<CloudOutlined />}
             onClick={syncFromCloud}

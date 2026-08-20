@@ -110,7 +110,7 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
             <Button icon={<ArrowLeftOutlined />} onClick={onBack}>
               返回
             </Button>
-            <Title level={3} className="!mb-0">
+            <Title level={3} className="!m-0 leading-none">
               成绩管理
             </Title>
           </div>
