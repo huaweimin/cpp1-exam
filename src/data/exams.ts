@@ -264,5 +264,264 @@ int main() {
   ],
 };
 
+// 2026年3月电子学会 C/C++ 一级真题
+// 注意：题目题干来自万卷网公开真题，答案与解析由 AI 依据 C++ 一级考纲补全（官网标准答案需登录查看），
+// 如与官方答案不符，请以官方为准并替换下方 answer / explanation 字段。
+export const exam2026_03: Exam = {
+  id: 'exam-2026-03-cpp1',
+  name: '2026年3月电子学会青少年软件编程（C/C++一级）真题',
+  examDate: '2026-03',
+  totalScore: 100,
+  passingScore: 60,
+  duration: 60, // 60分钟
+  singleChoice: [
+    {
+      id: 1,
+      type: 'singleChoice',
+      stem: '以下哪个语句可以输出整数变量 a 和 b 的值，中间用空格分隔？',
+      options: {
+        A: 'cout << a << " " << b;',
+        B: 'cout << a, b;',
+        C: 'printf("%d%d", a, b);',
+        D: 'printf(a + " " + b);',
+      },
+      answer: 'A',
+      score: 4,
+      tags: ['输入输出', 'cout'],
+      explanation: 'C++ 中使用 cout << 表达式 链式输出，中间插入字符串字面量 " " 作为空格分隔。B 的逗号表达式不会输出 b；C 的 %d%d 中间无空格；D 的 a+" "+b 类型不匹配且不对。',
+    },
+    {
+      id: 2,
+      type: 'singleChoice',
+      stem: '执行以下代码后，a 和 b 的值分别是？',
+      code: 'int a = 5, b = 10;\nint t = a;\na = b;\nb = t;',
+      options: { A: '5, 10', B: '10, 10', C: '10, 5', D: '5, 5' },
+      answer: 'C',
+      score: 4,
+      tags: ['变量交换', '顺序结构'],
+      explanation: '这是经典的三变量交换：t 暂存 a(5)；a 被赋值为 b(10)；b 被赋值为 t(5)。最终 a=10, b=5。',
+    },
+    {
+      id: 3,
+      type: 'singleChoice',
+      stem: '编译后生成的可执行文件，在 Windows 操作系统下，其默认的扩展名是？',
+      options: { A: 'cpp', B: 'exe', C: 'obj', D: 'h' },
+      answer: 'B',
+      score: 4,
+      tags: ['编译', '文件类型'],
+      explanation: 'Windows 下可执行文件扩展名为 .exe；.cpp 是源代码；.obj 是目标文件；.h 是头文件。',
+    },
+    {
+      id: 4,
+      type: 'singleChoice',
+      stem: '执行以下代码后，z 的值是？',
+      code: 'int z = 10;\nz *= 2 + 3;',
+      options: { A: '26', B: '50', C: '25', D: '23' },
+      answer: 'B',
+      score: 4,
+      tags: ['复合赋值', '运算符优先级'],
+      explanation: 'z *= 2+3 等价于 z = z * (2+3) = 10 * 5 = 50。注意右侧整体先计算 2+3=5 再相乘。',
+    },
+    {
+      id: 5,
+      type: 'singleChoice',
+      stem: '表达式 5 / 2 在 C++ 中的结果是？',
+      options: { A: '2', B: '2.5', C: '3', D: '2.0' },
+      answer: 'A',
+      score: 4,
+      tags: ['整数除法'],
+      explanation: '两个操作数都是整数，执行整数除法，结果舍去小数部分取商，5/2 = 2。要得到 2.5 需写成 5.0/2 或 5/2.0。',
+    },
+    {
+      id: 6,
+      type: 'singleChoice',
+      stem: '以下哪个是 C++ 程序中入口函数？',
+      options: { A: 'init()', B: 'main()', C: 'start()', D: 'begin()' },
+      answer: 'B',
+      score: 4,
+      tags: ['main函数', '程序结构'],
+      explanation: 'C/C++ 程序入口函数固定为 main()。操作系统从 main 开始执行程序。',
+    },
+    {
+      id: 7,
+      type: 'singleChoice',
+      stem: 'abs(-5) 的返回值是？',
+      options: { A: '-5', B: '5', C: '0', D: '1' },
+      answer: 'B',
+      score: 4,
+      tags: ['数学函数', 'abs'],
+      explanation: 'abs() 返回绝对值，|−5| = 5。',
+    },
+    {
+      id: 8,
+      type: 'singleChoice',
+      stem: '以下哪个不是合法的 C++ 标识符？',
+      options: { A: 'var', B: 'var123', C: '123 var', D: 'VarName' },
+      answer: 'C',
+      score: 4,
+      tags: ['标识符', '命名规则'],
+      explanation: '合法标识符只能由字母、数字、下划线组成，且必须以字母或下划线开头，中间不能有空格。"123 var" 含空格且以数字开头，非法。',
+    },
+    {
+      id: 9,
+      type: 'singleChoice',
+      stem: '以下哪个步骤不是 C 程序开发的流程？',
+      options: { A: '编写源代码', B: '编译生成目标文件', C: '链接生成可执行文件', D: '运行源文件' },
+      answer: 'D',
+      score: 4,
+      tags: ['开发流程', '编译链接'],
+      explanation: 'C/C++ 开发流程为：编写源码 → 编译生成目标文件 → 链接生成可执行文件 → 运行可执行文件。源文件（.c/.cpp）不能直接"运行"，需先编译链接。',
+    },
+    {
+      id: 10,
+      type: 'singleChoice',
+      stem: '以下代码的输出是？',
+      code: 'double d = 3.14159;\ncout << (int)(d) << endl;',
+      options: { A: '3.14159', B: '3', C: '4', D: '3.0' },
+      answer: 'B',
+      score: 4,
+      tags: ['类型转换', '强制转换'],
+      explanation: '(int)d 是强制类型转换，将 double 转 int，截断小数部分得 3，输出整数 3。',
+    },
+  ],
+  trueFalse: [
+    {
+      id: 11,
+      type: 'trueFalse',
+      stem: 'cin 和 cout 是 C++ 标准输入输出流对象，使用时需要包含 iostream 头文件。',
+      answer: 'A',
+      score: 2,
+      tags: ['输入输出', '头文件'],
+      explanation: 'cin/cout 定义在 <iostream> 中，使用时必须 #include <iostream> 才能使用。',
+    },
+    {
+      id: 12,
+      type: 'trueFalse',
+      stem: '注释语句会影响程序的执行速度。',
+      answer: 'B',
+      score: 2,
+      tags: ['注释', '编译'],
+      explanation: '注释在编译阶段被编译器忽略，不生成任何机器指令，不会影响程序执行速度。',
+    },
+    {
+      id: 13,
+      type: 'trueFalse',
+      stem: 'a += b 效果等价于 a = a + b。',
+      answer: 'A',
+      score: 2,
+      tags: ['复合赋值'],
+      explanation: '+= 是复合赋值运算符，a += b 即 a = a + b 的简写，二者等价。',
+    },
+    {
+      id: 14,
+      type: 'trueFalse',
+      stem: 'sqrt(b / (a - a)) 会运行错误。',
+      answer: 'A',
+      score: 2,
+      tags: ['数学函数', '除零'],
+      explanation: 'a - a = 0，b / 0 在 C++ 中属于未定义行为（除零），结果不可预期，通常会导致程序异常或崩溃；且 sqrt 的参数为负时也会产生域错误。因此该表达式存在运行期风险，判定为"会运行错误"。',
+    },
+    {
+      id: 15,
+      type: 'trueFalse',
+      stem: '变量名可以以数字开头。',
+      answer: 'B',
+      score: 2,
+      tags: ['标识符', '命名规则'],
+      explanation: 'C++ 标识符必须以字母或下划线开头，不能以数字开头。',
+    },
+    {
+      id: 16,
+      type: 'trueFalse',
+      stem: '顺序结构是程序的三大基本执行结构之一。',
+      answer: 'A',
+      score: 2,
+      tags: ['程序结构'],
+      explanation: '三大基本结构：顺序结构、选择（分支）结构、循环结构。顺序结构是最基本的一种。',
+    },
+    {
+      id: 17,
+      type: 'trueFalse',
+      stem: '赋值运算符 = 的优先级高于算术运算符。',
+      answer: 'B',
+      score: 2,
+      tags: ['运算符优先级'],
+      explanation: '赋值运算符 = 的优先级低于算术运算符。如 a = 3 + 4 先算 3+4 再赋值，说明算术运算先执行。',
+    },
+    {
+      id: 18,
+      type: 'trueFalse',
+      stem: '一个 C++ 源文件可以包含多个 main() 函数。',
+      answer: 'B',
+      score: 2,
+      tags: ['main函数'],
+      explanation: '一个程序只能有一个 main() 函数作为入口，多个 main 会导致链接错误。',
+    },
+    {
+      id: 19,
+      type: 'trueFalse',
+      stem: 'const int a = 10; 定义了一个常量，其值不能改变。',
+      answer: 'A',
+      score: 2,
+      tags: ['常量', 'const'],
+      explanation: 'const 修饰的变量为只读常量，初始化后不能被修改。',
+    },
+    {
+      id: 20,
+      type: 'trueFalse',
+      stem: 'cout << fixed << setprecision(2) << 3.1415926; 的运行结果是 3.14。',
+      answer: 'A',
+      score: 2,
+      tags: ['格式化输出', 'setprecision'],
+      explanation: 'fixed 与 setprecision(2) 配合表示保留 2 位小数，3.1415926 四舍五入为 3.14。（需包含 <iomanip>）',
+    },
+  ],
+  programming: [
+    {
+      id: 21,
+      type: 'programming',
+      stem: '【重复的数列】有一个数列，按如下顺序排列：1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, …… 请问，该数列第 n 个数字是多少？',
+      inputFormat: '单个整数：n',
+      outputFormat: '单个整数：表示该数列的第 n 个数字的值',
+      sampleInput: '10',
+      sampleOutput: '0',
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    // 数列以 1,2,3,4,0 为周期循环，周期长度 5
+    // (n-1) % 5 得到 0~4 的位置，再 +1 即映射到 1,2,3,4,0
+    int r = (n - 1) % 5 + 1;
+    if (r == 5) r = 0; // 位置 5 对应数字 0
+    cout << r << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['周期', '取模', '分支结构'],
+      explanation: '考点：找规律、取模运算、分支结构。数列以 [1,2,3,4,0] 为周期循环，周期长度 5。用 (n-1) % 5 + 1 把 n 映射到 1~5 的位置，其中位置 5 对应数字 0。验证：n=1→1，n=10→(9)%5+1=5→0。',
+    },
+    {
+      id: 22,
+      type: 'programming',
+      stem: '【欢迎来到程序世界】请你编写一个简单的程序，输出指定的欢迎语句。\n输入：本题没有输入。\n输出：请严格按照以下格式输出两行文字：\n第一行：Hello, C++ World!\n第二行：Let\'s start coding!\n注意：大小写、标点和空格必须完全一致。',
+      inputFormat: '本题没有输入',
+      outputFormat: '两行文字：\nHello, C++ World!\nLet\'s start coding!',
+      sampleInput: '',
+      sampleOutput: 'Hello, C++ World!\nLet\'s start coding!',
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    cout << "Hello, C++ World!" << endl;
+    cout << "Let's start coding!" << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['顺序结构', '基本输出'],
+      explanation: '考点：基本的 cout 输出。注意字符串中含单引号 Let\'s，在 C++ 双引号字符串中单引号无需转义，直接写出即可；换行使用 endl 或 "\\n"。',
+    },
+  ],
+};
+
 // 所有考试列表
-export const allExams: Exam[] = [exam2026_06];
+export const allExams: Exam[] = [exam2026_06, exam2026_03];
