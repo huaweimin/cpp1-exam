@@ -3,12 +3,12 @@ import {
   Button, Card, Input, Typography, Empty, Tag, Statistic, Row, Col, Collapse, Select, Popconfirm, message,
 } from 'antd'
 import {
-  ArrowLeftOutlined, UserOutlined, TrophyOutlined, CloudOutlined, FileSearchOutlined, DeleteOutlined,
+  ArrowLeftOutlined, UserOutlined, TrophyOutlined, FileSearchOutlined, DeleteOutlined,
 } from '@ant-design/icons'
 import type { Exam, ExamResult } from '../types/exam'
 import { allExams } from '../data/exams'
-import { getResultsByStudent, getAllStudentNames, importResults, deleteResult } from '../utils/storage'
-import { pullRecords, deleteRecordOnCloud } from '../utils/gistSync'
+import { getResultsByStudent, getAllStudentNames, deleteResult } from '../utils/storage'
+import { deleteRecordOnCloud } from '../utils/cloudSync'
 import RecordDetail from '../components/RecordDetail'
 
 const { Title, Text } = Typography
@@ -20,43 +20,14 @@ interface RecordsPageProps {
 export default function RecordsPage({ onBack }: RecordsPageProps) {
   const [name, setName] = useState('')
   const [version, setVersion] = useState(0)
-  const [cloudSyncing, setCloudSyncing] = useState(false)
-  const [cloudMsg, setCloudMsg] = useState<string | null>(null)
   // 当前正在查看完整试卷的历史记录，null = 显示列表
   const [viewing, setViewing] = useState<ExamResult | null>(null)
   const [deleting, setDeleting] = useState(false)
 
   const allNames = useMemo(() => getAllStudentNames(), [version])
 
-  // 本地 + 云端合并后的记录
+  // 本地记录
   const [records, setRecords] = useState<ExamResult[]>([])
-
-  // 拉取云端记录并合并到本地
-  const syncFromCloud = async () => {
-    setCloudSyncing(true)
-    setCloudMsg(null)
-    const cloud = await pullRecords()
-    if (cloud === null) {
-      setCloudMsg('云端暂时连不上（不影响本地记录），稍后再试')
-    } else if (cloud.length > 0) {
-      const imported = importResults(cloud)
-      setCloudMsg(
-        imported > 0
-          ? `已从云端同步 ${imported} 条记录`
-          : '云端没有新记录，已是最新'
-      )
-    } else {
-      setCloudMsg('云端暂无记录')
-    }
-    setCloudSyncing(false)
-    setVersion((v) => v + 1)
-  }
-
-  // 进入页面自动同步一次云端
-  useEffect(() => {
-    if (name.trim()) syncFromCloud()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name])
 
   useEffect(() => {
     setRecords(name.trim() ? getResultsByStudent(name.trim()) : [])
@@ -78,18 +49,14 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
 
   const scoreColor = (score: number, passed: boolean) => (passed ? '#52c41a' : '#ff4d4f')
 
-  // 删除一条记录：本地必删，云端尽力删（失败提示，下次同步可能恢复）
+  // 删除一条记录：本地必删，云端同步删除尽力而为
   const handleDelete = async (r: ExamResult) => {
     setDeleting(true)
     deleteResult(r.studentName, r.examId, r.submittedAt)
-    const cloudOk = await deleteRecordOnCloud(r.studentName, r.examId, r.submittedAt)
+    await deleteRecordOnCloud(r.studentName, r.examId, r.submittedAt)
     setDeleting(false)
     setVersion((v) => v + 1)
-    if (cloudOk) {
-      message.success('已删除该条记录（本地 + 云端）')
-    } else {
-      message.warning('本地已删除；云端删除失败（网络原因），下次同步云端时这条记录可能会回来，可稍后重试删除')
-    }
+    message.success('已删除该条记录')
   }
 
   // 查看某次记录的完整试卷（和交卷后的成绩页一样）
@@ -113,13 +80,6 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
           <Title level={3} className="!m-0 leading-none flex-1">
             我的练习记录
           </Title>
-          <Button
-            icon={<CloudOutlined />}
-            onClick={syncFromCloud}
-            loading={cloudSyncing}
-          >
-            同步云端
-          </Button>
         </div>
 
         {/* 姓名查询 */}
@@ -145,13 +105,8 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
               />
             )}
           </div>
-          {cloudMsg && (
-            <Text type="secondary" className="mt-2 block text-xs">
-              {cloudMsg}
-            </Text>
-          )}
-          <Text type="secondary" className="mt-1 block text-xs">
-            记录保存在浏览器本地 + 云端（自动合并），换设备也能查到
+          <Text type="secondary" className="mt-2 block text-xs">
+            记录保存在当前浏览器本地
           </Text>
         </Card>
 
@@ -249,7 +204,7 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
                           </Button>
                           <Popconfirm
                             title="删除这条记录？"
-                            description="会同时从本地和云端删除，删除后无法恢复"
+                            description="删除后无法恢复"
                             okText="删除"
                             okButtonProps={{ danger: true }}
                             cancelText="取消"

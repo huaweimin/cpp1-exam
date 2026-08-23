@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react'
-import { Button, Typography, Statistic, Card, Row, Col, Tag, Progress, Alert } from 'antd'
+import { useEffect, useRef, useState } from 'react'
+import { Button, Typography, Statistic, Card, Row, Col, Tag, Progress } from 'antd'
 import {
   ArrowLeftOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
   HomeOutlined,
-  CloudUploadOutlined,
 } from '@ant-design/icons'
 import type { Exam, ExamResult } from '../types/exam'
 import QuestionCard from '../components/QuestionCard'
 import { saveResult } from '../utils/storage'
-import { pushResult } from '../utils/gistSync'
+import { pushResult } from '../utils/cloudSync'
 
 const { Title, Text, Paragraph } = Typography
 
@@ -21,16 +20,15 @@ interface ResultPageProps {
 }
 
 export default function ResultPage({ result, exam, onBack }: ResultPageProps) {
-  // 云端同步状态：syncing | success | fail | null
-  const [cloudState, setCloudState] = useState<'syncing' | 'success' | 'fail' | null>(null)
+  const pushedRef = useRef(false)
 
-  // 保存结果（本地必达） + 尽力推送云端
+  // 保存结果（本地必达） + 尽力推送云端（静默，不显示状态）
   useEffect(() => {
     saveResult(result)
-    setCloudState('syncing')
-    pushResult(result)
-      .then((ok) => setCloudState(ok ? 'success' : 'fail'))
-      .catch(() => setCloudState('fail'))
+    if (!pushedRef.current) {
+      pushedRef.current = true
+      pushResult(result).catch(() => {})
+    }
   }, [result])
 
   const objectiveDetails = result.details.filter((d) => d.type !== 'programming')
@@ -85,33 +83,6 @@ export default function ResultPage({ result, exam, onBack }: ResultPageProps) {
               {result.studentName} · {result.examName}
             </Paragraph>
           </div>
-
-          {/* 云端同步状态 */}
-          {cloudState === 'syncing' && (
-            <Alert
-              className="mt-4"
-              type="info"
-              showIcon
-              icon={<CloudUploadOutlined spin />}
-              message="正在同步成绩到云端……"
-            />
-          )}
-          {cloudState === 'success' && (
-            <Alert
-              className="mt-4"
-              type="success"
-              showIcon
-              message="成绩已同步到云端，老师可以看到啦"
-            />
-          )}
-          {cloudState === 'fail' && (
-            <Alert
-              className="mt-4"
-              type="warning"
-              showIcon
-              message="云端同步失败（本地成绩已保存，不影响）。老师端可稍后点击「同步云端」重试。"
-            />
-          )}
 
           {/* 分项统计 */}
           <Row gutter={[16, 16]} className="mt-6">

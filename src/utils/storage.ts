@@ -26,19 +26,32 @@ export function clearProgress(examId: string, studentName: string): void {
   localStorage.removeItem(key);
 }
 
-// 保存考试结果
+// 保存考试结果（幂等：同一学生同一试卷同一提交时间只保存一次，防止 StrictMode 重复挂载导致重复记录）
 export function saveResult(result: ExamResult): void {
   const allResults = getAllResults();
-  allResults.push(result);
-  localStorage.setItem(`${STORAGE_PREFIX}results`, JSON.stringify(allResults));
+  const key = `${result.studentName}|${result.examId}|${result.submittedAt}`;
+  const exists = allResults.some(
+    (r) => `${r.studentName}|${r.examId}|${r.submittedAt}` === key
+  );
+  if (!exists) {
+    allResults.push(result);
+    localStorage.setItem(`${STORAGE_PREFIX}results`, JSON.stringify(allResults));
+  }
 }
 
-// 获取所有考试结果
+// 获取所有考试结果（读取时按主键去重，防止历史脏数据展示重复记录）
 export function getAllResults(): ExamResult[] {
   const data = localStorage.getItem(`${STORAGE_PREFIX}results`);
   if (!data) return [];
   try {
-    return JSON.parse(data) as ExamResult[];
+    const arr = JSON.parse(data) as ExamResult[];
+    const seen = new Set<string>();
+    return arr.filter((r) => {
+      const key = `${r.studentName}|${r.examId}|${r.submittedAt}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   } catch {
     return [];
   }

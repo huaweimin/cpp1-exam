@@ -1,0 +1,9 @@
+{
+  "name": "examSync",
+  "version": "1.0.0",
+  "description": "CloudBase 云函数：读写 exam_results 成绩表（PG 模式 rdb，pull/push/delete/test）",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "^3.18.3"
+  }
+}

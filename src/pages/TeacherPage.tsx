@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Table, Button, Typography, Empty, Card, Tag, Statistic, Row, Col, Space, message } from 'antd'
-import { ArrowLeftOutlined, DownloadOutlined, CloudOutlined, SyncOutlined } from '@ant-design/icons'
+import { Table, Button, Typography, Empty, Card, Tag, Statistic, Row, Col, message } from 'antd'
+import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons'
 import type { ExamResult } from '../types/exam'
 import { getAllResults, exportResultsToCSV, importResults } from '../utils/storage'
-import { pullRecords } from '../utils/gistSync'
+import { pullRecords } from '../utils/cloudSync'
 
 const { Title, Text } = Typography
 
@@ -13,30 +13,17 @@ interface TeacherPageProps {
 
 export default function TeacherPage({ onBack }: TeacherPageProps) {
   const [results, setResults] = useState<ExamResult[]>(getAllResults())
-  const [syncing, setSyncing] = useState(false)
-  const [cloudStatus, setCloudStatus] = useState<'idle' | 'ok' | 'fail'>('idle')
 
-  // 同步云端记录：拉取 → 合并导入本地 → 刷新
-  const syncFromCloud = async (silent = false) => {
-    setSyncing(true)
-    const cloud = await pullRecords()
-    setSyncing(false)
-    if (cloud === null) {
-      setCloudStatus('fail')
-      if (!silent) message.warning('云端暂时连不上，展示的是本地记录，稍后可重试')
-      return
-    }
-    const imported = importResults(cloud)
-    setResults(getAllResults())
-    setCloudStatus('ok')
-    if (!silent) {
-      message.success(imported > 0 ? `已从云端同步 ${imported} 条新记录` : '云端没有新记录，已是最新')
-    }
-  }
-
-  // 进入页面自动同步一次（静默）
+  // 进入页面时自动合并云端记录（静默，无 UI 提示）
   useEffect(() => {
-    syncFromCloud(true)
+    pullRecords()
+      .then((cloud) => {
+        if (cloud && cloud.length > 0) {
+          importResults(cloud)
+          setResults(getAllResults())
+        }
+      })
+      .catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -114,13 +101,6 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
               成绩管理
             </Title>
           </div>
-          <Space>
-            {cloudStatus === 'ok' && <Tag icon={<CloudOutlined />} color="success">云端已同步</Tag>}
-            {cloudStatus === 'fail' && <Tag icon={<CloudOutlined />} color="warning">云端未连接</Tag>}
-            <Button icon={<SyncOutlined />} loading={syncing} onClick={() => syncFromCloud(false)}>
-              同步云端
-            </Button>
-          </Space>
         </div>
 
         {/* 全局统计 */}
@@ -140,7 +120,7 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
             </Col>
           </Row>
           <Text type="secondary" className="text-xs mt-2 block">
-            数据来源：本地记录 + 云端（GitHub Gist）自动合并，学生换设备考试也能汇总到这里
+            数据来源：当前浏览器本地记录
           </Text>
         </Card>
 
