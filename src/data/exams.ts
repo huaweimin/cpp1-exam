@@ -5,6 +5,7 @@ import { mockExams } from './mockExams';
 export const exam2026_06: Exam = {
   id: 'exam-2026-06-cpp1',
   name: '2026年6月电子学会青少年软件编程（C/C++一级）真题',
+  category: 'real',
   examDate: '2026-06',
   totalScore: 100,
   passingScore: 60,
@@ -285,6 +286,7 @@ int main() {
 export const exam2026_03: Exam = {
   id: 'exam-2026-03-cpp1',
   name: '2026年3月电子学会青少年软件编程（C/C++一级）真题',
+  category: 'real',
   examDate: '2026-03',
   totalScore: 100,
   passingScore: 60,

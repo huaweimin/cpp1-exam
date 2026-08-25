@@ -8,7 +8,7 @@ import {
   HomeOutlined,
   ExperimentOutlined,
 } from '@ant-design/icons'
-import type { Exam, ExamResult } from '../types/exam'
+import type { ExamResult } from '../types/exam'
 import { allExams } from '../data/exams'
 import { useAuth } from '../App'
 import QuestionCard from '../components/QuestionCard'
@@ -162,7 +162,7 @@ export default function ResultPage() {
         </Button>
 
         {/* 成绩总览 */}
-        <Card className="mb-6 shadow-lg" bordered={false}>
+        <Card className="mb-6 shadow-lg" variant="borderless">
           <div className="text-center py-6">
             <div
               className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4"

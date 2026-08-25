@@ -99,7 +99,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
           <p className="text-white/80 text-sm">登录后可进行模拟考试、查看自己的练习记录</p>
         </div>
 
-        <Card bordered={false} className="shadow-2xl">
+        <Card variant="borderless" className="shadow-2xl">
           <Tabs
             activeKey={tab}
             onChange={(k) => setTab(k as 'login' | 'register')}
@@ -213,7 +213,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
         </Card>
 
         <footer className="text-center mt-8 text-white/60 text-xs leading-6">
-          <div>开发维护：华老师 · 前端开发工程师 / C++ 少儿编程教师</div>
+          <div>开发维护：华老师</div>
           <div>邮箱：huaweimin@yeah.net</div>
           <div>珠海 · 横琴 © 2026 C++ 一级在线考试系统</div>
         </footer>

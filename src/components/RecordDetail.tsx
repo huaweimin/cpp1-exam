@@ -72,7 +72,7 @@ export default function RecordDetail({ result, exam, onBack }: RecordDetailProps
         </Button>
 
         {/* 成绩总览（和交卷后的成绩页一致） */}
-        <Card className="mb-6 shadow-lg" bordered={false}>
+        <Card className="mb-6 shadow-lg" variant="borderless">
           <div className="text-center py-6">
             <div
               className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4"

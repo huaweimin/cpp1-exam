@@ -36,10 +36,14 @@ export interface ProgrammingQuestion {
   explanation: string;
 }
 
+// 试卷类型：真题 / 模拟卷
+export type ExamCategory = 'real' | 'mock';
+
 // 考试
 export interface Exam {
   id: string;
   name: string;
+  category: ExamCategory; // 真题 'real' / 模拟卷 'mock'
   examDate: string;
   totalScore: number;
   passingScore: number;
