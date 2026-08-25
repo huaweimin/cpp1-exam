@@ -1,8 +1,8 @@
-import { Radio, Input, Typography, Tag } from 'antd'
+import { Radio, Typography, Tag, Alert } from 'antd'
 import type { ObjectiveQuestion, ProgrammingQuestion } from '../types/exam'
+import CppSandbox from './CppSandbox'
 
 const { Text, Paragraph } = Typography
-const { TextArea } = Input
 
 interface QuestionCardProps {
   question: ObjectiveQuestion | ProgrammingQuestion
@@ -23,10 +23,12 @@ export default function QuestionCard({
   showResult = false,
   correctAnswer,
 }: QuestionCardProps) {
-  const isCorrect = showResult && studentAnswer === correctAnswer
+  // 只有客观题才用 correctAnswer 判定对错；编程题当前为人工评分，不标红/绿
+  const isObjective = question.type === 'singleChoice' || question.type === 'trueFalse'
+  const isCorrect = showResult && isObjective && studentAnswer === correctAnswer
 
   const cardClass = showResult
-    ? `question-card ${isCorrect ? 'answer-correct' : 'answer-wrong'}`
+    ? `question-card ${isCorrect ? 'answer-correct' : isObjective ? 'answer-wrong' : ''}`
     : 'question-card'
 
   return (
@@ -210,36 +212,46 @@ function ProgrammingContent({
         </div>
       </div>
 
-      {/* 代码输入区 */}
+      {/* 代码输入 + 运行沙箱 */}
       {!showResult ? (
         <div>
-          <Text strong className="text-gray-700 mb-2 block">请在此输入你的代码：</Text>
-          <TextArea
+          <Text strong className="text-gray-700 mb-2 block">请在此编写并运行你的代码：</Text>
+          <CppSandbox
             value={studentAnswer}
-            onChange={(e) => onAnswer?.(e.target.value)}
-            placeholder={`#include <iostream>\nusing namespace std;\nint main() {\n    // 在此编写你的代码\n    return 0;\n}`}
-            autoSize={{ minRows: 10, maxRows: 25 }}
-            className="font-mono text-sm"
-            style={{ fontFamily: 'SF Mono, Consolas, monospace' }}
+            onChange={(v) => onAnswer?.(v)}
+            sampleInput={question.sampleInput}
+            sampleOutput={question.sampleOutput}
           />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* 学生代码 */}
-          <div>
-            <Text strong className="text-gray-700 mb-2 block">你的代码：</Text>
-            <pre className="code-block light">{studentAnswer || '（未作答）'}</pre>
-          </div>
-          {/* 参考代码 */}
-          <div>
-            <Text strong className="text-green-600 mb-2 block">参考代码：</Text>
-            <pre className="code-block light">{question.referenceCode}</pre>
-          </div>
-          {/* 解析 */}
-          <div className="md:col-span-2 bg-blue-50 p-3 rounded-lg text-sm text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
-            <Text strong className="text-blue-600">📝 解析：</Text>
-            <br />
-            {question.explanation}
+        <div>
+          <Alert
+            type="info"
+            showIcon
+            message="编程题暂由教师人工评分"
+            description="请对照右侧参考代码和解析自行检查，系统会在教师确认后更新得分。"
+            className="mb-4"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 学生代码 */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Text strong className="text-gray-700">你的代码：</Text>
+                <Tag color="orange" className="text-xs">待评分</Tag>
+              </div>
+              <pre className="code-block light">{studentAnswer || '（未作答）'}</pre>
+            </div>
+            {/* 参考代码 */}
+            <div>
+              <Text strong className="text-green-600 mb-2 block">参考代码：</Text>
+              <pre className="code-block light">{question.referenceCode}</pre>
+            </div>
+            {/* 解析 */}
+            <div className="md:col-span-2 bg-blue-50 p-3 rounded-lg text-sm text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
+              <Text strong className="text-blue-600">📝 解析：</Text>
+              <br />
+              {question.explanation}
+            </div>
           </div>
         </div>
       )}

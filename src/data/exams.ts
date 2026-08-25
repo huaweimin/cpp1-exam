@@ -1,4 +1,5 @@
 import type { Exam } from '../types/exam';
+import { mockExams } from './mockExams';
 
 // 2026年6月电子学会 C/C++ 一级真题
 export const exam2026_06: Exam = {
@@ -233,7 +234,7 @@ int main() {
     {
       id: 22,
       type: 'programming',
-      stem: '【体温记录】某人连续 N 天记录体温（以"温度×100"的整数表示）。第 1 天体温为 W，之后每天给出与前一天的体温变化量 A_i（正数表示升高，负数表示降低）。已知正常体温范围为 [3600, 3700]（即 36.00°C ~ 37.00°C），求这 N 天中体温正常的天数。',
+      stem: '【体温记录】某人连续 N 天记录体温（以"温度×100"的整数表示）。第 1 天体温为 W，之后每天给出与前一天的体温变化量 A_i（正数表示升高，负数表示降低）。已知正常体温范围为 (3600, 3700)（即高于 36.00°C 且低于 37.00°C，不含 36.00°C 与 37.00°C 两个边界值），求这 N 天中体温正常的天数。',
       inputFormat: '第一行：N W（N 为天数，W 为第 1 天体温×100）\n第二行：N-1 个整数 A₂, A₃, ..., Aₙ（每天的体温变化量）',
       outputFormat: '一个整数，表示体温正常的天数',
       sampleInput: '5 3650\n-50 100 -30 20',
@@ -246,20 +247,20 @@ int main() {
     int temp = w;
     int count = 0;
     // 第1天
-    if(temp >= 3600 && temp <= 3700) count++;
+    if(temp > 3600 && temp < 3700) count++;
     // 第2~N天
     for(int i = 2; i <= n; i++) {
         int a;
         cin >> a;
         temp += a;
-        if(temp >= 3600 && temp <= 3700) count++;
+        if(temp > 3600 && temp < 3700) count++;
     }
     cout << count << endl;
     return 0;
 }`,
       score: 20,
       tags: ['循环', '分支', '累加', '逻辑运算'],
-      explanation: '考点：循环结构（for）、分支结构（if）、累加思想、逻辑运算（&&）。易错点：① 第 1 天也要判断是否正常（容易漏掉）；② 变化量是累加到 temp 上的，不是替换；③ 范围判断用 >= 和 <=，包含边界值。',
+      explanation: '考点：循环结构（for）、分支结构（if）、累加思想、逻辑运算（&&）。易错点：① 第 1 天也要判断是否正常（容易漏掉）；② 变化量是累加到 temp 上的，不是替换；③ 范围判断用 > 和 <（开区间），边界值 3600 和 3700 不算正常——本题样例里第 2 天体温 3600、第 3 天体温 3700 恰好卡在边界，都不计入正常天数。',
     },
   ],
 };
@@ -523,5 +524,5 @@ int main() {
   ],
 };
 
-// 所有考试列表
-export const allExams: Exam[] = [exam2026_06, exam2026_03];
+// 所有考试列表（真题 + 模拟卷）
+export const allExams: Exam[] = [exam2026_06, exam2026_03, ...mockExams];

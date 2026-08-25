@@ -119,6 +119,17 @@ export default function HomePage({ onStart, onTeacher, onRecords }: HomePageProp
             教师查看成绩
           </Button>
         </div>
+
+        {/* 个人信息 footer */}
+        <footer className="text-center mt-8 text-white/60 text-xs leading-6">
+          <div>
+            开发维护：华老师 · 前端开发工程师 / C++ 少儿编程教师
+          </div>
+          <div>
+            邮箱：huaweimin@yeah.net
+          </div>
+          <div>珠海 · 横琴 © 2026 C++ 一级在线考试系统</div>
+        </footer>
       </div>
     </div>
   )
