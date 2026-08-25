@@ -252,45 +252,47 @@ export default function HomePage() {
           </Button>
         </Card>
 
-        {/* 底部按钮：移动端隐藏页脚，仅保留关键操作 */}
-        <div className="hidden sm:flex text-center mt-6 flex-wrap items-center justify-center gap-3">
+        {/* 底部按钮：移动端和桌面端都可见，移动端做成紧凑的小按钮组 */}
+        <div className="mt-3 sm:mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
           <Button
             type="text"
+            size="middle"
             icon={<HistoryOutlined />}
             onClick={() => navigate('/records')}
-            className="text-white/80 hover:text-white"
+            className="!text-white/90 hover:!text-white !px-2"
           >
-            我的练习记录
+            <span className="text-xs sm:text-sm">我的练习记录</span>
           </Button>
           {user.role === 'teacher' && (
             <Button
               type="text"
+              size="middle"
               icon={<BarChartOutlined />}
               onClick={() => navigate('/teacher')}
-              className="text-white/80 hover:text-white"
+              className="!text-white/90 hover:!text-white !px-2"
             >
-              教师查看成绩
+              <span className="text-xs sm:text-sm">教师查看成绩</span>
             </Button>
           )}
           <Button
             type="text"
+            size="middle"
             icon={<LogoutOutlined />}
             onClick={logout}
-            className="text-white/80 hover:text-white"
+            className="!text-white/90 hover:!text-white !px-2"
           >
-            退出登录
+            <span className="text-xs sm:text-sm">退出登录</span>
           </Button>
         </div>
 
-        {/* 个人信息 footer：移动端隐藏，释放底部署名空间 */}
-        <footer className="hidden sm:block text-center mt-8 text-white/60 text-xs leading-6">
-          <div>
-            开发维护：华老师
+        {/* 个人信息 footer：移动端仅保留一行最简信息，避免挤占底部按钮空间 */}
+        <footer className="mt-4 sm:mt-8 text-center text-white/70 text-[10px] leading-5 sm:text-xs sm:leading-6">
+          <div className="sm:hidden">华老师 · 珠海横琴 © 2026</div>
+          <div className="hidden sm:block">
+            <div>开发维护：华老师</div>
+            <div>邮箱：huaweimin@yeah.net</div>
+            <div>珠海 · 横琴 © 2026 C++ 一级在线考试系统</div>
           </div>
-          <div>
-            邮箱：huaweimin@yeah.net
-          </div>
-          <div>珠海 · 横琴 © 2026 C++ 一级在线考试系统</div>
         </footer>
       </div>
     </div>
