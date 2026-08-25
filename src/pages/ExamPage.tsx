@@ -1,21 +1,23 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Button, Modal, Typography, Progress, Space, Affix } from 'antd'
+import { useNavigate, useParams, Link } from 'react-router-dom'
+import { Button, Modal, Typography, Progress, Space, Affix, Card } from 'antd'
 import { ClockCircleOutlined, LogoutOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import type { Exam, StudentAnswers, ExamResult } from '../types/exam'
+import { allExams } from '../data/exams'
+import { useAuth } from '../App'
 import QuestionCard from '../components/QuestionCard'
 import { saveProgress, loadProgress, clearProgress } from '../utils/storage'
 import { gradeExam, getAnswerStats } from '../utils/grading'
 
 const { Text, Title } = Typography
 
-interface ExamPageProps {
+interface ExamInnerProps {
   exam: Exam
   studentName: string
-  onFinish: (result: ExamResult) => void
-  onExit: () => void
 }
 
-export default function ExamPage({ exam, studentName, onFinish, onExit }: ExamPageProps) {
+function ExamInner({ exam, studentName }: ExamInnerProps) {
+  const navigate = useNavigate()
   const startTimeRef = useRef<number>(Date.now())
   const [remainingSec, setRemainingSec] = useState(exam.duration * 60)
 
@@ -67,10 +69,10 @@ export default function ExamPage({ exam, studentName, onFinish, onExit }: ExamPa
       const result = gradeExam(exam, answers, studentName, durationSec)
       saveProgress(exam.id, studentName, answers)
       clearProgress(exam.id, studentName)
-      onFinish(result)
+      navigate('/result', { state: { result }, replace: true })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [answers, exam, studentName, onFinish]
+    [answers, exam, studentName, navigate]
   )
 
   // 更新单选题答案
@@ -335,7 +337,7 @@ export default function ExamPage({ exam, studentName, onFinish, onExit }: ExamPa
       <Modal
         title="确认退出"
         open={showExitModal}
-        onOk={onExit}
+        onOk={() => navigate('/')}
         onCancel={() => setShowExitModal(false)}
         okText="确认退出"
         cancelText="继续答题"
@@ -352,4 +354,28 @@ export default function ExamPage({ exam, studentName, onFinish, onExit }: ExamPa
       </Modal>
     </div>
   )
+}
+
+export default function ExamPage() {
+  const { examId } = useParams<{ examId: string }>()
+  const { auth } = useAuth()
+  const exam = allExams.find((e) => e.id === examId)
+
+  // 理论上不会走到（RequireAuth 已拦截未登录），仅作兜底
+  if (!auth) return null
+
+  if (!exam) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+        <Card className="max-w-md w-full text-center shadow-lg">
+          <Title level={4} className="!mb-4">试卷不存在或已下架</Title>
+          <Link to="/">
+            <Button type="primary" size="large">返回首页</Button>
+          </Link>
+        </Card>
+      </div>
+    )
+  }
+
+  return <ExamInner exam={exam} studentName={auth.user.username} />
 }

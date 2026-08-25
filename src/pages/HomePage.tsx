@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, Button, Space, Typography, Tag, Divider } from 'antd'
 import {
   PlayCircleOutlined,
@@ -7,26 +8,20 @@ import {
   LogoutOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-import type { Exam } from '../types/exam'
-import type { AuthUser } from '../utils/cloudSync'
 import { allExams } from '../data/exams'
+import { useAuth } from '../App'
 
 const { Title, Text } = Typography
 
-interface HomePageProps {
-  user: AuthUser
-  onStart: (exam: Exam) => void
-  onTeacher: () => void
-  onRecords: () => void
-  onLogout: () => void
-}
-
-export default function HomePage({ user, onStart, onTeacher, onRecords, onLogout }: HomePageProps) {
-  const [selectedExam, setSelectedExam] = useState<Exam | null>(allExams[0] || null)
+export default function HomePage() {
+  const { auth, logout } = useAuth()
+  const navigate = useNavigate()
+  const [selectedExam, setSelectedExam] = useState(allExams[0] || null)
+  const user = auth!.user
 
   const handleStart = () => {
     if (selectedExam) {
-      onStart(selectedExam)
+      navigate(`/exam/${selectedExam.id}`)
     }
   }
 
@@ -95,7 +90,7 @@ export default function HomePage({ user, onStart, onTeacher, onRecords, onLogout
           <Button
             type="text"
             icon={<HistoryOutlined />}
-            onClick={onRecords}
+            onClick={() => navigate('/records')}
             className="text-white/80 hover:text-white"
           >
             我的练习记录
@@ -104,7 +99,7 @@ export default function HomePage({ user, onStart, onTeacher, onRecords, onLogout
             <Button
               type="text"
               icon={<BarChartOutlined />}
-              onClick={onTeacher}
+              onClick={() => navigate('/teacher')}
               className="text-white/80 hover:text-white"
             >
               教师查看成绩
@@ -113,7 +108,7 @@ export default function HomePage({ user, onStart, onTeacher, onRecords, onLogout
           <Button
             type="text"
             icon={<LogoutOutlined />}
-            onClick={onLogout}
+            onClick={logout}
             className="text-white/80 hover:text-white"
           >
             退出登录

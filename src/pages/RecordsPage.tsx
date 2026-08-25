@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Button, Card, Typography, Empty, Tag, Statistic, Row, Col, Collapse, Popconfirm, message, Spin,
 } from 'antd'
@@ -7,19 +8,18 @@ import {
 } from '@ant-design/icons'
 import type { Exam, ExamResult } from '../types/exam'
 import { allExams } from '../data/exams'
+import { useAuth } from '../App'
 import { deleteResult } from '../utils/storage'
 import { pullMyRecords, deleteRecordOnCloud } from '../utils/cloudSync'
 import RecordDetail from '../components/RecordDetail'
 
 const { Title, Text } = Typography
 
-interface RecordsPageProps {
-  onBack: () => void
-  token: string
-  username: string
-}
-
-export default function RecordsPage({ onBack, token, username }: RecordsPageProps) {
+export default function RecordsPage() {
+  const { auth } = useAuth()
+  const navigate = useNavigate()
+  const token = auth!.token
+  const username = auth!.user.username
   // 当前登录学生的云端记录（服务器唯一数据源，只返回自己的）
   const [records, setRecords] = useState<ExamResult[]>([])
   const [loading, setLoading] = useState(false)
@@ -95,7 +95,7 @@ export default function RecordsPage({ onBack, token, username }: RecordsPageProp
     <div className="min-h-screen p-4 md:p-6 bg-gray-50">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-3 mb-6">
-          <Button icon={<ArrowLeftOutlined />} onClick={onBack}>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/')}>
             返回
           </Button>
           <Title level={3} className="!m-0 leading-none flex-1">

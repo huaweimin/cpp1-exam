@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect } from 'react'
-import type { Exam, ExamResult } from './types/exam'
+import { useState, useCallback, useEffect, useContext, createContext, useMemo } from 'react'
+import type { ReactElement } from 'react'
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import type { AuthUser, LoginResult } from './utils/cloudSync'
 import { getStoredAuth, storeAuth, verifyAuth, logoutAccount, clearAuth } from './utils/cloudSync'
 import AuthPage from './pages/AuthPage'
@@ -9,14 +10,48 @@ import ResultPage from './pages/ResultPage'
 import TeacherPage from './pages/TeacherPage'
 import RecordsPage from './pages/RecordsPage'
 
-type Page = 'home' | 'exam' | 'result' | 'teacher' | 'records'
+interface AuthState {
+  token: string
+  user: AuthUser
+}
+
+interface AuthContextValue {
+  auth: AuthState | null
+  login: (loginResult: LoginResult) => void
+  logout: () => void
+}
+
+const AuthContext = createContext<AuthContextValue>({
+  auth: null,
+  login: () => {},
+  logout: () => {},
+})
+
+/** 获取登录态（RequireAuth 守卫内调用，非空） */
+export function useAuth() {
+  return useContext(AuthContext)
+}
+
+/** 登录守卫：未登录跳转到 /login，并记录来源页面用于登录后回跳 */
+function RequireAuth({ children }: { children: ReactElement }) {
+  const { auth } = useAuth()
+  const location = useLocation()
+  if (!auth) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />
+  }
+  return children
+}
 
 export default function App() {
   // 登录态（localStorage 持久化）
-  const [auth, setAuth] = useState<{ token: string; user: AuthUser } | null>(() => getStoredAuth())
-  const [page, setPage] = useState<Page>('home')
-  const [exam, setExam] = useState<Exam | null>(null)
-  const [result, setResult] = useState<ExamResult | null>(null)
+  const [auth, setAuth] = useState<AuthState | null>(() => getStoredAuth())
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  // 路由切换时回到顶部，避免继承上一页的滚动位置
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
 
   // 启动时校验登录态是否仍有效（token 过期/被注销则清除）
   useEffect(() => {
@@ -27,6 +62,7 @@ export default function App() {
       if (!user) {
         clearAuth()
         setAuth(null)
+        navigate('/login', { replace: true })
       } else if (user.role !== auth.user.role) {
         // 角色信息以服务器为准
         setAuth((prev) => (prev ? { ...prev, user } : prev))
@@ -38,65 +74,70 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleLogin = useCallback((loginResult: LoginResult) => {
+  const login = useCallback((loginResult: LoginResult) => {
     storeAuth(loginResult)
     setAuth({ token: loginResult.token, user: { username: loginResult.username, role: loginResult.role } })
-    setPage('home')
   }, [])
 
-  const handleLogout = useCallback(() => {
+  const logout = useCallback(() => {
     if (auth) logoutAccount(auth.token)
     setAuth(null)
-    setResult(null)
-    setExam(null)
-    setPage('home')
-  }, [auth])
+    navigate('/login', { replace: true })
+  }, [auth, navigate])
 
-  const startExam = useCallback(
-    (selectedExam: Exam) => {
-      if (!auth) return
-      setExam(selectedExam)
-      setPage('exam')
-    },
-    [auth]
-  )
-
-  const finishExam = useCallback((examResult: ExamResult) => {
-    setResult(examResult)
-    setPage('result')
-  }, [])
-
-  const backToHome = useCallback(() => {
-    setPage('home')
-    setResult(null)
-  }, [])
-
-  // 未登录：显示登录/注册页
-  if (!auth) {
-    return <AuthPage onLogin={handleLogin} />
-  }
-
-  const studentName = auth.user.username
+  const authValue = useMemo(() => ({ auth, login, logout }), [auth, login, logout])
 
   return (
-    <>
-      {page === 'home' && (
-        <HomePage
-          user={auth.user}
-          onStart={startExam}
-          onTeacher={() => setPage('teacher')}
-          onRecords={() => setPage('records')}
-          onLogout={handleLogout}
+    <AuthContext.Provider value={authValue}>
+      <Routes>
+        {/* 已登录访问登录页 → 直接回首页 */}
+        <Route
+          path="/login"
+          element={auth ? <Navigate to="/" replace /> : <AuthPage onLogin={login} />}
         />
-      )}
-      {page === 'exam' && exam && (
-        <ExamPage exam={exam} studentName={studentName} onFinish={finishExam} onExit={backToHome} />
-      )}
-      {page === 'result' && result && exam && (
-        <ResultPage result={result} exam={exam} onBack={backToHome} token={auth.token} />
-      )}
-      {page === 'teacher' && <TeacherPage onBack={backToHome} token={auth.token} />}
-      {page === 'records' && <RecordsPage onBack={backToHome} token={auth.token} username={studentName} />}
-    </>
+        <Route
+          path="/"
+          element={
+            <RequireAuth>
+              <HomePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/exam/:examId"
+          element={
+            <RequireAuth>
+              <ExamPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/result"
+          element={
+            <RequireAuth>
+              <ResultPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/teacher"
+          element={
+            <RequireAuth>
+              <TeacherPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/records"
+          element={
+            <RequireAuth>
+              <RecordsPage />
+            </RequireAuth>
+          }
+        />
+        {/* 未知路径 → 首页 */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AuthContext.Provider>
   )
 }

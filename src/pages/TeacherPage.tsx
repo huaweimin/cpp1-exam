@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Table, Button, Typography, Empty, Card, Tag, Statistic, Row, Col, message, Spin } from 'antd'
 import { ArrowLeftOutlined, DownloadOutlined, ReloadOutlined } from '@ant-design/icons'
 import type { ExamResult } from '../types/exam'
 import { pullRecords } from '../utils/cloudSync'
+import { useAuth } from '../App'
 
 const { Title, Text } = Typography
 
-interface TeacherPageProps {
-  onBack: () => void
-  token: string
-}
-
-export default function TeacherPage({ onBack, token }: TeacherPageProps) {
+export default function TeacherPage() {
+  const { auth } = useAuth()
+  const navigate = useNavigate()
+  const token = auth!.token
   // 全部成绩记录（唯一数据源：服务器）
   const [results, setResults] = useState<ExamResult[]>([])
   const [loading, setLoading] = useState(false)
@@ -132,7 +132,7 @@ export default function TeacherPage({ onBack, token }: TeacherPageProps) {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <Button icon={<ArrowLeftOutlined />} onClick={onBack}>
+            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/')}>
               返回
             </Button>
             <Title level={3} className="!m-0 leading-none">

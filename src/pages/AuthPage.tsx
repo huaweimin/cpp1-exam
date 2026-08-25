@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Card, Input, Button, Tabs, Radio, Typography, message } from 'antd'
 import { UserOutlined, LockOutlined, SafetyOutlined, LoginOutlined, UserAddOutlined } from '@ant-design/icons'
 import type { LoginResult } from '../utils/cloudSync'
@@ -11,6 +12,10 @@ interface AuthPageProps {
 }
 
 export default function AuthPage({ onLogin }: AuthPageProps) {
+  const navigate = useNavigate()
+  const location = useLocation()
+  // 未登录访问受保护页时被重定向过来，登录后跳回来源页面；否则回首页
+  const from = (location.state as { from?: string } | null)?.from ?? '/'
   const [tab, setTab] = useState<'login' | 'register'>('login')
 
   // 登录表单
@@ -37,6 +42,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
       const auth = await loginAccount(name, loginPwd)
       message.success(`欢迎回来，${auth.username}`)
       onLogin(auth)
+      navigate(from, { replace: true })
     } catch (err) {
       message.error(String(err instanceof Error ? err.message : err))
     } finally {
@@ -76,6 +82,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
       })
       message.success('注册成功，已自动登录')
       onLogin(auth)
+      navigate(from, { replace: true })
     } catch (err) {
       message.error(String(err instanceof Error ? err.message : err))
     } finally {

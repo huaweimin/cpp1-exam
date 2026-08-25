@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Button, Typography, Statistic, Card, Row, Col, Tag, Progress, Spin } from 'antd'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { Button, Typography, Statistic, Card, Row, Col, Tag, Progress, Spin, Empty } from 'antd'
 import {
   ArrowLeftOutlined,
   CheckCircleOutlined,
@@ -8,6 +9,8 @@ import {
   ExperimentOutlined,
 } from '@ant-design/icons'
 import type { Exam, ExamResult } from '../types/exam'
+import { allExams } from '../data/exams'
+import { useAuth } from '../App'
 import QuestionCard from '../components/QuestionCard'
 import { saveResult } from '../utils/storage'
 import { pushResult } from '../utils/cloudSync'
@@ -15,24 +18,45 @@ import { judgeExamProgramming } from '../utils/judge'
 
 const { Title, Text, Paragraph } = Typography
 
-interface ResultPageProps {
-  result: ExamResult
-  exam: Exam
-  onBack: () => void
-  token: string
-}
+// 成绩缓存键：交卷后写入路由 state + sessionStorage，刷新 /result 页面时从缓存恢复
+const RESULT_CACHE_KEY = 'cpp_exam_last_result'
 
-export default function ResultPage({ result, exam, onBack, token }: ResultPageProps) {
+export default function ResultPage() {
+  const { auth } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
   const pushedRef = useRef(false)
+
+  // 交卷后的成绩：优先取路由 state；刷新页面（state 丢失）时从 sessionStorage 恢复
+  const [result] = useState<ExamResult | null>(() => {
+    const stateResult = (location.state as { result?: ExamResult } | null)?.result
+    if (stateResult) {
+      try {
+        sessionStorage.setItem(RESULT_CACHE_KEY, JSON.stringify(stateResult))
+      } catch {
+        /* 忽略写入失败 */
+      }
+      return stateResult
+    }
+    try {
+      const raw = sessionStorage.getItem(RESULT_CACHE_KEY)
+      return raw ? (JSON.parse(raw) as ExamResult) : null
+    } catch {
+      return null
+    }
+  })
+
+  const exam = result ? allExams.find((e) => e.id === result.examId) : undefined
+  const token = auth!.token
+
   // 评测后的完整成绩（编程题判完才有）；评测完成前用原始 result
   const [judgedResult, setJudgedResult] = useState<ExamResult | null>(null)
   const [judging, setJudging] = useState(false)
   const [judgeProgress, setJudgeProgress] = useState({ done: 0, total: 0 })
 
-  const display = judgedResult ?? result
-
   // 交卷后：本地保存 → 评测编程题 → 评测完成再推送云端
   useEffect(() => {
+    if (!result) return
     saveResult(result)
     const pendingProgramming = result.details.filter(
       (d) => d.type === 'programming' && d.judgeStatus === 'pending'
@@ -40,8 +64,8 @@ export default function ResultPage({ result, exam, onBack, token }: ResultPagePr
     if (pushedRef.current) return
     pushedRef.current = true
 
-    if (pendingProgramming.length === 0) {
-      // 无待评测编程题（如历史记录回看），直接推送
+    if (pendingProgramming.length === 0 || !exam) {
+      // 无待评测编程题（如历史记录回看）或试卷已下架：直接推送
       pushResult(result, token).catch(() => {})
       return
     }
@@ -64,6 +88,28 @@ export default function ResultPage({ result, exam, onBack, token }: ResultPagePr
       })
       .finally(() => setJudging(false))
   }, [result, exam, token])
+
+  // 无成绩数据（非法直达 /result 且无缓存）
+  if (!result) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+        <Card className="max-w-md w-full text-center shadow-lg">
+          <Empty description="没有可显示的成绩数据" />
+          <Button
+            type="primary"
+            size="large"
+            icon={<HomeOutlined />}
+            onClick={() => navigate('/')}
+            className="mt-4"
+          >
+            返回首页
+          </Button>
+        </Card>
+      </div>
+    )
+  }
+
+  const display = judgedResult ?? result
 
   const objectiveDetails = display.details.filter((d) => d.type !== 'programming')
   const programmingDetails = display.details.filter((d) => d.type === 'programming')
@@ -109,7 +155,7 @@ export default function ResultPage({ result, exam, onBack, token }: ResultPagePr
         {/* 返回按钮 */}
         <Button
           icon={<ArrowLeftOutlined />}
-          onClick={onBack}
+          onClick={() => navigate('/')}
           className="mb-4"
         >
           返回首页
@@ -196,66 +242,78 @@ export default function ResultPage({ result, exam, onBack, token }: ResultPagePr
           />
         </Card>
 
-        {/* 逐题解析 */}
-        <div className="mb-4">
-          <Title level={4} className="bg-blue-50 px-4 py-2 rounded-lg border-l-4 border-blue-500">
-            📝 一、单选题解析（每题 4 分）
-          </Title>
-          {exam.singleChoice.map((q, i) => {
-            const detail = display.details.find((d) => d.questionId === q.id)!
-            return (
-              <QuestionCard
-                key={q.id}
-                question={q}
-                index={i + 1}
-                sectionLabel="单选题"
-                studentAnswer={detail.studentAnswer}
-                showResult
-                correctAnswer={detail.correctAnswer}
-              />
-            )
-          })}
-        </div>
+        {/* 逐题解析（试卷下架时只显示成绩概览） */}
+        {!exam && (
+          <Card className="mb-4">
+            <Empty description="这套试卷已不在系统中，只能查看成绩概览" />
+          </Card>
+        )}
 
-        <div className="mb-4">
-          <Title level={4} className="bg-green-50 px-4 py-2 rounded-lg border-l-4 border-green-500">
-            📝 二、判断题解析（每题 2 分）
-          </Title>
-          {exam.trueFalse.map((q, i) => {
-            const detail = display.details.find((d) => d.questionId === q.id)!
-            return (
-              <QuestionCard
-                key={q.id}
-                question={q}
-                index={i + 1}
-                sectionLabel="判断题"
-                studentAnswer={detail.studentAnswer}
-                showResult
-                correctAnswer={detail.correctAnswer}
-              />
-            )
-          })}
-        </div>
+        {exam && (
+          <div className="mb-4">
+            <Title level={4} className="bg-blue-50 px-4 py-2 rounded-lg border-l-4 border-blue-500">
+              📝 一、单选题解析（每题 4 分）
+            </Title>
+            {exam.singleChoice.map((q, i) => {
+              const detail = display.details.find((d) => d.questionId === q.id)!
+              return (
+                <QuestionCard
+                  key={q.id}
+                  question={q}
+                  index={i + 1}
+                  sectionLabel="单选题"
+                  studentAnswer={detail.studentAnswer}
+                  showResult
+                  correctAnswer={detail.correctAnswer}
+                />
+              )
+            })}
+          </div>
+        )}
 
-        <div className="mb-4">
-          <Title level={4} className="bg-orange-50 px-4 py-2 rounded-lg border-l-4 border-orange-500">
-            📝 三、编程题解析（每题 20 分，自动评测）
-          </Title>
-          {exam.programming.map((q, i) => {
-            const detail = display.details.find((d) => d.questionId === q.id)!
-            return (
-              <QuestionCard
-                key={q.id}
-                question={q}
-                index={i + 1}
-                sectionLabel="编程题"
-                studentAnswer={detail.studentAnswer}
-                showResult
-                judge={detail}
-              />
-            )
-          })}
-        </div>
+        {exam && (
+          <div className="mb-4">
+            <Title level={4} className="bg-green-50 px-4 py-2 rounded-lg border-l-4 border-green-500">
+              📝 二、判断题解析（每题 2 分）
+            </Title>
+            {exam.trueFalse.map((q, i) => {
+              const detail = display.details.find((d) => d.questionId === q.id)!
+              return (
+                <QuestionCard
+                  key={q.id}
+                  question={q}
+                  index={i + 1}
+                  sectionLabel="判断题"
+                  studentAnswer={detail.studentAnswer}
+                  showResult
+                  correctAnswer={detail.correctAnswer}
+                />
+              )
+            })}
+          </div>
+        )}
+
+        {exam && (
+          <div className="mb-4">
+            <Title level={4} className="bg-orange-50 px-4 py-2 rounded-lg border-l-4 border-orange-500">
+              📝 三、编程题解析（每题 20 分，自动评测）
+            </Title>
+            {exam.programming.map((q, i) => {
+              const detail = display.details.find((d) => d.questionId === q.id)!
+              return (
+                <QuestionCard
+                  key={q.id}
+                  question={q}
+                  index={i + 1}
+                  sectionLabel="编程题"
+                  studentAnswer={detail.studentAnswer}
+                  showResult
+                  judge={detail}
+                />
+              )
+            })}
+          </div>
+        )}
 
         {/* 底部返回 */}
         <div className="text-center py-8">
@@ -263,7 +321,7 @@ export default function ResultPage({ result, exam, onBack, token }: ResultPagePr
             type="primary"
             size="large"
             icon={<HomeOutlined />}
-            onClick={onBack}
+            onClick={() => navigate('/')}
             className="!px-12"
           >
             返回首页
