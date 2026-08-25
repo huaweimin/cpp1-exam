@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Table, Button, Typography, Empty, Card, Tag, Statistic, Row, Col, message } from 'antd'
-import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons'
+import { Table, Button, Typography, Empty, Card, Tag, Statistic, Row, Col, message, Spin } from 'antd'
+import { ArrowLeftOutlined, DownloadOutlined, ReloadOutlined } from '@ant-design/icons'
 import type { ExamResult } from '../types/exam'
-import { getAllResults, exportResultsToCSV, importResults } from '../utils/storage'
 import { pullRecords } from '../utils/cloudSync'
 
 const { Title, Text } = Typography
@@ -12,18 +11,28 @@ interface TeacherPageProps {
 }
 
 export default function TeacherPage({ onBack }: TeacherPageProps) {
-  const [results, setResults] = useState<ExamResult[]>(getAllResults())
+  // 全部成绩记录（唯一数据源：服务器）
+  const [results, setResults] = useState<ExamResult[]>([])
+  const [loading, setLoading] = useState(false)
+  const [loadFailed, setLoadFailed] = useState(false)
 
-  // 进入页面时自动合并云端记录（静默，无 UI 提示）
-  useEffect(() => {
+  const loadFromServer = (silent = false) => {
+    if (!silent) setLoading(true)
+    setLoadFailed(false)
     pullRecords()
-      .then((cloud) => {
-        if (cloud && cloud.length > 0) {
-          importResults(cloud)
-          setResults(getAllResults())
+      .then((list) => {
+        if (list) {
+          setResults(list)
+        } else {
+          setLoadFailed(true)
         }
       })
-      .catch(() => {})
+      .finally(() => setLoading(false))
+  }
+
+  // 进入页面时从服务器拉取全部记录
+  useEffect(() => {
+    loadFromServer()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -44,6 +53,34 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
   const avgScore = results.length > 0
     ? (results.reduce((s, r) => s + r.totalScore, 0) / results.length).toFixed(1)
     : '0'
+
+  // 导出 CSV（从当前服务器数据过滤，不依赖浏览器缓存）
+  const exportCSV = (examId: string, examName: string) => {
+    const list = results.filter((r) => r.examId === examId)
+    if (list.length === 0) {
+      message.warning('暂无成绩数据')
+      return
+    }
+    const headers = ['姓名', '总分', '满分', '是否及格', '提交时间', '用时(分钟)']
+    const rows = list.map((r) => [
+      r.studentName,
+      r.totalScore,
+      r.maxScore,
+      r.passed ? '及格' : '不及格',
+      r.submittedAt,
+      (r.duration / 60).toFixed(1),
+    ])
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${cell}"`).join(','))
+      .join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${examName}_成绩.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   const columns = [
     {
@@ -101,6 +138,9 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
               成绩管理
             </Title>
           </div>
+          <Button icon={<ReloadOutlined />} loading={loading} onClick={() => loadFromServer()}>
+            刷新
+          </Button>
         </div>
 
         {/* 全局统计 */}
@@ -119,12 +159,24 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
               <Statistic title="平均分" value={avgScore} />
             </Col>
           </Row>
-          <Text type="secondary" className="text-xs mt-2 block">
-            数据来源：当前浏览器本地记录
-          </Text>
         </Card>
 
-        {results.length === 0 ? (
+        {loading ? (
+          <Card>
+            <div className="py-12 text-center">
+              <Spin />
+              <div className="mt-3 text-gray-400 text-sm">正在加载成绩数据…</div>
+            </div>
+          </Card>
+        ) : loadFailed ? (
+          <Card>
+            <Empty description="成绩加载失败，请检查网络">
+              <Button type="primary" icon={<ReloadOutlined />} onClick={() => loadFromServer()}>
+                重新加载
+              </Button>
+            </Empty>
+          </Card>
+        ) : results.length === 0 ? (
           <Card>
             <Empty description="暂无考试记录，等学生交卷后这里会自动汇总" />
           </Card>
@@ -137,7 +189,7 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
                 </Title>
                 <Button
                   icon={<DownloadOutlined />}
-                  onClick={() => exportResultsToCSV(examId, examResults[0].examName)}
+                  onClick={() => exportCSV(examId, examResults[0].examName)}
                 >
                   导出 CSV
                 </Button>

@@ -9,12 +9,17 @@
  *   主键 id = studentName|examId|submittedAt（唯一去重键）
  *
  * event.action 支持：
- *   - pull   : 查询全部记录，按 submittedAt 倒序返回
- *   - push   : 批量 upsert（按主键 id 冲突合并）
- *   - delete : 按唯一键删除单条
- *   - test   : 返回当前记录条数（连通性诊断）
+ *   - pull        : 查询全部记录，按 submittedAt 倒序返回
+ *   - pullStudent : 按学生姓名精确查询该生全部记录，按 submittedAt 倒序返回
+ *   - names       : 返回去重后的学生姓名列表（升序）
+ *   - push        : 批量 upsert（按主键 id 冲突合并）
+ *   - pushOne     : 单条 upsert（学生交卷时调用）
+ *   - delete      : 按唯一键删除单条
+ *   - test        : 返回当前记录条数（连通性诊断）
  *
- * 无论成功与否都返回 { code, data, message }，前端根据 code 判定。
+ * 无论成功与否，业务层都返回 { code, data, message }，前端根据 code 判定；
+ * 经 HTTP 网关调用时包装为 { statusCode, headers(含CORS), body: JSON 字符串 }，
+ * callFunction 直调则保持原业务对象。
  */
 
 const cloud = require('@cloudbase/node-sdk')
@@ -98,6 +103,27 @@ async function handlePull() {
   return (data || []).map(rowToRecord).filter(Boolean)
 }
 
+/** 按学生姓名精确查询（学生练习记录页用） */
+async function handlePullStudent(studentName) {
+  if (!studentName) return []
+  const { data, error } = await db
+    .from(TABLE)
+    .select('*')
+    .eq('student_name', String(studentName))
+    .order('submitted_at', { ascending: false })
+    .limit(1000)
+  if (error) throw new Error(pgError(error))
+  return (data || []).map(rowToRecord).filter(Boolean)
+}
+
+/** 返回去重后的学生姓名列表（升序，历史姓名下拉用） */
+async function handleNames() {
+  const { data, error } = await db.from(TABLE).select('student_name').limit(2000)
+  if (error) throw new Error(pgError(error))
+  const names = new Set((data || []).map((r) => r.student_name).filter(Boolean))
+  return Array.from(names).sort((a, b) => String(a).localeCompare(String(b), 'zh-CN'))
+}
+
 /** 批量 upsert（主键冲突即覆盖更新），分批防止单次请求过大 */
 async function handlePush(records) {
   const list = Array.isArray(records) ? records : []
@@ -153,28 +179,61 @@ function normalizeEvent(event = {}) {
   return event
 }
 
+/**
+ * 把业务对象包装成 HTTP 响应（含 CORS 头）。
+ * 仅 HTTP 网关调用生效；callFunction 直调保持返回原业务对象。
+ */
+function httpResponse(payload, statusCode = 200) {
+  return {
+    statusCode,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+    body: JSON.stringify(payload),
+  }
+}
+
 exports.main = async (event = {}) => {
+  // HTTP 网关调用：event 带 httpMethod（预检为 OPTIONS）
+  const isHttp = !!(event && event.httpMethod)
   const input = normalizeEvent(event)
   const action = input && input.action
   const data = (input && input.data) || {}
+
+  // CORS 预检请求：直接返回 204 + 允许头，不执行业务逻辑
+  if (isHttp && event.httpMethod === 'OPTIONS') {
+    return httpResponse({ code: 0, data: null, message: 'ok' }, 204)
+  }
 
   try {
     let result
     switch (action) {
       case 'pull':
         result = await handlePull()
-        return { code: 0, data: result, message: 'ok' }
+        break
+      case 'pullStudent':
+        result = await handlePullStudent(data.studentName)
+        break
+      case 'names':
+        result = await handleNames()
+        break
       case 'push':
         result = await handlePush(data.records)
-        return { code: 0, data: result, message: 'ok' }
+        break
+      case 'pushOne':
+        result = await handlePush(data.record ? [data.record] : [])
+        break
       case 'delete':
         result = await handleDelete(data.record)
-        return { code: 0, data: result, message: 'ok' }
+        break
       case 'test':
         result = await handleTest()
-        return { code: 0, data: result, message: 'ok' }
-      default:
-        return {
+        break
+      default: {
+        const payload = {
           code: -1,
           data: {
             eventKeys: Object.keys(event || {}),
@@ -187,7 +246,10 @@ exports.main = async (event = {}) => {
           },
           message: `unknown action: ${action}`,
         }
+        return isHttp ? httpResponse(payload) : payload
+      }
     }
+    return isHttp ? httpResponse({ code: 0, data: result, message: 'ok' }) : { code: 0, data: result, message: 'ok' }
   } catch (err) {
     let detail
     try {
@@ -199,6 +261,6 @@ exports.main = async (event = {}) => {
       detail = String(err)
     }
     console.error('[examSync] 处理失败:', action, detail, err && err.stack)
-    return { code: 1, data: null, message: detail }
+    return isHttp ? httpResponse({ code: 1, data: null, message: detail }) : { code: 1, data: null, message: detail }
   }
 }

@@ -2,8 +2,8 @@ import type { ExamResult } from '../types/exam'
 
 /**
  * CloudBase 云函数同步模块（examSync）
- * 设计原则：云端是"尽力而为"的同步层，localStorage 永远是保底。
- * 任何网络失败都静默降级，绝不影响本地答题与判分。
+ * 设计原则：服务器是成绩记录的唯一数据源，页面展示（学生记录页/教师成绩页）均从云端拉取；
+ * localStorage 仅作为交卷瞬间的本地缓存兜底（崩溃/断网保护），不参与页面展示。
  *
  * 链路：fetch → HTTP 访问服务公开路由 → 云函数 examSync → PostgreSQL exam_results 表
  * （PG 环境匿名 callFunction 会被角色授权层拦截 EXCEED_AUTHORITY，故走免鉴权公开路由）
@@ -55,18 +55,40 @@ async function call<T>(action: string, data: Record<string, unknown> = {}): Prom
   return json
 }
 
-/** 拉取云端全部成绩记录（教师页/同步用）。失败返回 null，调用方降级。 */
+/** 拉取云端全部成绩记录（教师页用）。失败返回 null，调用方降级。 */
 export async function pullRecords(): Promise<ExamResult[] | null> {
   try {
-    const json = await call<{ records: ExamResult[] }>('pull')
-    return Array.isArray(json.data.records) ? json.data.records : []
+    const json = await call<ExamResult[]>('pull')
+    return Array.isArray(json.data) ? json.data : []
   } catch (err) {
-    console.warn('[cloudSync] 拉取云端记录失败（已降级为本地数据）:', err)
+    console.warn('[cloudSync] 拉取云端记录失败:', err)
     return null
   }
 }
 
-/** 把本地全部记录推送到云端（服务端按主键 upsert 合并，不会覆盖别人刚交的成绩）。 */
+/** 拉取指定学生的全部云端记录（学生练习记录页）。失败返回 null。 */
+export async function pullRecordsByStudent(studentName: string): Promise<ExamResult[] | null> {
+  try {
+    const json = await call<ExamResult[]>('pullStudent', { studentName })
+    return Array.isArray(json.data) ? json.data : []
+  } catch (err) {
+    console.warn('[cloudSync] 拉取学生云端记录失败:', err)
+    return null
+  }
+}
+
+/** 拉取云端全部学生姓名（历史姓名下拉）。失败返回 null。 */
+export async function pullStudentNames(): Promise<string[] | null> {
+  try {
+    const json = await call<string[]>('names')
+    return Array.isArray(json.data) ? json.data : []
+  } catch (err) {
+    console.warn('[cloudSync] 拉取学生姓名列表失败:', err)
+    return null
+  }
+}
+
+/** 推送全部本地记录到云端（服务端按主键 upsert 合并）。 */
 export async function pushRecords(localRecords: ExamResult[]): Promise<boolean> {
   try {
     await call('push', { records: localRecords })
@@ -77,14 +99,15 @@ export async function pushRecords(localRecords: ExamResult[]): Promise<boolean> 
   }
 }
 
-/** 推送单条成绩（学生交卷时调用）。 */
+/** 推送单条成绩（学生交卷时调用，服务端按主键 upsert）。 */
 export async function pushResult(result: ExamResult): Promise<boolean> {
-  const { getAllResults } = await import('./storage')
-  const local = getAllResults()
-  if (!local.some((r) => r.studentName === result.studentName && r.submittedAt === result.submittedAt)) {
-    local.push(result)
+  try {
+    await call('pushOne', { record: result })
+    return true
+  } catch (err) {
+    console.warn('[cloudSync] 推送成绩失败（本地缓存兜底）:', err)
+    return false
   }
-  return pushRecords(local)
 }
 
 /** 从云端删除一条记录。 */

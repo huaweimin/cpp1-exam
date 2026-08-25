@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  Button, Card, Input, Typography, Empty, Tag, Statistic, Row, Col, Collapse, Select, Popconfirm, message,
+  Button, Card, Input, Typography, Empty, Tag, Statistic, Row, Col, Collapse, Select, Popconfirm, message, Spin,
 } from 'antd'
 import {
   ArrowLeftOutlined, UserOutlined, TrophyOutlined, FileSearchOutlined, DeleteOutlined,
 } from '@ant-design/icons'
 import type { Exam, ExamResult } from '../types/exam'
 import { allExams } from '../data/exams'
-import { getResultsByStudent, getAllStudentNames, deleteResult } from '../utils/storage'
-import { deleteRecordOnCloud } from '../utils/cloudSync'
+import { deleteResult } from '../utils/storage'
+import { pullRecordsByStudent, pullStudentNames, deleteRecordOnCloud } from '../utils/cloudSync'
 import RecordDetail from '../components/RecordDetail'
 
 const { Title, Text } = Typography
@@ -19,19 +19,54 @@ interface RecordsPageProps {
 
 export default function RecordsPage({ onBack }: RecordsPageProps) {
   const [name, setName] = useState('')
-  const [version, setVersion] = useState(0)
+  // 全部历史姓名（来自服务器，供下拉选择）
+  const [allNames, setAllNames] = useState<string[]>([])
+  const [namesLoading, setNamesLoading] = useState(false)
+  // 当前学生的云端记录
+  const [records, setRecords] = useState<ExamResult[]>([])
+  const [loading, setLoading] = useState(false)
+  const [loadFailed, setLoadFailed] = useState(false)
   // 当前正在查看完整试卷的历史记录，null = 显示列表
   const [viewing, setViewing] = useState<ExamResult | null>(null)
   const [deleting, setDeleting] = useState(false)
 
-  const allNames = useMemo(() => getAllStudentNames(), [version])
-
-  // 本地记录
-  const [records, setRecords] = useState<ExamResult[]>([])
-
+  // 进入页面时从服务器拉取历史姓名列表
   useEffect(() => {
-    setRecords(name.trim() ? getResultsByStudent(name.trim()) : [])
-  }, [name, version])
+    setNamesLoading(true)
+    pullStudentNames()
+      .then((names) => {
+        if (names) setAllNames(names)
+      })
+      .finally(() => setNamesLoading(false))
+  }, [])
+
+  // 姓名变化时从服务器拉取该生记录
+  useEffect(() => {
+    const studentName = name.trim()
+    if (!studentName) {
+      setRecords([])
+      setLoadFailed(false)
+      return
+    }
+    let cancelled = false
+    setLoading(true)
+    setLoadFailed(false)
+    pullRecordsByStudent(studentName)
+      .then((list) => {
+        if (cancelled) return
+        if (list) {
+          setRecords(list)
+        } else {
+          setLoadFailed(true)
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [name])
 
   const bestScore = records.length > 0 ? Math.max(...records.map((r) => r.totalScore)) : 0
   const passCount = records.filter((r) => r.passed).length
@@ -49,14 +84,20 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
 
   const scoreColor = (score: number, passed: boolean) => (passed ? '#52c41a' : '#ff4d4f')
 
-  // 删除一条记录：本地必删，云端同步删除尽力而为
+  // 删除一条记录：服务器删除成功后清理本地缓存并刷新列表
   const handleDelete = async (r: ExamResult) => {
     setDeleting(true)
-    deleteResult(r.studentName, r.examId, r.submittedAt)
-    await deleteRecordOnCloud(r.studentName, r.examId, r.submittedAt)
+    const ok = await deleteRecordOnCloud(r.studentName, r.examId, r.submittedAt)
+    if (ok) {
+      deleteResult(r.studentName, r.examId, r.submittedAt)
+      setRecords((prev) => prev.filter(
+        (x) => !(x.studentName === r.studentName && x.examId === r.examId && x.submittedAt === r.submittedAt)
+      ))
+      message.success('已删除该条记录')
+    } else {
+      message.error('删除失败，请检查网络后重试')
+    }
     setDeleting(false)
-    setVersion((v) => v + 1)
-    message.success('已删除该条记录')
   }
 
   // 查看某次记录的完整试卷（和交卷后的成绩页一样）
@@ -101,18 +142,27 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
                 style={{ minWidth: 160 }}
                 value={name || undefined}
                 onChange={(val) => setName(val)}
+                loading={namesLoading}
                 options={allNames.map((n) => ({ value: n, label: n }))}
               />
             )}
           </div>
-          <Text type="secondary" className="mt-2 block text-xs">
-            记录保存在当前浏览器本地
-          </Text>
         </Card>
 
         {name.trim() === '' ? (
           <Card>
             <Empty description="输入姓名查看你的练习记录" />
+          </Card>
+        ) : loading ? (
+          <Card>
+            <div className="py-12 text-center">
+              <Spin />
+              <div className="mt-3 text-gray-400 text-sm">正在加载练习记录…</div>
+            </div>
+          </Card>
+        ) : loadFailed ? (
+          <Card>
+            <Empty description="记录加载失败，请检查网络后重试" />
           </Card>
         ) : records.length === 0 ? (
           <Card>
