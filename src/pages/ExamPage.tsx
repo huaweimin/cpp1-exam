@@ -2,12 +2,13 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { Button, Modal, Typography, Progress, Space, Affix, Card } from 'antd'
 import { ClockCircleOutlined, LogoutOutlined, CheckCircleOutlined } from '@ant-design/icons'
-import type { Exam, StudentAnswers, ExamResult } from '../types/exam'
+import type { Exam, StudentAnswers } from '../types/exam'
 import { allExams } from '../data/exams'
 import { useAuth } from '../App'
 import QuestionCard from '../components/QuestionCard'
 import { saveProgress, loadProgress, clearProgress } from '../utils/storage'
 import { gradeExam, getAnswerStats } from '../utils/grading'
+import { initMonaco } from '../utils/monacoSetup'
 
 const { Text, Title } = Typography
 
@@ -29,6 +30,12 @@ function ExamInner({ exam, studentName }: ExamInnerProps) {
 
   const [showSubmitModal, setShowSubmitModal] = useState(false)
   const [showExitModal, setShowExitModal] = useState(false)
+
+  // 预热 Monaco：进入考试页即后台下载 4MB 编辑器引擎，
+  // 学生在做单选/判断题期间完成加载，进入编程题时编辑器已就绪（避免长时间「加载中」）。
+  useEffect(() => {
+    void initMonaco()
+  }, [])
 
   // 倒计时
   useEffect(() => {

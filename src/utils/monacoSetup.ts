@@ -11,7 +11,7 @@ let monacoReady: Promise<void> | null = null
  */
 export function initMonaco(): Promise<void> {
   if (!monacoReady) {
-    monacoReady = (async () => {
+    const load = (async () => {
       const [{ loader }, monaco] = await Promise.all([
         import('@monaco-editor/react'),
         import('monaco-editor'),
@@ -30,6 +30,11 @@ export function initMonaco(): Promise<void> {
       loader.config({ monaco })
       await loader.init()
     })()
+    // 失败时清空缓存，允许下次（进入编程题真正使用时）重试，避免预热失败导致永久卡死
+    monacoReady = load.catch((err) => {
+      monacoReady = null
+      throw err
+    })
   }
   return monacoReady
 }
