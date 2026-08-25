@@ -8,9 +8,10 @@ const { Title, Text } = Typography
 
 interface TeacherPageProps {
   onBack: () => void
+  token: string
 }
 
-export default function TeacherPage({ onBack }: TeacherPageProps) {
+export default function TeacherPage({ onBack, token }: TeacherPageProps) {
   // 全部成绩记录（唯一数据源：服务器）
   const [results, setResults] = useState<ExamResult[]>([])
   const [loading, setLoading] = useState(false)
@@ -19,7 +20,7 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
   const loadFromServer = (silent = false) => {
     if (!silent) setLoading(true)
     setLoadFailed(false)
-    pullRecords()
+    pullRecords(token)
       .then((list) => {
         if (list) {
           setResults(list)
@@ -34,7 +35,7 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
   useEffect(() => {
     loadFromServer()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [token])
 
   // 按考试分组
   const examGroups = useMemo(() => {

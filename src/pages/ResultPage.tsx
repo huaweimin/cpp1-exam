@@ -17,9 +17,10 @@ interface ResultPageProps {
   result: ExamResult
   exam: Exam
   onBack: () => void
+  token: string
 }
 
-export default function ResultPage({ result, exam, onBack }: ResultPageProps) {
+export default function ResultPage({ result, exam, onBack, token }: ResultPageProps) {
   const pushedRef = useRef(false)
 
   // 保存结果（本地必达） + 尽力推送云端（静默，不显示状态）
@@ -27,9 +28,9 @@ export default function ResultPage({ result, exam, onBack }: ResultPageProps) {
     saveResult(result)
     if (!pushedRef.current) {
       pushedRef.current = true
-      pushResult(result).catch(() => {})
+      pushResult(result, token).catch(() => {})
     }
-  }, [result])
+  }, [result, token])
 
   const objectiveDetails = result.details.filter((d) => d.type !== 'programming')
   const programmingDetails = result.details.filter((d) => d.type === 'programming')

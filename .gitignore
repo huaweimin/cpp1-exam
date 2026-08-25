@@ -41,3 +41,4 @@ yarn-error.log*
 # 部署配置
 .edgeone/
 dist_old_tmp/
+cloudbaserc.json

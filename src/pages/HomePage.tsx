@@ -1,27 +1,32 @@
 import { useState } from 'react'
-import { Card, Input, Button, Space, Typography, Tag, Divider } from 'antd'
-import { UserOutlined, PlayCircleOutlined, BarChartOutlined, HistoryOutlined } from '@ant-design/icons'
+import { Card, Button, Space, Typography, Tag, Divider } from 'antd'
+import {
+  PlayCircleOutlined,
+  BarChartOutlined,
+  HistoryOutlined,
+  LogoutOutlined,
+  UserOutlined,
+} from '@ant-design/icons'
 import type { Exam } from '../types/exam'
+import type { AuthUser } from '../utils/cloudSync'
 import { allExams } from '../data/exams'
 
 const { Title, Text } = Typography
 
 interface HomePageProps {
-  onStart: (name: string, exam: Exam) => void
+  user: AuthUser
+  onStart: (exam: Exam) => void
   onTeacher: () => void
   onRecords: () => void
+  onLogout: () => void
 }
 
-export default function HomePage({ onStart, onTeacher, onRecords }: HomePageProps) {
-  const [name, setName] = useState('')
+export default function HomePage({ user, onStart, onTeacher, onRecords, onLogout }: HomePageProps) {
   const [selectedExam, setSelectedExam] = useState<Exam | null>(allExams[0] || null)
 
   const handleStart = () => {
-    if (!name.trim()) {
-      return
-    }
     if (selectedExam) {
-      onStart(name.trim(), selectedExam)
+      onStart(selectedExam)
     }
   }
 
@@ -32,6 +37,13 @@ export default function HomePage({ onStart, onTeacher, onRecords }: HomePageProp
         <div className="text-center mb-5 sm:mb-8">
           <h1 className="text-2xl font-bold text-white mb-2 sm:text-4xl">C++ 一级在线考试系统</h1>
           <p className="text-white/80 text-sm sm:text-lg">青少年软件编程等级考试 · 模拟训练平台</p>
+          <div className="mt-3 inline-flex items-center gap-2 bg-white/15 rounded-full px-4 py-1.5 text-white text-sm">
+            <UserOutlined />
+            <span>{user.username}</span>
+            <Tag color={user.role === 'teacher' ? 'gold' : 'blue'} className="!mr-0">
+              {user.role === 'teacher' ? '教师' : '学生'}
+            </Tag>
+          </div>
         </div>
 
         {/* 考试卡片 */}
@@ -67,36 +79,15 @@ export default function HomePage({ onStart, onTeacher, onRecords }: HomePageProp
 
           <Divider />
 
-          {/* 输入姓名 */}
-          <div className="mb-6">
-            <Title level={4}>输入你的姓名</Title>
-            <Input
-              size="large"
-              placeholder="请输入姓名"
-              prefix={<UserOutlined />}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onPressEnter={handleStart}
-              maxLength={20}
-            />
-          </div>
-
           <Button
             type="primary"
             size="large"
             block
             icon={<PlayCircleOutlined />}
             onClick={handleStart}
-            disabled={!name.trim()}
           >
             开始考试
           </Button>
-
-          {!name.trim() && (
-            <div className="mt-2 text-center">
-              <Text type="secondary">请先输入姓名</Text>
-            </div>
-          )}
         </Card>
 
         {/* 底部按钮 */}
@@ -109,13 +100,23 @@ export default function HomePage({ onStart, onTeacher, onRecords }: HomePageProp
           >
             我的练习记录
           </Button>
+          {user.role === 'teacher' && (
+            <Button
+              type="text"
+              icon={<BarChartOutlined />}
+              onClick={onTeacher}
+              className="text-white/80 hover:text-white"
+            >
+              教师查看成绩
+            </Button>
+          )}
           <Button
             type="text"
-            icon={<BarChartOutlined />}
-            onClick={onTeacher}
+            icon={<LogoutOutlined />}
+            onClick={onLogout}
             className="text-white/80 hover:text-white"
           >
-            教师查看成绩
+            退出登录
           </Button>
         </div>
 

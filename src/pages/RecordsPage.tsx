@@ -1,28 +1,26 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  Button, Card, Input, Typography, Empty, Tag, Statistic, Row, Col, Collapse, Select, Popconfirm, message, Spin,
+  Button, Card, Typography, Empty, Tag, Statistic, Row, Col, Collapse, Popconfirm, message, Spin,
 } from 'antd'
 import {
-  ArrowLeftOutlined, UserOutlined, TrophyOutlined, FileSearchOutlined, DeleteOutlined,
+  ArrowLeftOutlined, TrophyOutlined, FileSearchOutlined, DeleteOutlined,
 } from '@ant-design/icons'
 import type { Exam, ExamResult } from '../types/exam'
 import { allExams } from '../data/exams'
 import { deleteResult } from '../utils/storage'
-import { pullRecordsByStudent, pullStudentNames, deleteRecordOnCloud } from '../utils/cloudSync'
+import { pullMyRecords, deleteRecordOnCloud } from '../utils/cloudSync'
 import RecordDetail from '../components/RecordDetail'
 
 const { Title, Text } = Typography
 
 interface RecordsPageProps {
   onBack: () => void
+  token: string
+  username: string
 }
 
-export default function RecordsPage({ onBack }: RecordsPageProps) {
-  const [name, setName] = useState('')
-  // 全部历史姓名（来自服务器，供下拉选择）
-  const [allNames, setAllNames] = useState<string[]>([])
-  const [namesLoading, setNamesLoading] = useState(false)
-  // 当前学生的云端记录
+export default function RecordsPage({ onBack, token, username }: RecordsPageProps) {
+  // 当前登录学生的云端记录（服务器唯一数据源，只返回自己的）
   const [records, setRecords] = useState<ExamResult[]>([])
   const [loading, setLoading] = useState(false)
   const [loadFailed, setLoadFailed] = useState(false)
@@ -30,43 +28,22 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
   const [viewing, setViewing] = useState<ExamResult | null>(null)
   const [deleting, setDeleting] = useState(false)
 
-  // 进入页面时从服务器拉取历史姓名列表
-  useEffect(() => {
-    setNamesLoading(true)
-    pullStudentNames()
-      .then((names) => {
-        if (names) setAllNames(names)
-      })
-      .finally(() => setNamesLoading(false))
-  }, [])
-
-  // 姓名变化时从服务器拉取该生记录
-  useEffect(() => {
-    const studentName = name.trim()
-    if (!studentName) {
-      setRecords([])
-      setLoadFailed(false)
-      return
-    }
-    let cancelled = false
-    setLoading(true)
+  const loadFromServer = (silent = false) => {
+    if (!silent) setLoading(true)
     setLoadFailed(false)
-    pullRecordsByStudent(studentName)
+    pullMyRecords(token)
       .then((list) => {
-        if (cancelled) return
-        if (list) {
-          setRecords(list)
-        } else {
-          setLoadFailed(true)
-        }
+        if (list) setRecords(list)
+        else setLoadFailed(true)
       })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [name])
+      .finally(() => setLoading(false))
+  }
+
+  // 进入页面时从服务器拉取当前用户的记录
+  useEffect(() => {
+    loadFromServer()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token])
 
   const bestScore = records.length > 0 ? Math.max(...records.map((r) => r.totalScore)) : 0
   const passCount = records.filter((r) => r.passed).length
@@ -87,7 +64,10 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
   // 删除一条记录：服务器删除成功后清理本地缓存并刷新列表
   const handleDelete = async (r: ExamResult) => {
     setDeleting(true)
-    const ok = await deleteRecordOnCloud(r.studentName, r.examId, r.submittedAt)
+    const ok = await deleteRecordOnCloud(
+      { studentName: r.studentName, examId: r.examId, submittedAt: r.submittedAt },
+      token
+    )
     if (ok) {
       deleteResult(r.studentName, r.examId, r.submittedAt)
       setRecords((prev) => prev.filter(
@@ -121,39 +101,10 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
           <Title level={3} className="!m-0 leading-none flex-1">
             我的练习记录
           </Title>
+          <Text type="secondary">{username}</Text>
         </div>
 
-        {/* 姓名查询 */}
-        <Card className="mb-6">
-          <div className="flex flex-col md:flex-row gap-3">
-            <Input
-              size="large"
-              placeholder="请输入你的姓名"
-              prefix={<UserOutlined />}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              maxLength={20}
-              allowClear
-            />
-            {allNames.length > 0 && (
-              <Select
-                size="large"
-                placeholder="或选择历史姓名"
-                style={{ minWidth: 160 }}
-                value={name || undefined}
-                onChange={(val) => setName(val)}
-                loading={namesLoading}
-                options={allNames.map((n) => ({ value: n, label: n }))}
-              />
-            )}
-          </div>
-        </Card>
-
-        {name.trim() === '' ? (
-          <Card>
-            <Empty description="输入姓名查看你的练习记录" />
-          </Card>
-        ) : loading ? (
+        {loading ? (
           <Card>
             <div className="py-12 text-center">
               <Spin />
@@ -162,7 +113,9 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
           </Card>
         ) : loadFailed ? (
           <Card>
-            <Empty description="记录加载失败，请检查网络后重试" />
+            <Empty description="记录加载失败，请检查网络后重试">
+              <Button type="primary" onClick={() => loadFromServer()}>重新加载</Button>
+            </Empty>
           </Card>
         ) : records.length === 0 ? (
           <Card>

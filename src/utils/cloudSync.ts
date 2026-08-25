@@ -3,9 +3,10 @@ import type { ExamResult } from '../types/exam'
 /**
  * CloudBase 云函数同步模块（examSync）
  * 设计原则：服务器是成绩记录的唯一数据源，页面展示（学生记录页/教师成绩页）均从云端拉取；
- * localStorage 仅作为交卷瞬间的本地缓存兜底（崩溃/断网保护），不参与页面展示。
+ * 登录体系：所有成绩读写都需要登录 token（register/login 除外），
+ * 学生只能操作自己的记录，教师账号才能查看/操作全部记录。
  *
- * 链路：fetch → HTTP 访问服务公开路由 → 云函数 examSync → PostgreSQL exam_results 表
+ * 链路：fetch → HTTP 访问服务公开路由 → 云函数 examSync → PostgreSQL
  * （PG 环境匿名 callFunction 会被角色授权层拦截 EXCEED_AUTHORITY，故走免鉴权公开路由）
  */
 
@@ -26,6 +27,45 @@ const SYNC_URL =
 // 请求超时时间（ms）
 const TIMEOUT = 12000
 
+// 登录态存储键
+export const AUTH_TOKEN_KEY = 'cpp_exam_token'
+export const AUTH_USER_KEY = 'cpp_exam_user'
+
+export interface AuthUser {
+  username: string
+  role: 'student' | 'teacher'
+}
+
+export interface LoginResult extends AuthUser {
+  token: string
+}
+
+/** 读取本地登录态 */
+export function getStoredAuth(): { token: string; user: AuthUser } | null {
+  try {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY)
+    const userRaw = localStorage.getItem(AUTH_USER_KEY)
+    if (!token || !userRaw) return null
+    const user = JSON.parse(userRaw) as AuthUser
+    if (!user.username || !user.role) return null
+    return { token, user }
+  } catch {
+    return null
+  }
+}
+
+/** 保存本地登录态 */
+export function storeAuth(auth: LoginResult): void {
+  localStorage.setItem(AUTH_TOKEN_KEY, auth.token)
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify({ username: auth.username, role: auth.role }))
+}
+
+/** 清除本地登录态 */
+export function clearAuth(): void {
+  localStorage.removeItem(AUTH_TOKEN_KEY)
+  localStorage.removeItem(AUTH_USER_KEY)
+}
+
 async function fetchWithTimeout(url: string, init: RequestInit = {}): Promise<Response> {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), TIMEOUT)
@@ -42,12 +82,18 @@ interface CloudResp<T> {
   message: string
 }
 
-/** 统一调用云函数 action，失败抛错由调用方降级。 */
-async function call<T>(action: string, data: Record<string, unknown> = {}): Promise<CloudResp<T>> {
+/** 统一调用云函数 action（带可选 token）。业务错误（code!==0）抛出异常。 */
+async function call<T>(
+  action: string,
+  data: Record<string, unknown> = {},
+  token?: string
+): Promise<CloudResp<T>> {
+  const payload: Record<string, unknown> = { action, data }
+  if (token) payload.token = token
   const res = await fetchWithTimeout(SYNC_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action, data }),
+    body: JSON.stringify(payload),
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   const json = (await res.json()) as CloudResp<T>
@@ -55,10 +101,60 @@ async function call<T>(action: string, data: Record<string, unknown> = {}): Prom
   return json
 }
 
-/** 拉取云端全部成绩记录（教师页用）。失败返回 null，调用方降级。 */
-export async function pullRecords(): Promise<ExamResult[] | null> {
+/* ==================== 用户体系 ==================== */
+
+/** 注册账号，成功返回 token + 用户信息（自动登录） */
+export async function registerAccount(input: {
+  username: string
+  password: string
+  role: 'student' | 'teacher'
+  teacherKey?: string
+}): Promise<LoginResult> {
+  const json = await call<LoginResult>('register', {
+    username: input.username,
+    password: input.password,
+    role: input.role,
+    teacherKey: input.teacherKey,
+  })
+  return json.data
+}
+
+/** 登录，成功返回 token + 用户信息 */
+export async function loginAccount(username: string, password: string): Promise<LoginResult> {
+  const json = await call<LoginResult>('login', { username, password })
+  return json.data
+}
+
+/** 注销（服务端清除 token + 本地清除登录态） */
+export async function logoutAccount(token: string): Promise<boolean> {
   try {
-    const json = await call<ExamResult[]>('pull')
+    await call('logout', {}, token)
+    return true
+  } catch (err) {
+    console.warn('[cloudSync] 注销失败:', err)
+    return false
+  } finally {
+    clearAuth()
+  }
+}
+
+/** 校验 token 有效性，返回当前用户；无效返回 null */
+export async function verifyAuth(token: string): Promise<AuthUser | null> {
+  try {
+    const json = await call<AuthUser>('me', {}, token)
+    return json.data
+  } catch (err) {
+    console.warn('[cloudSync] 登录态校验失败:', err)
+    return null
+  }
+}
+
+/* ==================== 成绩记录 ==================== */
+
+/** 拉取云端全部成绩记录（教师页用）。失败返回 null，调用方降级。 */
+export async function pullRecords(token: string): Promise<ExamResult[] | null> {
+  try {
+    const json = await call<ExamResult[]>('pull', {}, token)
     return Array.isArray(json.data) ? json.data : []
   } catch (err) {
     console.warn('[cloudSync] 拉取云端记录失败:', err)
@@ -66,43 +162,21 @@ export async function pullRecords(): Promise<ExamResult[] | null> {
   }
 }
 
-/** 拉取指定学生的全部云端记录（学生练习记录页）。失败返回 null。 */
-export async function pullRecordsByStudent(studentName: string): Promise<ExamResult[] | null> {
+/** 拉取当前登录用户自己的全部记录（学生练习记录页）。失败返回 null。 */
+export async function pullMyRecords(token: string): Promise<ExamResult[] | null> {
   try {
-    const json = await call<ExamResult[]>('pullStudent', { studentName })
+    const json = await call<ExamResult[]>('mine', {}, token)
     return Array.isArray(json.data) ? json.data : []
   } catch (err) {
-    console.warn('[cloudSync] 拉取学生云端记录失败:', err)
+    console.warn('[cloudSync] 拉取个人记录失败:', err)
     return null
   }
 }
 
-/** 拉取云端全部学生姓名（历史姓名下拉）。失败返回 null。 */
-export async function pullStudentNames(): Promise<string[] | null> {
+/** 推送单条成绩（学生交卷时调用，归属强制为当前登录用户）。 */
+export async function pushResult(result: ExamResult, token: string): Promise<boolean> {
   try {
-    const json = await call<string[]>('names')
-    return Array.isArray(json.data) ? json.data : []
-  } catch (err) {
-    console.warn('[cloudSync] 拉取学生姓名列表失败:', err)
-    return null
-  }
-}
-
-/** 推送全部本地记录到云端（服务端按主键 upsert 合并）。 */
-export async function pushRecords(localRecords: ExamResult[]): Promise<boolean> {
-  try {
-    await call('push', { records: localRecords })
-    return true
-  } catch (err) {
-    console.warn('[cloudSync] 推送云端失败（本地数据不受影响）:', err)
-    return false
-  }
-}
-
-/** 推送单条成绩（学生交卷时调用，服务端按主键 upsert）。 */
-export async function pushResult(result: ExamResult): Promise<boolean> {
-  try {
-    await call('pushOne', { record: result })
+    await call('pushOne', { record: result }, token)
     return true
   } catch (err) {
     console.warn('[cloudSync] 推送成绩失败（本地缓存兜底）:', err)
@@ -110,14 +184,13 @@ export async function pushResult(result: ExamResult): Promise<boolean> {
   }
 }
 
-/** 从云端删除一条记录。 */
+/** 从云端删除一条记录（学生只能删自己的，教师可删任意）。 */
 export async function deleteRecordOnCloud(
-  studentName: string,
-  examId: string,
-  submittedAt: string
+  record: { studentName: string; examId: string; submittedAt: string },
+  token: string
 ): Promise<boolean> {
   try {
-    await call('delete', { record: { studentName, examId, submittedAt } })
+    await call('delete', { record }, token)
     return true
   } catch (err) {
     console.warn('[cloudSync] 云端删除失败（本地不受影响）:', err)
@@ -125,17 +198,7 @@ export async function deleteRecordOnCloud(
   }
 }
 
-/** 合并两组记录并按 (studentName, examId, submittedAt) 去重。 */
-export function mergeRecords(a: ExamResult[], b: ExamResult[]): ExamResult[] {
-  const map = new Map<string, ExamResult>()
-  const keyOf = (r: ExamResult) => `${r.studentName}|${r.examId}|${r.submittedAt}`
-  for (const r of [...a, ...b]) map.set(keyOf(r), r)
-  return Array.from(map.values()).sort(
-    (x, y) => new Date(y.submittedAt).getTime() - new Date(x.submittedAt).getTime()
-  )
-}
-
-/** 测试云端连通性（设置页/诊断用）。 */
+/** 测试云端连通性（无需登录）。 */
 export async function testConnection(): Promise<{ ok: boolean; count: number | null; error?: string }> {
   try {
     const json = await call<{ count: number }>('test')
