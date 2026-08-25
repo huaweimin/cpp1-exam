@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FixedSizeList as VirtualList } from 'react-window'
-import { Card, Button, Space, Typography, Tag, Divider, Select, Segmented, Input, Empty } from 'antd'
+import { Card, Button, Space, Typography, Tag, Divider, Segmented, Input, Empty } from 'antd'
 import {
   PlayCircleOutlined,
   BarChartOutlined,
@@ -48,7 +48,6 @@ export default function HomePage() {
   const user = auth!.user
 
   const [selectedExam, setSelectedExam] = useState<Exam | null>(allExams[0] || null)
-  const [yearFilter, setYearFilter] = useState<string>('all')
   const [categoryFilter, setCategoryFilter] = useState<ExamCategory | 'all'>('all')
   const [keyword, setKeyword] = useState('')
   const [showFilters, setShowFilters] = useState(false)
@@ -57,21 +56,14 @@ export default function HomePage() {
   const listRef = useRef<HTMLDivElement>(null)
   const listHeight = useElementHeight(listRef)
 
-  // 从 examDate 派生年份，并生成可选项
-  const yearOptions = useMemo(() => {
-    const years = Array.from(new Set(allExams.map((e) => e.examDate.slice(0, 4)))).sort((a, b) => b.localeCompare(a))
-    return [{ value: 'all', label: '全部年份' }, ...years.map((y) => ({ value: y, label: `${y} 年` }))]
-  }, [])
-
   const filteredExams = useMemo(() => {
     const kw = keyword.trim().toLowerCase()
     return allExams.filter((exam) => {
-      if (yearFilter !== 'all' && !exam.examDate.startsWith(yearFilter)) return false
       if (categoryFilter !== 'all' && exam.category !== categoryFilter) return false
       if (kw && !exam.name.toLowerCase().includes(kw)) return false
       return true
     })
-  }, [yearFilter, categoryFilter, keyword])
+  }, [categoryFilter, keyword])
 
   // 若所有试卷的分数/时长一致，则抽成顶部一行全局说明（移动端显示）
   const scoreInfo = useMemo(() => {
@@ -90,7 +82,6 @@ export default function HomePage() {
 
   // 当前已激活的筛选条件（用于移动端折叠时展示 chips）
   const activeChips: string[] = []
-  if (yearFilter !== 'all') activeChips.push(yearOptions.find((y) => y.value === yearFilter)?.label ?? yearFilter)
   if (categoryFilter !== 'all') activeChips.push(CATEGORY_LABEL[categoryFilter])
   if (keyword.trim()) activeChips.push(`"${keyword.trim()}"`)
 
@@ -169,12 +160,6 @@ export default function HomePage() {
           <div className={showFilters ? '' : 'hidden sm:block'}>
             <Space direction="vertical" className="w-full" size="small">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                <Select
-                  value={yearFilter}
-                  onChange={setYearFilter}
-                  options={yearOptions}
-                  className="w-full sm:w-40"
-                />
                 <Segmented
                   value={categoryFilter}
                   onChange={(v) => setCategoryFilter(v as ExamCategory | 'all')}
