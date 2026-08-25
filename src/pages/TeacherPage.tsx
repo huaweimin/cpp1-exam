@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Table, Button, Typography, Empty, Card, Tag, Statistic, Row, Col, message, Spin } from 'antd'
-import { ArrowLeftOutlined, DownloadOutlined, ReloadOutlined } from '@ant-design/icons'
-import type { ExamResult } from '../types/exam'
+import { ArrowLeftOutlined, DownloadOutlined, ReloadOutlined, FileSearchOutlined } from '@ant-design/icons'
+import type { Exam, ExamResult } from '../types/exam'
+import { allExams } from '../data/exams'
 import { pullRecords } from '../utils/cloudSync'
 import { useAuth } from '../App'
+import RecordDetail from '../components/RecordDetail'
 
 const { Title, Text } = Typography
 
@@ -16,6 +18,8 @@ export default function TeacherPage() {
   const [results, setResults] = useState<ExamResult[]>([])
   const [loading, setLoading] = useState(false)
   const [loadFailed, setLoadFailed] = useState(false)
+  // 当前正在查看完整试卷的记录，null = 显示成绩列表
+  const [viewing, setViewing] = useState<ExamResult | null>(null)
 
   const loadFromServer = (silent = false) => {
     if (!silent) setLoading(true)
@@ -36,6 +40,8 @@ export default function TeacherPage() {
     loadFromServer()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
+
+  const findExam = (examId: string): Exam | undefined => allExams.find((e) => e.id === examId)
 
   // 按考试分组
   const examGroups = useMemo(() => {
@@ -125,7 +131,35 @@ export default function TeacherPage() {
       key: 'duration',
       render: (_: unknown, record: ExamResult) => `${(record.duration / 60).toFixed(1)} 分钟`,
     },
+    {
+      title: '操作',
+      key: 'action',
+      render: (_: unknown, record: ExamResult) => (
+        <Button
+          type="link"
+          size="small"
+          icon={<FileSearchOutlined />}
+          onClick={() => {
+            setViewing(record)
+            window.scrollTo(0, 0)
+          }}
+        >
+          查看试卷
+        </Button>
+      ),
+    },
   ]
+
+  // 查看某条成绩的完整试卷（含逐题解析）
+  if (viewing) {
+    return (
+      <RecordDetail
+        result={viewing}
+        exam={findExam(viewing.examId)}
+        onBack={() => setViewing(null)}
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen p-4 md:p-6 bg-gray-50">
