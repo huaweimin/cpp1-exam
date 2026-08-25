@@ -1,6 +1,6 @@
 import type { Exam, StudentAnswers, ExamResult, QuestionResult } from '../types/exam';
 
-// 自动批改：客观题（单选+判断）自动判分，编程题不判分（标记为待教师查看）
+// 自动批改：客观题（单选+判断）自动判分；编程题标记"待评测"，交卷后由 judge.ts 黑盒判题
 export function gradeExam(
   exam: Exam,
   answers: StudentAnswers,
@@ -39,7 +39,7 @@ export function gradeExam(
     });
   }
 
-  // 编程题：不自动判分，标记为"待评分"
+  // 编程题：交卷时先标记"待评测"，交卷后由 judgeExamProgramming 黑盒判题给分
   for (const q of exam.programming) {
     const studentCode = answers.programming[q.id] || '';
     details.push({
@@ -47,9 +47,13 @@ export function gradeExam(
       type: 'programming',
       studentAnswer: studentCode,
       correctAnswer: '（参考代码见解析）',
-      isCorrect: false, // 待教师确认
-      score: 0, // 编程题暂不计分，教师手动评
+      isCorrect: false, // 判题后更新
+      score: 0, // 判题后按用例通过比例给分
       maxScore: q.score,
+      judgeStatus: 'pending',
+      casesPassed: 0,
+      casesTotal: q.testCases?.length ?? 0,
+      caseDetails: [],
     });
   }
 

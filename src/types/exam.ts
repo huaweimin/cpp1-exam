@@ -14,6 +14,12 @@ export interface ObjectiveQuestion {
   explanation: string;
 }
 
+// 编程题测试用例（黑盒判题：stdin = input，比对程序输出与 expected）
+export interface TestCase {
+  input: string;
+  output: string; // 期望输出
+}
+
 // 编程题
 export interface ProgrammingQuestion {
   id: number;
@@ -24,6 +30,7 @@ export interface ProgrammingQuestion {
   sampleInput: string;
   sampleOutput: string;
   referenceCode: string;
+  testCases: TestCase[]; // 判题用例（样例 + 边界，隐藏对学生）
   score: number;
   tags: string[];
   explanation: string;
@@ -49,6 +56,17 @@ export interface StudentAnswers {
   programming: Record<number, string>; // questionId -> 代码文本
 }
 
+// 编程题判题状态
+export type JudgeStatus = 'pending' | 'done' | 'error';
+
+// 单个用例的判题对比详情（结果页展示给学生）
+export interface CaseDetail {
+  input: string;
+  expected: string;
+  actual: string;
+  passed: boolean;
+}
+
 // 批改结果 - 单题
 export interface QuestionResult {
   questionId: number;
@@ -58,6 +76,11 @@ export interface QuestionResult {
   isCorrect: boolean;
   score: number;
   maxScore: number;
+  // 编程题判题附加信息
+  judgeStatus?: JudgeStatus;
+  casesPassed?: number;
+  casesTotal?: number;
+  caseDetails?: CaseDetail[];
 }
 
 // 批改结果 - 整卷

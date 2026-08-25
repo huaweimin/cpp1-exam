@@ -222,6 +222,12 @@ export const examMock1: Exam = {
       outputFormat: '面积和周长，保留两位小数，用空格隔开',
       sampleInput: '3 4',
       sampleOutput: '12.00 14.00',
+      testCases: [
+        { input: '3 4', output: '12.00 14.00' },
+        { input: '5 5', output: '25.00 20.00' },
+        { input: '2.5 4', output: '10.00 13.00' },
+        { input: '1 1', output: '1.00 4.00' },
+      ],
       referenceCode: `#include <iostream>
 #include <iomanip>
 using namespace std;
@@ -243,6 +249,13 @@ int main() {
       outputFormat: '两个整数：偶数的个数和偶数的和，用空格隔开',
       sampleInput: '5\n1 2 3 4 5',
       sampleOutput: '2 6',
+      testCases: [
+        { input: '5\n1 2 3 4 5', output: '2 6' },
+        { input: '1\n7', output: '0 0' },
+        { input: '3\n-2 4 -6', output: '3 -4' },
+        { input: '6\n2 4 6 8 10 12', output: '6 42' },
+        { input: '4\n-1 -3 -5 0', output: '1 0' },
+      ],
       referenceCode: `#include <iostream>
 using namespace std;
 int main() {
@@ -490,6 +503,13 @@ export const examMock2: Exam = {
       outputFormat: 'Yes 或 No',
       sampleInput: '2000',
       sampleOutput: 'Yes',
+      testCases: [
+        { input: '2000', output: 'Yes' },
+        { input: '1900', output: 'No' },
+        { input: '2024', output: 'Yes' },
+        { input: '2023', output: 'No' },
+        { input: '400', output: 'Yes' },
+      ],
       referenceCode: `#include <iostream>
 using namespace std;
 int main() {
@@ -513,6 +533,12 @@ int main() {
       outputFormat: '最大值和最小值，用空格隔开',
       sampleInput: '5\n3 9 1 7 5',
       sampleOutput: '9 1',
+      testCases: [
+        { input: '5\n3 9 1 7 5', output: '9 1' },
+        { input: '1\n42', output: '42 42' },
+        { input: '4\n-5 -2 -8 -1', output: '-1 -8' },
+        { input: '3\n100 0 50', output: '100 0' },
+      ],
       referenceCode: `#include <iostream>
 using namespace std;
 int main() {

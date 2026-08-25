@@ -194,7 +194,7 @@ export default function RecordDetail({ result, exam, onBack }: RecordDetailProps
 
         <div className="mb-4">
           <Title level={4} className="bg-orange-50 px-4 py-2 rounded-lg border-l-4 border-orange-500">
-            📝 三、编程题解析
+            📝 三、编程题解析（自动评测）
           </Title>
           {exam.programming.map((q, i) => {
             const detail = result.details.find((d) => d.questionId === q.id)
@@ -207,6 +207,7 @@ export default function RecordDetail({ result, exam, onBack }: RecordDetailProps
                 sectionLabel="编程题"
                 studentAnswer={detail.studentAnswer}
                 showResult
+                judge={detail}
               />
             )
           })}

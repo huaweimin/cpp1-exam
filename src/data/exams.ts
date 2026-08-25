@@ -217,6 +217,13 @@ export const exam2026_06: Exam = {
       outputFormat: '华氏温度 F，保留两位小数',
       sampleInput: '37',
       sampleOutput: '98.60',
+      testCases: [
+        { input: '37', output: '98.60' },
+        { input: '0', output: '32.00' },
+        { input: '100', output: '212.00' },
+        { input: '-40', output: '-40.00' },
+        { input: '36.5', output: '97.70' },
+      ],
       referenceCode: `#include <iostream>
 #include <iomanip>
 using namespace std;
@@ -239,6 +246,13 @@ int main() {
       outputFormat: '一个整数，表示体温正常的天数',
       sampleInput: '5 3650\n-50 100 -30 20',
       sampleOutput: '3',
+      testCases: [
+        { input: '5 3650\n-50 100 -30 20', output: '3' },
+        { input: '1 3650', output: '1' },
+        { input: '4 3680\n-10 -5 15', output: '4' },
+        { input: '3 3600\n100 -10', output: '1' },
+        { input: '3 3700\n100 100', output: '0' },
+      ],
       referenceCode: `#include <iostream>
 using namespace std;
 int main() {
@@ -486,6 +500,13 @@ export const exam2026_03: Exam = {
       outputFormat: '单个整数：表示该数列的第 n 个数字的值',
       sampleInput: '10',
       sampleOutput: '0',
+      testCases: [
+        { input: '10', output: '0' },
+        { input: '1', output: '1' },
+        { input: '5', output: '0' },
+        { input: '6', output: '1' },
+        { input: '13', output: '3' },
+      ],
       referenceCode: `#include <iostream>
 using namespace std;
 int main() {
@@ -510,6 +531,9 @@ int main() {
       outputFormat: '两行文字：\nHello, C++ World!\nLet\'s start coding!',
       sampleInput: '',
       sampleOutput: 'Hello, C++ World!\nLet\'s start coding!',
+      testCases: [
+        { input: '', output: 'Hello, C++ World!\nLet\'s start coding!' },
+      ],
       referenceCode: `#include <iostream>
 using namespace std;
 int main() {

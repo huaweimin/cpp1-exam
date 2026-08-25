@@ -1,5 +1,5 @@
 import { Radio, Typography, Tag, Alert } from 'antd'
-import type { ObjectiveQuestion, ProgrammingQuestion } from '../types/exam'
+import type { ObjectiveQuestion, ProgrammingQuestion, QuestionResult } from '../types/exam'
 import CppSandbox from './CppSandbox'
 
 const { Text, Paragraph } = Typography
@@ -12,6 +12,7 @@ interface QuestionCardProps {
   onAnswer?: (value: string) => void
   showResult?: boolean
   correctAnswer?: string
+  judge?: QuestionResult // 编程题判题详情（成绩页/记录页传）
 }
 
 export default function QuestionCard({
@@ -22,8 +23,9 @@ export default function QuestionCard({
   onAnswer,
   showResult = false,
   correctAnswer,
+  judge,
 }: QuestionCardProps) {
-  // 只有客观题才用 correctAnswer 判定对错；编程题当前为人工评分，不标红/绿
+  // 客观题用 correctAnswer 判定对错；编程题用 judge 展示判题结果
   const isObjective = question.type === 'singleChoice' || question.type === 'trueFalse'
   const isCorrect = showResult && isObjective && studentAnswer === correctAnswer
 
@@ -74,6 +76,7 @@ export default function QuestionCard({
           studentAnswer={studentAnswer}
           onAnswer={onAnswer}
           showResult={showResult}
+          judge={judge}
         />
       )}
 
@@ -180,12 +183,19 @@ function ProgrammingContent({
   studentAnswer,
   onAnswer,
   showResult,
+  judge,
 }: {
   question: ProgrammingQuestion
   studentAnswer: string
   onAnswer?: (v: string) => void
   showResult: boolean
+  judge?: QuestionResult
 }) {
+  const judgedJudge = judge && judge.judgeStatus === 'done' ? judge : undefined
+  const judged = !!judgedJudge
+  const allPassed = judgedJudge
+    ? (judgedJudge.casesTotal ?? 0) > 0 && judgedJudge.casesPassed === judgedJudge.casesTotal
+    : false
   return (
     <div>
       {/* 输入输出格式 + 样例 */}
@@ -225,19 +235,35 @@ function ProgrammingContent({
         </div>
       ) : (
         <div>
-          <Alert
-            type="info"
-            showIcon
-            message="编程题暂由教师人工评分"
-            description="请对照右侧参考代码和解析自行检查，系统会在教师确认后更新得分。"
-            className="mb-4"
-          />
+          {judged && judgedJudge ? (
+            <Alert
+              type={allPassed ? 'success' : (judgedJudge.casesPassed ?? 0) > 0 ? 'warning' : 'error'}
+              showIcon
+              message={`已自动评测：通过 ${judgedJudge.casesPassed ?? 0} / ${judgedJudge.casesTotal ?? 0} 组用例，得分 ${judgedJudge.score} / ${question.score} 分`}
+              description={allPassed ? '全部测试用例通过，程序逻辑正确 🎉' : '未全部通过，查看下方用例对比，找出输出与期望不一致的地方'}
+              className="mb-4"
+            />
+          ) : (
+            <Alert
+              type="info"
+              showIcon
+              message="编程题等待评测"
+              description="交卷后系统会自动运行你的代码进行评测（通过测试用例给分），无需教师人工评分。"
+              className="mb-4"
+            />
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* 学生代码 */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Text strong className="text-gray-700">你的代码：</Text>
-                <Tag color="orange" className="text-xs">待评分</Tag>
+                {judged && judgedJudge ? (
+                  <Tag color={allPassed ? 'success' : (judgedJudge.casesPassed ?? 0) > 0 ? 'warning' : 'error'} className="text-xs">
+                    通过 {judgedJudge.casesPassed ?? 0}/{judgedJudge.casesTotal ?? 0} · {judgedJudge.score} 分
+                  </Tag>
+                ) : (
+                  <Tag color="orange" className="text-xs">待评测</Tag>
+                )}
               </div>
               <pre className="code-block light">{studentAnswer || '（未作答）'}</pre>
             </div>
@@ -252,6 +278,41 @@ function ProgrammingContent({
               <br />
               {question.explanation}
             </div>
+            {/* 用例对比 */}
+            {judged && judgedJudge && judgedJudge.caseDetails && judgedJudge.caseDetails.length > 0 && (
+              <div className="md:col-span-2">
+                <Text strong className="text-gray-700 mb-2 block">🧪 测试用例对比：</Text>
+                <div className="flex flex-col gap-2">
+                  {judgedJudge.caseDetails.map((c, i) => (
+                    <div
+                      key={i}
+                      className={`rounded-lg border p-3 text-xs ${c.passed ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={c.passed ? 'text-green-600' : 'text-red-500'}>
+                          {c.passed ? '✓ 通过' : '✗ 未通过'}
+                        </span>
+                        <Text type="secondary">用例 {i + 1}</Text>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div>
+                          <Text type="secondary">输入</Text>
+                          <pre className="code-block light !mt-1 !mb-0">{c.input || '（无输入）'}</pre>
+                        </div>
+                        <div>
+                          <Text type="secondary">期望输出</Text>
+                          <pre className="code-block light !mt-1 !mb-0">{c.expected}</pre>
+                        </div>
+                        <div>
+                          <Text type="secondary">你的输出</Text>
+                          <pre className="code-block light !mt-1 !mb-0">{c.actual || '（无输出）'}</pre>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
