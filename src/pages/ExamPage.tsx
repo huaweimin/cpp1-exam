@@ -177,8 +177,8 @@ export default function ExamPage({ exam, studentName, onFinish, onExit }: ExamPa
     <div className="min-h-screen bg-gray-100">
       {/* 顶部状态栏 */}
       <Affix offsetTop={0}>
-        <div className="bg-white shadow-md px-6 py-3 flex items-center justify-between z-50">
-          <div className="flex items-center gap-4">
+        <div className="bg-white shadow-md px-3 sm:px-6 py-3 flex items-center justify-between z-50">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Button
               type="text"
               icon={<LogoutOutlined />}
@@ -192,11 +192,11 @@ export default function ExamPage({ exam, studentName, onFinish, onExit }: ExamPa
             </Text>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <div className="flex items-center gap-2">
               <ClockCircleOutlined className={`text-lg ${isUrgent ? 'text-red-500' : 'text-blue-500'}`} />
               <span
-                className={`font-mono text-xl font-bold ${isUrgent ? 'text-red-500 animate-pulse' : 'text-gray-700'}`}
+                className={`font-mono text-lg sm:text-xl font-bold ${isUrgent ? 'text-red-500 animate-pulse' : 'text-gray-700'}`}
               >
                 {formatTime(remainingSec)}
               </span>

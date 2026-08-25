@@ -47,6 +47,13 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
+/* 移动端缩小卡片内边距，避免内容显得拥挤 */
+@media (max-width: 640px) {
+  .question-card {
+    padding: 16px;
+  }
+}
+
 /* 答案正确/错误标记 */
 .answer-correct {
   background: #f0fdf4;

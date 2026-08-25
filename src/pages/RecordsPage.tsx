@@ -112,7 +112,7 @@ export default function RecordsPage({ onBack }: RecordsPageProps) {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50">
+    <div className="min-h-screen p-4 md:p-6 bg-gray-50">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-3 mb-6">
           <Button icon={<ArrowLeftOutlined />} onClick={onBack}>

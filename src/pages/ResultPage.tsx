@@ -124,7 +124,7 @@ export default function ResultPage({ result, exam, onBack }: ResultPageProps) {
           </Row>
 
           {/* 用时 + 进度条 */}
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <Text type="secondary">⏱️ 考试用时：{formatDuration(result.duration)}</Text>
             <Text type="secondary">提交时间：{new Date(result.submittedAt).toLocaleString('zh-CN')}</Text>
           </div>

@@ -127,7 +127,7 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
   ]
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50">
+    <div className="min-h-screen p-4 md:p-6 bg-gray-50">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -183,8 +183,8 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
         ) : (
           Object.entries(examGroups).map(([examId, examResults]) => (
             <Card key={examId} className="mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <Title level={4} className="!mb-0">
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <Title level={4} className="!mb-0 flex-1 min-w-0">
                   {examResults[0].examName}
                 </Title>
                 <Button
@@ -200,8 +200,9 @@ export default function TeacherPage({ onBack }: TeacherPageProps) {
                 rowKey={(r) => r.studentName + r.submittedAt}
                 pagination={false}
                 size="middle"
+                scroll={{ x: 'max-content' }}
               />
-              <div className="mt-4 flex gap-6 text-sm">
+              <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm">
                 <Text type="secondary">参考人次：{examResults.length}</Text>
                 <Text type="secondary">及格人次：{examResults.filter((r) => r.passed).length}</Text>
                 <Text type="secondary">

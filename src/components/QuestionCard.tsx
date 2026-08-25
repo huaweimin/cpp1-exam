@@ -34,12 +34,12 @@ export default function QuestionCard({
   return (
     <div className={cardClass} id={`q-${question.id}`}>
       {/* 题号 + 考点 */}
-      <div className="flex items-start justify-between mb-3">
-        <div>
+      <div className="flex items-start justify-between gap-2 mb-3">
+        <div className="min-w-0">
           <span className="text-blue-600 font-bold text-lg">第 {index} 题</span>
           <span className="ml-2 text-gray-400 text-sm">（{sectionLabel}，{question.score} 分）</span>
         </div>
-        <div>
+        <div className="flex flex-wrap justify-end gap-1 shrink-0">
           {question.tags.map((tag) => (
             <Tag key={tag} color="blue">{tag}</Tag>
           ))}
@@ -80,7 +80,7 @@ export default function QuestionCard({
       {/* 结果展示：正确答案 + 解析 */}
       {showResult && (question.type === 'singleChoice' || question.type === 'trueFalse') && (
         <div className="mt-4 pt-3 border-t border-gray-200">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex flex-col gap-1 mb-2 sm:flex-row sm:items-center sm:gap-3">
             <Text strong className={isCorrect ? 'text-green-600' : 'text-red-500'}>
               {isCorrect ? '✅ 回答正确' : '❌ 回答错误'}
             </Text>

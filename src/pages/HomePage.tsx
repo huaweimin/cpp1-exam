@@ -26,12 +26,12 @@ export default function HomePage({ onStart, onTeacher, onRecords }: HomePageProp
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-      <div className="w-full max-w-3xl">
+    <div className="min-h-dvh flex justify-center px-4 py-6 sm:p-6" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <div className="w-full max-w-3xl my-auto">
         {/* 标题 */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">C++ 一级在线考试系统</h1>
-          <p className="text-white/80 text-lg">青少年软件编程等级考试 · 模拟训练平台</p>
+        <div className="text-center mb-5 sm:mb-8">
+          <h1 className="text-2xl font-bold text-white mb-2 sm:text-4xl">C++ 一级在线考试系统</h1>
+          <p className="text-white/80 text-sm sm:text-lg">青少年软件编程等级考试 · 模拟训练平台</p>
         </div>
 
         {/* 考试卡片 */}
@@ -43,22 +43,21 @@ export default function HomePage({ onStart, onTeacher, onRecords }: HomePageProp
                 <Card
                   key={exam.id}
                   size="small"
-                  hoverable
-                  className={`cursor-pointer transition-all ${selectedExam?.id === exam.id ? 'border-2 border-blue-500' : ''}`}
+                  className={`cursor-pointer border-2 transition-[transform,border-color] duration-150 active:scale-[0.97] ${selectedExam?.id === exam.id ? 'border-blue-500' : 'border-gray-200'}`}
                   onClick={() => setSelectedExam(exam)}
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                    <div className="min-w-0 flex-1">
                       <Text strong className="text-base">{exam.name}</Text>
-                      <div className="mt-1">
+                      <div className="mt-1 flex flex-wrap gap-1">
                         <Tag color="blue">单选 {exam.singleChoice.length} 题</Tag>
                         <Tag color="green">判断 {exam.trueFalse.length} 题</Tag>
                         <Tag color="orange">编程 {exam.programming.length} 题</Tag>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-gray-800">{exam.totalScore}分</div>
-                      <Text type="secondary">及格 {exam.passingScore}分 · {exam.duration}分钟</Text>
+                    <div className="flex items-baseline justify-between sm:flex-col sm:items-end">
+                      <div className="text-xl font-bold text-gray-800 sm:text-2xl">{exam.totalScore}分</div>
+                      <Text type="secondary" className="text-xs sm:text-sm">及格 {exam.passingScore}分 · {exam.duration}分钟</Text>
                     </div>
                   </div>
                 </Card>
@@ -101,7 +100,7 @@ export default function HomePage({ onStart, onTeacher, onRecords }: HomePageProp
         </Card>
 
         {/* 底部按钮 */}
-        <div className="text-center mt-6 flex items-center justify-center gap-4">
+        <div className="text-center mt-6 flex flex-wrap items-center justify-center gap-3">
           <Button
             type="text"
             icon={<HistoryOutlined />}
