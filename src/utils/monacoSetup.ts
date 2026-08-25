@@ -1,17 +1,35 @@
-// Monaco 编辑器本地化初始化
-// 目的：让 Monaco 核心包与 worker 都从本地打包加载，不依赖任何 CDN。
-// 课堂机房网络不稳定时也能正常加载编辑器、运行 C++ 沙箱。
-import * as monaco from 'monaco-editor'
-import { loader } from '@monaco-editor/react'
-import editorWorker from 'monaco-editor/editor/editor.worker?worker'
+// Monaco 编辑器按需加载初始化
+// 目的：只有进入编程题/沙箱页面时才动态加载 Monaco 核心包与 worker，
+// 首屏不再下载 ~4MB 的 Monaco 引擎，加快国内访问速度。
+// 课堂机房网络不稳定时，进入编程题后也能正常加载编辑器。
+let monacoReady: Promise<void> | null = null
 
-// 仅 C++ 高亮/编辑是同步 tokenizer，不需要专门的语言 worker，
-// 所有 label 统一返回基础 editorWorker 即可。
-window.MonacoEnvironment = {
-  getWorker() {
-    return new editorWorker()
-  },
+/**
+ * 初始化本地 Monaco 实例（幂等）。
+ * 首次调用时动态拉取 monaco-editor 核心包 + worker，并注入 @monaco-editor/react loader。
+ * 返回的 Promise resolve 后即可安全渲染 <Editor />。
+ */
+export function initMonaco(): Promise<void> {
+  if (!monacoReady) {
+    monacoReady = (async () => {
+      const [{ loader }, monaco] = await Promise.all([
+        import('@monaco-editor/react'),
+        import('monaco-editor'),
+      ])
+      // 仅 C++ 高亮/编辑是同步 tokenizer，不需要专门的语言 worker，
+      // 所有 label 统一返回基础 editorWorker 即可。
+      const { default: editorWorker } = await import(
+        'monaco-editor/editor/editor.worker?worker'
+      )
+      window.MonacoEnvironment = {
+        getWorker() {
+          return new editorWorker()
+        },
+      }
+      // 使用本地 monaco 实例，避免 @monaco-editor/react 默认从 CDN 拉取核心包
+      loader.config({ monaco })
+      await loader.init()
+    })()
+  }
+  return monacoReady
 }
-
-// 使用本地 monaco 实例，避免 @monaco-editor/react 默认从 CDN 拉取核心包
-loader.config({ monaco })

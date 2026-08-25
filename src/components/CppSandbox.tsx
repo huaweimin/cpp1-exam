@@ -1,7 +1,8 @@
-import { useState, useRef } from 'react'
-import Editor, { type OnMount } from '@monaco-editor/react'
+import { lazy, Suspense, useState, useRef } from 'react'
+import type { EditorProps, OnMount } from '@monaco-editor/react'
 import { Button, Input, Typography, Tag, Spin } from 'antd'
 import { PlayCircleOutlined, ReloadOutlined } from '@ant-design/icons'
+import { initMonaco } from '../utils/monacoSetup'
 
 const { Text } = Typography
 const { TextArea } = Input
@@ -35,6 +36,30 @@ const RUN_TIMEOUT_MS = 15000
 const handleEditorMount: OnMount = (editor) => {
   if (!window.__cppEditors) window.__cppEditors = []
   window.__cppEditors.push({ setValue: (v) => editor.setValue(v), getValue: () => editor.getValue() })
+}
+
+// 按需加载 Monaco：首屏不下载编辑器引擎，进入编程题时才拉取（配合 initMonaco 本地化配置）
+const MonacoEditor = lazy(() =>
+  initMonaco().then(() => import('@monaco-editor/react').then((m) => ({ default: m.Editor })))
+)
+
+/** 包装层：Monaco 加载期间显示占位，避免布局跳动 */
+function LazyEditor(props: EditorProps) {
+  return (
+    <Suspense
+      fallback={
+        <div
+          className="flex items-center justify-center bg-gray-900"
+          style={{ height: 340 }}
+        >
+          <Spin size="large" />
+          <span className="ml-3 text-gray-400 text-sm">编辑器加载中…</span>
+        </div>
+      }
+    >
+      <MonacoEditor {...props} />
+    </Suspense>
+  )
 }
 
 export default function CppSandbox({
@@ -127,7 +152,7 @@ export default function CppSandbox({
     <div className="cpp-sandbox">
       {/* 代码编辑器 */}
       <div className="rounded-lg overflow-hidden border border-gray-300">
-        <Editor
+        <LazyEditor
           height="340px"
           language="cpp"
           theme="vs-dark"
@@ -150,8 +175,7 @@ export default function CppSandbox({
         />
       </div>
 
-      {/* 工具栏 */}
-      <div className="flex flex-wrap items-center gap-2 mt-3">
+      {/* 工具栏 */}      <div className="flex flex-wrap items-center gap-2 mt-3">
         <Button
           type="primary"
           icon={<PlayCircleOutlined />}
