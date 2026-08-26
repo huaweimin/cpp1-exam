@@ -1,6 +1,31 @@
-import type { StudentAnswers, ExamResult } from '../types/exam';
+import type { StudentAnswers, ExamResult, ExamCategory } from '../types/exam';
 
 const STORAGE_PREFIX = 'cpp_exam_';
+
+// 首页视图状态：选中试卷 + 筛选条件（退出考试返回/刷新页面时恢复）
+export interface HomeViewState {
+  examId: string;
+  categoryFilter: ExamCategory | 'all';
+  keyword: string;
+}
+
+const HOME_STATE_KEY = `${STORAGE_PREFIX}home_state`;
+
+// 保存首页视图状态
+export function saveHomeState(state: HomeViewState): void {
+  localStorage.setItem(HOME_STATE_KEY, JSON.stringify(state));
+}
+
+// 读取首页视图状态
+export function loadHomeState(): HomeViewState | null {
+  const data = localStorage.getItem(HOME_STATE_KEY);
+  if (!data) return null;
+  try {
+    return JSON.parse(data) as HomeViewState;
+  } catch {
+    return null;
+  }
+}
 
 // 保存答题进度（断线恢复用）
 export function saveProgress(examId: string, studentName: string, answers: StudentAnswers): void {

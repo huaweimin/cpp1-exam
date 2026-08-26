@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FixedSizeList as VirtualList } from 'react-window'
+import type { FixedSizeList } from 'react-window'
 import { Card, Button, Space, Typography, Tag, Divider, Segmented, Input, Empty } from 'antd'
 import {
   PlayCircleOutlined,
@@ -16,6 +17,7 @@ import {
 import { allExams } from '../data/exams'
 import type { Exam, ExamCategory } from '../types/exam'
 import { useAuth } from '../App'
+import { loadHomeState, saveHomeState } from '../utils/storage'
 
 const { Title, Text } = Typography
 
@@ -47,14 +49,33 @@ export default function HomePage() {
   const navigate = useNavigate()
   const user = auth!.user
 
-  const [selectedExam, setSelectedExam] = useState<Exam | null>(allExams[0] || null)
-  const [categoryFilter, setCategoryFilter] = useState<ExamCategory | 'all'>('all')
-  const [keyword, setKeyword] = useState('')
+  // 恢复上次的视图状态（选中试卷 + 筛选条件），退出考试返回或刷新页面时保留
+  const savedHomeState = useMemo(() => loadHomeState(), [])
+  const [selectedExam, setSelectedExam] = useState<Exam | null>(() => {
+    const examId = savedHomeState?.examId
+    if (examId) {
+      return allExams.find((e) => e.id === examId) || allExams[0] || null
+    }
+    return allExams[0] || null
+  })
+  const [categoryFilter, setCategoryFilter] = useState<ExamCategory | 'all'>(savedHomeState?.categoryFilter ?? 'all')
+  const [keyword, setKeyword] = useState(savedHomeState?.keyword ?? '')
   const [showFilters, setShowFilters] = useState(false)
 
-  // 列表容器高度随视口自适应
+  // 试卷选中/筛选变化时持久化，保证下次进入首页能恢复
+  useEffect(() => {
+    saveHomeState({
+      examId: selectedExam?.id ?? '',
+      categoryFilter,
+      keyword,
+    })
+  }, [selectedExam, categoryFilter, keyword])
+
+  // 虚拟列表容器高度随视口自适应
   const listRef = useRef<HTMLDivElement>(null)
   const listHeight = useElementHeight(listRef)
+  // 虚拟列表实例 ref，用于 scrollToItem
+  const virtualListRef = useRef<FixedSizeList>(null)
 
   const filteredExams = useMemo(() => {
     const kw = keyword.trim().toLowerCase()
@@ -64,6 +85,18 @@ export default function HomePage() {
       return true
     })
   }, [categoryFilter, keyword])
+
+  // 选中项不在可视区域内时，滚动定位（从考试页返回/切换筛选时恢复位置）
+  useEffect(() => {
+    if (!selectedExam) return
+    // 容器高度还没测量出来（ResizeObserver 是异步的）→ 等待下一轮再试
+    // 否则 react-window 的 scrollToItem 在 height=0 时不生效
+    if (listHeight <= 0) return
+    const idx = filteredExams.findIndex((e) => e.id === selectedExam.id)
+    if (idx >= 0 && virtualListRef.current) {
+      virtualListRef.current.scrollToItem(idx, 'smart')
+    }
+  }, [selectedExam, filteredExams, listHeight])
 
   // 若所有试卷的分数/时长一致，则抽成顶部一行全局说明（移动端显示）
   const scoreInfo = useMemo(() => {
@@ -209,6 +242,7 @@ export default function HomePage() {
               <Empty description="没有符合条件的试卷" className="py-10" />
             ) : listHeight > 0 ? (
               <VirtualList
+                ref={virtualListRef}
                 height={listHeight}
                 itemCount={filteredExams.length}
                 itemSize={ROW_HEIGHT}

@@ -20,6 +20,8 @@ interface ExamInnerProps {
 function ExamInner({ exam, studentName }: ExamInnerProps) {
   const navigate = useNavigate()
   const startTimeRef = useRef<number>(Date.now())
+  // 已交卷标记：true 时跳过 useEffect 卸载时的最终保存，避免把答案重新写回 localStorage
+  const submittedRef = useRef<boolean>(false)
   const [remainingSec, setRemainingSec] = useState(exam.duration * 60)
 
   // 初始化答案（尝试恢复进度）
@@ -61,7 +63,11 @@ function ExamInner({ exam, studentName }: ExamInnerProps) {
     }, 10000)
     return () => {
       clearInterval(autoSave)
-      saveProgress(exam.id, studentName, answers)
+      // 已交卷时跳过最终保存：组件卸载触发的兜底保存会覆盖刚刚 clearProgress 的清理，
+      // 导致 localStorage 里残留上次的答题进度，下次进入同一试卷会带着上次的作答。
+      if (!submittedRef.current) {
+        saveProgress(exam.id, studentName, answers)
+      }
     }
   }, [exam.id, studentName, answers])
 
@@ -74,7 +80,9 @@ function ExamInner({ exam, studentName }: ExamInnerProps) {
       if (!autoSubmit) setShowSubmitModal(false)
       const durationSec = Math.round((Date.now() - startTimeRef.current) / 1000)
       const result = gradeExam(exam, answers, studentName, durationSec)
-      saveProgress(exam.id, studentName, answers)
+      // 先标记已交卷：再清进度。顺序很关键——标记要在 clearProgress 之前，
+      // 否则卸载时 useEffect 清理函数会再次把答案写回 localStorage。
+      submittedRef.current = true
       clearProgress(exam.id, studentName)
       navigate('/result', { state: { result }, replace: true })
     },
