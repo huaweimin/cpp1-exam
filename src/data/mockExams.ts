@@ -282,9 +282,10 @@ int main() {
 
 // ============================================================
 // C/C++ 一级 · 综合模拟卷（二）
-// 侧重：进阶应用全覆盖（进制与存储 / 赋值与类型转换 / 多分支 /
-//       嵌套循环 / break·continue / 字符与ASCII / 浮点精度 /
-//       闰年判断 / 打擂台求最值）
+// 侧重：运算与分支（标识符命名 / 整数除法陷阱 / 复合赋值 /
+//       类型转换 / if 作用域 / 多分支 / 逻辑运算 / 数学函数 /
+//       变量交换 / bool 输出）
+// 依据 2026 年 3 月新版一级考纲，不涉及进制转换、数组、函数
 // ============================================================
 export const examMock2: Exam = {
   id: 'exam-mock-02-cpp1',
@@ -293,280 +294,277 @@ export const examMock2: Exam = {
   examDate: '2026-08',
   totalScore: 100,
   passingScore: 60,
-  duration: 60, // 60分钟
+  duration: 60,
   singleChoice: [
     {
       id: 1,
       type: 'singleChoice',
-      stem: '十进制数 10 转换为二进制后是？',
-      options: { A: '1010', B: '1100', C: '1001', D: '1011' },
-      answer: 'A',
+      stem: '下列变量名中，符合 C++ 标识符命名规则的是？',
+      options: { A: '2num', B: 'my_score', C: 'int', D: 'a-b' },
+      answer: 'B',
       score: 4,
-      tags: ['进制转换', '二进制'],
-      explanation: '10 = 8 + 2 = 1×2³ + 0×2² + 1×2¹ + 0×2⁰，即二进制 1010。',
+      tags: ['标识符', '命名规则'],
+      explanation: '标识符只能由字母、数字、下划线组成，且不能以数字开头，也不能是关键字。2num 以数字开头；int 是关键字；a-b 含有减号。只有 my_score 合法。',
     },
     {
       id: 2,
       type: 'singleChoice',
-      stem: '执行以下代码后，a 和 b 的值分别是？',
-      code: 'int a = 5, b = 10;\na = b;\nb = a;',
-      options: { A: '10 10', B: '10 5', C: '5 10', D: '5 5' },
+      stem: '执行以下代码，输出结果是？',
+      code: 'double d = 7 / 2;\ncout << d;',
+      options: { A: '3', B: '3.5', C: '4', D: '3.50' },
       answer: 'A',
       score: 4,
-      tags: ['变量赋值', '赋值顺序'],
-      explanation: 'a=b 把 b 的值 10 赋给 a，此时 a=10、b=10；b=a 再把 a 的值 10 赋给 b，结果 a=10、b=10。',
+      tags: ['整数除法', '类型转换', 'double'],
+      explanation: '7 和 2 都是 int，7/2 先做整数除法得 3，再赋给 double 变成 3.0，cout 输出为 3。想得 3.5 要写成 7.0 / 2 或 7 / 2.0。',
     },
     {
       id: 3,
       type: 'singleChoice',
-      stem: '执行以下代码后，变量 x 的值是？',
-      code: 'int x = 6;\nx += 3;\nx *= 2;',
-      options: { A: '18', B: '12', C: '36', D: '9' },
+      stem: '执行以下代码，输出结果是？',
+      code: 'int x = 5;\nx += 3;\nx *= 2;\ncout << x;',
+      options: { A: '16', B: '13', C: '10', D: '8' },
       answer: 'A',
       score: 4,
-      tags: ['复合赋值', '运算'],
-      explanation: 'x += 3 等价于 x = x + 3，x 变为 9；x *= 2 等价于 x = x * 2，x 变为 18。',
+      tags: ['复合赋值', '算术运算'],
+      explanation: 'x += 3 等价于 x = x + 3 = 8；x *= 2 等价于 x = x * 2 = 16。复合赋值是"先算右边，再赋回左边"。',
     },
     {
       id: 4,
       type: 'singleChoice',
       stem: '执行以下代码，输出结果是？',
-      code: 'int a = 7 / 2.0;\ncout << a;',
-      options: { A: '3', B: '3.5', C: '4', D: '3.0' },
-      answer: 'A',
+      code: 'int a = 10;\nif (a > 5)\n    cout << "大";\n    cout << "了";',
+      options: { A: '大', B: '大了', C: '了', D: '没有输出' },
+      answer: 'B',
       score: 4,
-      tags: ['类型转换', '隐式转换'],
-      explanation: '7/2.0=3.5（因为 2.0 是 double，结果自动转为 double）。赋给 int 变量 a 时小数部分截断，a=3，输出 3。',
+      tags: ['if', '分支结构', '代码块'],
+      explanation: 'if 后面没有花括号时，只控制紧随其后的第一条语句。第二句 cout << "了" 的缩进只是好看，并不属于 if，无论条件是否成立都会执行，所以输出"大了"。',
     },
     {
       id: 5,
       type: 'singleChoice',
-      stem: '执行以下代码，变量 g 的值是？',
-      code: 'int s = 85;\nchar g;\nif(s >= 90)      g = \'A\';\nelse if(s >= 80) g = \'B\';\nelse if(s >= 70) g = \'C\';\nelse            g = \'D\';',
-      options: { A: "'A'", B: "'B'", C: "'C'", D: "'D'" },
+      stem: '执行以下代码，输出结果是？',
+      code: 'int s = 75;\nif (s >= 90) cout << "优";\nelse if (s >= 60) cout << "及格";\nelse cout << "不及格";',
+      options: { A: '优', B: '及格', C: '及格不及格', D: '不及格' },
       answer: 'B',
       score: 4,
-      tags: ['分支结构', 'if-else if', '多分支'],
-      explanation: 's=85：s>=90 不成立；继续判断 s>=80 成立，执行 g=\'B\'，后面的分支不再判断。',
+      tags: ['多分支', 'if-else if'],
+      explanation: '多分支 if-else if 从上往下判断，只执行第一个条件成立的分支。75>=90 不成立，75>=60 成立，输出"及格"，后面的 else 不再判断。',
     },
     {
       id: 6,
       type: 'singleChoice',
-      stem: '以下嵌套循环中，内层循环体一共会执行多少次？',
-      code: 'for(int i = 1; i <= 3; i++)\n    for(int j = 1; j <= 2; j++)\n        cout << i * j << " ";',
-      options: { A: '5', B: '6', C: '3', D: '2' },
+      stem: '表达式 !(5 > 3) && (2 < 4) 的值是？',
+      options: { A: 'true', B: 'false', C: '1', D: '2' },
       answer: 'B',
       score: 4,
-      tags: ['循环', '嵌套循环'],
-      explanation: '外层循环 3 次，内层循环每次执行 2 次，总次数 = 3 × 2 = 6 次。',
+      tags: ['逻辑运算', '!', '&&'],
+      explanation: '5>3 为 true，取反后 !(true)=false。&& 要求两边都为 true 结果才是 true，false && true = false。',
     },
     {
       id: 7,
       type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'for(int i = 1; i <= 5; i++) {\n    if(i == 3) continue;\n    cout << i;\n}',
-      options: { A: '12345', B: '1245', C: '123', D: '1345' },
+      stem: '在 C++ 中，要判断整数 n 能否被 5 整除，正确的条件写法是？',
+      options: { A: 'n / 5 == 0', B: 'n % 5 == 0', C: 'n % 5 = 0', D: 'n \\ 5 == 0' },
       answer: 'B',
       score: 4,
-      tags: ['循环', 'continue'],
-      explanation: 'continue 的作用是跳过本次循环剩余语句，直接进入下一次。i=3 时被跳过，所以输出 1245。',
+      tags: ['取模', '判断整除', '=='],
+      explanation: '% 取余数，余数为 0 说明能整除。判断相等必须用 ==（双等号），单个 = 是赋值，写在条件里是常见错误。',
     },
     {
       id: 8,
       type: 'singleChoice',
       stem: '执行以下代码，输出结果是？',
-      code: 'int s = 0;\nfor(int i = 1; i <= 5; i++) {\n    if(i % 2 == 0) s += i;\n}\ncout << s;',
-      options: { A: '6', B: '9', C: '15', D: '5' },
+      code: 'cout << abs(-7) + sqrt(16);',
+      options: { A: '11', B: '-3', C: '3', D: '23' },
       answer: 'A',
       score: 4,
-      tags: ['循环', '取模', '累加'],
-      explanation: 'i%2==0 说明 i 是偶数，将偶数 2 和 4 累加，s = 2 + 4 = 6。',
+      tags: ['数学函数', 'abs', 'sqrt'],
+      explanation: 'abs(-7) 求绝对值 = 7，sqrt(16) 开平方 = 4，7 + 4 = 11。使用这两个函数需要包含 <cmath> 头文件。',
     },
     {
       id: 9,
       type: 'singleChoice',
-      stem: 'sqrt(16) + abs(-9) 的值是？',
-      options: { A: '13', B: '7', C: '25', D: '-5' },
-      answer: 'A',
+      stem: '执行以下代码，输出结果是？',
+      code: 'int a = 2, b = 3, c;\nc = a;\na = b;\nb = c;\ncout << a << " " << b;',
+      options: { A: '2 3', B: '3 2', C: '2 2', D: '3 3' },
+      answer: 'B',
       score: 4,
-      tags: ['数学函数', 'sqrt', 'abs'],
-      explanation: 'sqrt(16)=4（平方根），abs(-9)=9（绝对值），4+9=13。',
+      tags: ['顺序结构', '变量交换'],
+      explanation: '这是经典的"两数交换"，必须借助第三个变量暂存：c=a=2 先把 a 存起来；a=b=3；b=c=2 把原来的 a 赋给 b。最终 a=3、b=2。',
     },
     {
       id: 10,
       type: 'singleChoice',
       stem: '执行以下代码，输出结果是？',
-      code: 'char ch = \'A\';\ncout << (char)(ch + 1);',
-      options: { A: 'A', B: 'B', C: '66', D: '65' },
+      code: 'bool flag = 5 > 3;\ncout << flag;',
+      options: { A: 'true', B: '1', C: '5>3', D: '0' },
       answer: 'B',
       score: 4,
-      tags: ['字符类型', 'ASCII'],
-      explanation: '字符参与运算时按 ASCII 码计算：\'A\' 的 ASCII 是 65，65+1=66，即 \'B\' 的 ASCII，强转回 char 输出 \'B\'。',
+      tags: ['bool', '数据类型', '输出'],
+      explanation: 'bool 类型只有 true 和 false 两个值，但用 cout 直接输出时，true 显示为 1，false 显示为 0。5>3 为 true，所以输出 1。',
     },
   ],
   trueFalse: [
     {
       id: 11,
       type: 'trueFalse',
-      stem: '变量名可以以数字开头，例如 2num 是合法的变量名。',
+      stem: 'C++ 中，变量名 num 和 Num 表示同一个变量。',
       answer: 'B',
       score: 2,
-      tags: ['标识符', '变量命名'],
-      explanation: 'C++ 标识符只能以字母或下划线开头，不能以数字开头。2num 非法，num2 合法。',
+      tags: ['标识符', '大小写'],
+      explanation: 'C++ 严格区分大小写，num 和 Num 是两个完全不同的变量。',
     },
     {
       id: 12,
       type: 'trueFalse',
-      stem: 'const int a = 10; 定义后，程序中可以执行 a = 20; 来修改 a 的值。',
+      stem: '表达式 7 / 2 的计算结果是 3.5。',
       answer: 'B',
       score: 2,
-      tags: ['常量', 'const'],
-      explanation: 'const 修饰的变量是常量，定义后值不可修改。a = 20; 会编译报错。',
+      tags: ['整数除法'],
+      explanation: '两个整数相除，结果仍是整数，7/2 = 3（小数部分直接舍去）。要得到 3.5 需写成 7.0/2。',
     },
     {
       id: 13,
       type: 'trueFalse',
-      stem: 'C++ 中，10 / 3 的计算结果是 3.33。',
-      answer: 'B',
+      stem: '在 C++ 中，判断两个数是否相等应该使用 ==，而不是 =。',
+      answer: 'A',
       score: 2,
-      tags: ['整数除法'],
-      explanation: '两个 int 相除结果还是 int：10/3=3（小数部分直接舍去）。想得到 3.33 需写成 10.0/3。',
+      tags: ['运算符', '=='],
+      explanation: '== 是关系运算符（判断是否相等），= 是赋值运算符。把 if(a = 5) 写在条件里是典型的低级错误。',
     },
     {
       id: 14,
       type: 'trueFalse',
-      stem: 'if(x = 5) 和 if(x == 5) 的判断效果完全一样。',
-      answer: 'B',
+      stem: 'if 语句后面如果没有写花括号，则只有紧随其后的一条语句受它控制。',
+      answer: 'A',
       score: 2,
-      tags: ['赋值运算符', '关系运算'],
-      explanation: 'x=5 是赋值（把 5 给 x，值为 5，恒为真）；x==5 是比较（判断 x 是否等于 5）。两者完全不同。',
+      tags: ['if', '代码块'],
+      explanation: '没有花括号时 if 只管一条语句。想让它管多条语句，必须加花括号 {} 把它们括起来。',
     },
     {
       id: 15,
       type: 'trueFalse',
-      stem: 'int b = 0; 时，执行 if(b != 0 && 100 / b > 1) 不会发生除零错误。',
+      stem: '表达式 10 % 3 的结果是 1。',
       answer: 'A',
       score: 2,
-      tags: ['逻辑运算', '短路求值'],
-      explanation: '&& 具有短路特性：左边 b!=0 为 false 时，整个表达式已确定为 false，右边 100/b 不会再执行，因此不会除零。',
+      tags: ['取模', '%'],
+      explanation: '10 ÷ 3 = 3 余 1，% 取余数，所以 10 % 3 = 1。',
     },
     {
       id: 16,
       type: 'trueFalse',
-      stem: 'while(1) 会构成无限循环。',
-      answer: 'A',
+      stem: '一个完整的 C++ 程序中可以包含多个 main 函数。',
+      answer: 'B',
       score: 2,
-      tags: ['循环', '无限循环'],
-      explanation: '循环条件 1 恒为真（非 0 即真），条件永远成立，构成死循环。除非循环体内用 break 跳出。',
+      tags: ['main函数', '程序结构'],
+      explanation: 'main 是程序唯一的入口，一个程序只能有一个 main 函数。写多个会导致编译错误。',
     },
     {
       id: 17,
       type: 'trueFalse',
-      stem: 'break 语句可以立即跳出当前所在的循环。',
+      stem: '在算术运算符中，*、/、% 的优先级高于 +、-。',
       answer: 'A',
       score: 2,
-      tags: ['循环', 'break'],
-      explanation: 'break 用于结束当前循环（或 switch），程序继续执行循环后面的语句。',
+      tags: ['运算符优先级'],
+      explanation: '和数学一样，先乘除取模、后加减。例如 2 + 3 * 4 = 14 而不是 20。',
     },
     {
       id: 18,
       type: 'trueFalse',
-      stem: '1 GB 等于 1024 MB。',
+      stem: 'C++ 中的变量必须先定义，然后才能使用。',
       answer: 'A',
       score: 2,
-      tags: ['存储单位'],
-      explanation: '计算机存储单位按 1024 进位：1KB=1024B，1MB=1024KB，1GB=1024MB。',
+      tags: ['变量', '定义'],
+      explanation: '变量必须先定义（声明类型）再使用，否则编译器不知道它是什么类型、占多大空间，会报错。',
     },
     {
       id: 19,
       type: 'trueFalse',
-      stem: '浮点数 0.1 + 0.2 在计算机中可能无法精确等于 0.3。',
-      answer: 'A',
+      stem: '表达式 3.5 + 2 的结果是整数 5。',
+      answer: 'B',
       score: 2,
-      tags: ['浮点精度'],
-      explanation: '二进制无法精确表示所有十进制小数，浮点运算存在精度误差。比较浮点数应使用差值小于极小值（如 1e-9）的方式。',
+      tags: ['类型转换', '混合运算'],
+      explanation: 'double 和 int 混合运算时，int 会自动转成 double，结果是 5.5（double 类型），不是整数 5。',
     },
     {
       id: 20,
       type: 'trueFalse',
-      stem: 'bool 类型的变量只能存储 true 或 false 两个值。',
+      stem: 'sqrt(25) 的计算结果是 5，使用该函数需要包含 <cmath> 头文件。',
       answer: 'A',
       score: 2,
-      tags: ['数据类型', 'bool'],
-      explanation: 'bool 是布尔类型，只有 true（真）和 false（假）两个取值，常用于条件判断。',
+      tags: ['数学函数', 'sqrt'],
+      explanation: 'sqrt 是开平方函数，sqrt(25)=5。所有数学函数（sqrt/abs/pow/max/min）都需要 #include <cmath>。',
     },
   ],
   programming: [
     {
       id: 21,
       type: 'programming',
-      stem: '【闰年判断】输入一个年份 y，判断它是否为闰年并输出。闰年规则：能被 4 整除但不能被 100 整除，或者能被 400 整除。是闰年输出 Yes，否则输出 No。',
-      inputFormat: '一个整数 y',
-      outputFormat: 'Yes 或 No',
-      sampleInput: '2000',
-      sampleOutput: 'Yes',
+      stem: '【温度转换】输入一个摄氏温度 c（可能为小数），按公式 f = c × 9 / 5 + 32 计算对应的华氏温度，输出结果保留 1 位小数。',
+      inputFormat: '一个实数 c，表示摄氏温度',
+      outputFormat: '一个实数，表示华氏温度，保留 1 位小数',
+      sampleInput: '100',
+      sampleOutput: '212.0',
       testCases: [
-        { input: '2000', output: 'Yes' },
-        { input: '1900', output: 'No' },
-        { input: '2024', output: 'Yes' },
-        { input: '2023', output: 'No' },
-        { input: '400', output: 'Yes' },
+        { input: '100', output: '212.0' },
+        { input: '0', output: '32.0' },
+        { input: '37', output: '98.6' },
+        { input: '25', output: '77.0' },
+        { input: '-40', output: '-40.0' },
       ],
       referenceCode: `#include <iostream>
+#include <iomanip>
 using namespace std;
 int main() {
-    int y;
-    cin >> y;
-    if((y % 4 == 0 && y % 100 != 0) || y % 400 == 0)
-        cout << "Yes" << endl;
-    else
-        cout << "No" << endl;
+    double c, f;
+    cin >> c;
+    f = c * 9 / 5 + 32;
+    cout << fixed << setprecision(1) << f << endl;
     return 0;
 }`,
       score: 20,
-      tags: ['分支结构', '逻辑运算', '取模'],
-      explanation: '考点：if 多条件判断、逻辑运算、取模。易错点：① 闰年条件要两个"或"分支：能被4整除且不能被100整除，或能被400整除；② 整除用 % 判断余数为 0。',
+      tags: ['顺序结构', '浮点运算', '格式化输出'],
+      explanation: '考点：顺序结构、double 类型、算术运算、保留小数。易错点：① 温度可能是小数，要用 double 存；② 保留 1 位小数用 fixed << setprecision(1)，需包含 <iomanip>；③ 写 c * 9 / 5 而不是 c * (9 / 5)，因为 9/5 是整数除法会变成 1。',
     },
     {
       id: 22,
       type: 'programming',
-      stem: '【最大值与最小值】输入 N 个整数，找出其中的最大值和最小值并输出。',
-      inputFormat: '第一行：一个整数 N\n第二行：N 个整数（用空格隔开）',
-      outputFormat: '最大值和最小值，用空格隔开',
-      sampleInput: '5\n3 9 1 7 5',
-      sampleOutput: '9 1',
+      stem: '【成绩等级】输入一个整数成绩 score（0~100），按以下规则输出对应的等级字母：90 分及以上输出 A；80~89 分输出 B；60~79 分输出 C；60 分以下输出 D。',
+      inputFormat: '一个整数 score，表示成绩',
+      outputFormat: '一个大写字母 A、B、C 或 D',
+      sampleInput: '85',
+      sampleOutput: 'B',
       testCases: [
-        { input: '5\n3 9 1 7 5', output: '9 1' },
-        { input: '1\n42', output: '42 42' },
-        { input: '4\n-5 -2 -8 -1', output: '-1 -8' },
-        { input: '3\n100 0 50', output: '100 0' },
+        { input: '95', output: 'A' },
+        { input: '85', output: 'B' },
+        { input: '60', output: 'C' },
+        { input: '59', output: 'D' },
+        { input: '100', output: 'A' },
+        { input: '0', output: 'D' },
       ],
       referenceCode: `#include <iostream>
 using namespace std;
 int main() {
-    int n, x, mx, mn;
-    cin >> n;
-    cin >> mx;   // 先读入第 1 个数作为初始值
-    mn = mx;
-    for(int i = 2; i <= n; i++) {
-        cin >> x;
-        if(x > mx) mx = x;   // 打擂台：更新最大值
-        if(x < mn) mn = x;   // 打擂台：更新最小值
-    }
-    cout << mx << " " << mn << endl;
+    int score;
+    cin >> score;
+    if (score >= 90) cout << "A";
+    else if (score >= 80) cout << "B";
+    else if (score >= 60) cout << "C";
+    else cout << "D";
     return 0;
 }`,
       score: 20,
-      tags: ['循环', '分支', '打擂台', '求最值'],
-      explanation: '考点：循环输入、if 比较、"打擂台"思想。易错点：① 最大值/最小值要先初始化为第一个数，不能随便初始化为 0；② 每读一个数就分别和当前最大值、最小值比较更新。',
+      tags: ['多分支', 'if-else if', '边界条件'],
+      explanation: '考点：多分支 if-else if、边界值判断。易错点：① 判断要从高分段往低分段写（先判断 >=90），反过来写会全落到第一段；② 60 分属于 C 档（>=60），59 分才是不及格；③ 分支只会执行第一个满足的条件，后面的不再判断。',
     },
   ],
 };
 
 // ============================================================
 // C/C++ 一级 · 综合模拟卷（三）
-// 侧重：运算符与优先级 / switch 多分支 / 自增自减 / do-while /
-//       字符与ASCII / 逻辑运算 / 质数判断
+// 侧重：循环与综合应用（for/while/do-while / 循环次数 /
+//       break·continue / 嵌套循环 / 累加累乘 / 打擂台求最值）
+// 依据 2026 年 3 月新版一级考纲，不涉及进制转换、数组、函数
 // ============================================================
 export const examMock3: Exam = {
   id: 'exam-mock-03-cpp1',
@@ -575,280 +573,292 @@ export const examMock3: Exam = {
   examDate: '2026-08',
   totalScore: 100,
   passingScore: 60,
-  duration: 60, // 60分钟
+  duration: 60,
   singleChoice: [
     {
       id: 1,
       type: 'singleChoice',
       stem: '执行以下代码，输出结果是？',
-      code: 'int a = 3;\ncout << a++ * 2;\ncout << a;',
-      options: { A: '64', B: '46', C: '6 4', D: '62' },
+      code: 'int s = 0;\nfor (int i = 2; i <= 8; i += 2)\n    s += i;\ncout << s;',
+      options: { A: '20', B: '16', C: '12', D: '25' },
       answer: 'A',
       score: 4,
-      tags: ['自增运算', 'i++'],
-      explanation: 'a++ 是"先使用后自增"：先取出 a 的值 3 参与计算 3×2=6 输出，随后 a 自增为 4，再输出 a，结果为 64。',
+      tags: ['for循环', '累加', '步长'],
+      explanation: 'i 依次取 2、4、6、8（步长为 2），s = 2+4+6+8 = 20。注意 i += 2 表示每次加 2，不是加 1。',
     },
     {
       id: 2,
       type: 'singleChoice',
-      stem: 'C++ 表达式 2 + 3 * 4 % 5 的计算结果是？',
-      options: { A: '2', B: '3', C: '4', D: '5' },
-      answer: 'C',
+      stem: '以下代码执行后，循环体一共执行了多少次？',
+      code: 'for (int i = 10; i > 0; i -= 3)\n    cout << i << " ";',
+      options: { A: '3', B: '4', C: '5', D: '10' },
+      answer: 'B',
       score: 4,
-      tags: ['运算符优先级', '取模运算'],
-      explanation: '先算乘法 3×4=12，再算取模 12%5=2，最后 2+2=4。注意 % 与 *、/ 优先级相同。',
+      tags: ['for循环', '循环次数'],
+      explanation: 'i 依次取 10、7、4、1 共 4 次；下一次 i = -2，不满足 i > 0，循环结束。',
     },
     {
       id: 3,
       type: 'singleChoice',
       stem: '执行以下代码，输出结果是？',
-      code: 'int x = 2;\nswitch(x) {\n    case 1: cout << "A";\n    case 2: cout << "B";\n    case 3: cout << "C";\n}',
-      options: { A: 'BC', B: 'B', C: 'C', D: 'ABC' },
-      answer: 'A',
+      code: 'int i = 1;\nwhile (i < 5) {\n    cout << i;\n    i += 2;\n}',
+      options: { A: '123', B: '13', C: '135', D: '24' },
+      answer: 'B',
       score: 4,
-      tags: ['switch', '多分支', 'break'],
-      explanation: 'x=2，从 case 2 开始执行，由于没有 break，会贯穿到 case 3，依次输出 B 和 C，结果为 BC。',
+      tags: ['while循环'],
+      explanation: 'i=1 输出 1，i 变成 3；i=3 满足条件输出 3，i 变成 5；i=5 不满足 i<5，循环结束。连起来输出 "13"。',
     },
     {
       id: 4,
       type: 'singleChoice',
-      stem: '执行以下代码后，变量 x 的值是？',
-      code: 'int x = 8;\nx /= 2;\nx += 4;',
-      options: { A: '8', B: '4', C: '12', D: '10' },
-      answer: 'A',
+      stem: '执行以下代码，输出结果是？',
+      code: 'int n = 0;\ndo {\n    n++;\n} while (n > 5);\ncout << n;',
+      options: { A: '0', B: '1', C: '5', D: '6' },
+      answer: 'B',
       score: 4,
-      tags: ['复合赋值'],
-      explanation: 'x /= 2 等价于 x = x / 2，x 变为 4；x += 4 等价于 x = x + 4，x 变为 8。',
+      tags: ['do-while', '循环'],
+      explanation: 'do-while 是"先执行、后判断"：先执行一次循环体使 n 变成 1，再判断 n > 5 为 false，循环结束。输出 1。',
     },
     {
       id: 5,
       type: 'singleChoice',
       stem: '执行以下代码，输出结果是？',
-      code: 'int i = 0;\ndo { i++; } while(i < 3);\ncout << i;',
-      options: { A: '3', B: '2', C: '4', D: '1' },
+      code: 'for (int i = 1; i <= 10; i++) {\n    if (i % 3 == 0) break;\n    cout << i << " ";\n}',
+      options: { A: '1 2 ', B: '1 2 3 ', C: '3 6 9 ', D: '1 2 3 4 5 6 7 8 9 10 ' },
       answer: 'A',
       score: 4,
-      tags: ['循环', 'do-while'],
-      explanation: 'do-while 先执行后判断：i 依次变为 1、2、3，当 i=3 时条件 i<3 为 false 退出，最终 i=3。',
+      tags: ['break', '循环控制'],
+      explanation: 'i=1、2 时正常输出；i=3 时 3%3==0 成立，break 立即跳出整个循环，后面的 4~10 不再执行。输出 "1 2 "。',
     },
     {
       id: 6,
       type: 'singleChoice',
       stem: '执行以下代码，输出结果是？',
-      code: 'char c = \'a\';\ncout << (char)(c - 32);',
-      options: { A: 'A', B: 'a', C: '65', D: '97' },
+      code: 'int s = 0;\nfor (int i = 1; i <= 5; i++) {\n    if (i % 2 == 1) continue;\n    s += i;\n}\ncout << s;',
+      options: { A: '6', B: '9', C: '15', D: '4' },
       answer: 'A',
       score: 4,
-      tags: ['字符类型', 'ASCII'],
-      explanation: '小写 a 的 ASCII 是 97，97-32=65 即大写 A 的 ASCII，强转回 char 输出大写字母 A。',
+      tags: ['continue', '循环控制'],
+      explanation: 'i 为奇数（1、3、5）时 continue 跳过本次循环，不执行累加；只有 i=2、4 参与累加，s = 2 + 4 = 6。continue 只跳过本轮，不结束整个循环。',
     },
     {
       id: 7,
       type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'int a = 5, b = 0;\ncout << (a && b);',
-      options: { A: '0', B: '1', C: '5', D: 'true' },
-      answer: 'A',
+      stem: '执行以下代码，最内层的 cout 语句一共执行了多少次？',
+      code: 'for (int i = 1; i <= 3; i++)\n    for (int j = 1; j <= 4; j++)\n        cout << "*";',
+      options: { A: '7', B: '12', C: '3', D: '4' },
+      answer: 'B',
       score: 4,
-      tags: ['逻辑运算', '&&'],
-      explanation: '&&（逻辑与）两边都为真才为真。a=5 为真，b=0 为假，真 && 假 = 假，输出 0。',
+      tags: ['嵌套循环', '循环次数'],
+      explanation: '外层循环执行 3 次，每执行一次外层，内层循环完整跑 4 次，所以总共 3 × 4 = 12 次。嵌套循环的总次数是各层次数相乘。',
     },
     {
       id: 8,
       type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'int s = 0;\nfor(int i = 1; i <= 10; i++) {\n    if(i % 3 == 0) s += i;\n}\ncout << s;',
-      options: { A: '18', B: '15', C: '33', D: '12' },
+      stem: '以下代码用"打擂台法"求 10 个整数中的最大值，横线处应填入哪个条件？',
+      code: 'int mx, x;\ncin >> mx;\nfor (int i = 2; i <= 10; i++) {\n    cin >> x;\n    if (______) mx = x;\n}',
+      options: { A: 'x > mx', B: 'x < mx', C: 'x == mx', D: 'x != mx' },
       answer: 'A',
       score: 4,
-      tags: ['循环', '取模', '累加'],
-      explanation: '把 1~10 中能被 3 整除的数（3、6、9）累加，s = 3 + 6 + 9 = 18。',
+      tags: ['打擂台', '求最值'],
+      explanation: '把第一个数当作"擂主"存入 mx，之后每读入一个新数，只要它比当前擂主大（x > mx）就更新擂主。循环结束 mx 即最大值。',
     },
     {
       id: 9,
       type: 'singleChoice',
       stem: '执行以下代码，输出结果是？',
-      code: 'int a = 5;\ndouble b = a / 2;\ncout << b;',
-      options: { A: '2', B: '2.5', C: '2.0', D: '3' },
+      code: 'int a = 1;\nfor (int i = 1; i <= 4; i++)\n    a *= i;\ncout << a;',
+      options: { A: '24', B: '10', C: '4', D: '16' },
       answer: 'A',
       score: 4,
-      tags: ['整数除法', '类型转换'],
-      explanation: 'a/2 中两个操作数都是 int，结果是整数 2，赋给 double 后 b=2.0，输出为 2。',
+      tags: ['累乘', '循环', '初始化'],
+      explanation: 'a 依次乘上 1、2、3、4，即 a = 1×1×2×3×4 = 24（4 的阶乘）。关键：累乘的初始值必须是 1，累加才初始化为 0，用错结果就变成 0。',
     },
     {
       id: 10,
       type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'cout << min(10, max(3, 7));',
-      options: { A: '7', B: '10', C: '3', D: '4' },
+      stem: '执行以下代码，输出结果是？（每行末尾都有换行）',
+      code: 'for (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= i; j++)\n        cout << j;\n    cout << endl;\n}',
+      options: {
+        A: '第一行 1，第二行 12，第三行 123',
+        B: '第一行 1，第二行 22，第三行 333',
+        C: '第一行 123，第二行 123，第三行 123',
+        D: '第一行 1，第二行 2，第三行 3',
+      },
       answer: 'A',
       score: 4,
-      tags: ['数学函数', 'min', 'max'],
-      explanation: '先算内层 max(3,7)=7，再算 min(10,7)=7。max 取较大值，min 取较小值。',
+      tags: ['嵌套循环', '输出图案'],
+      explanation: '外层 i 控制行号（共 3 行），内层 j 每次从 1 输出到 i：第 1 行输出 1，第 2 行输出 12，第 3 行输出 123。内层循环的上限跟着外层变量变化，是打印三角形图案的核心技巧。',
     },
   ],
   trueFalse: [
     {
       id: 11,
       type: 'trueFalse',
-      stem: 'switch 语句的 case 分支可以没有 break 语句。',
+      stem: '循环体如果只有一条语句，可以省略花括号 {}。',
       answer: 'A',
       score: 2,
-      tags: ['switch', 'break'],
-      explanation: 'case 分支末尾的 break 不是必需的，省略时会发生"贯穿"，继续执行下一个 case。是否省略取决于逻辑需要。',
+      tags: ['循环', '代码块'],
+      explanation: '只有一条语句时花括号可以省略（和 if 一样）。但初学阶段建议都写上，避免添加语句时出错。',
     },
     {
       id: 12,
       type: 'trueFalse',
-      stem: 'x++; 和 ++x; 单独作为一条语句时，执行效果完全一样。',
+      stem: 'break 语句的作用是立即结束整个循环。',
       answer: 'A',
       score: 2,
-      tags: ['自增运算'],
-      explanation: '单独成语句时，两者都只是让 x 加 1，区别只在"先使用还是先自增"，不参与其它计算时效果相同。',
+      tags: ['break', '循环控制'],
+      explanation: 'break 会立刻跳出当前所在的整个循环，循环剩下的次数不再执行。（在 switch 中 break 用于跳出 switch）',
     },
     {
       id: 13,
       type: 'trueFalse',
-      stem: 'C++ 中 %（取模）运算符可以用于浮点数。',
+      stem: 'continue 语句的作用是立即结束整个循环。',
       answer: 'B',
       score: 2,
-      tags: ['取模运算'],
-      explanation: '% 只能用于整数。对浮点数取模（如 5.5 % 2）是编译错误。',
+      tags: ['continue', '循环控制'],
+      explanation: 'continue 只跳过"本次"循环中它后面的语句，直接进入下一轮；结束整个循环的是 break。这是最容易混淆的一对概念。',
     },
     {
       id: 14,
       type: 'trueFalse',
-      stem: '逻辑运算符 ! 的优先级高于 &&。',
-      answer: 'A',
+      stem: '死循环（无限循环）属于语法错误，程序无法通过编译。',
+      answer: 'B',
       score: 2,
-      tags: ['逻辑运算', '运算符优先级'],
-      explanation: '优先级从高到低为：!（非）> &&（与）> ||（或）。',
+      tags: ['死循环', '逻辑错误'],
+      explanation: '死循环是逻辑错误不是语法错误，程序能正常编译，只是运行时停不下来。常见原因：忘记写循环变量的更新语句，或循环条件永远成立。',
     },
     {
       id: 15,
       type: 'trueFalse',
-      stem: '字符 \'a\' 的 ASCII 码大于字符 \'A\' 的 ASCII 码。',
+      stem: 'for (int i = 1; i <= 10; i++) 的循环体一共执行 10 次。',
       answer: 'A',
       score: 2,
-      tags: ['ASCII', '字符类型'],
-      explanation: '小写 a 的 ASCII 是 97，大写 A 是 65，小写字母比对应大写字母大 32。',
+      tags: ['for循环', '循环次数'],
+      explanation: 'i 从 1 取到 10，共 10 个数，循环体执行 10 次。一般规律：for(i=a; i<=b; i++) 执行 b-a+1 次。',
     },
     {
       id: 16,
       type: 'trueFalse',
-      stem: 'char c = 65; 和 char c = \'A\'; 的效果相同。',
+      stem: '做累加求和时，累加变量必须先初始化为 0，否则结果可能出错。',
       answer: 'A',
       score: 2,
-      tags: ['ASCII', '字符类型'],
-      explanation: '65 正好是字符 A 的 ASCII 码，把整数 65 赋给 char 变量等同于赋字符 A。',
+      tags: ['累加', '初始化'],
+      explanation: '未初始化的变量值是不确定的"垃圾值"，在这个基础上累加结果必然错误。累加必须从 0 开始，累乘必须从 1 开始。',
     },
     {
       id: 17,
       type: 'trueFalse',
-      stem: 'do-while 循环的循环体至少会执行一次。',
+      stem: '循环嵌套时，外层循环每执行一次，内层循环都要完整执行一遍。',
       answer: 'A',
       score: 2,
-      tags: ['循环', 'do-while'],
-      explanation: 'do-while 是"先执行后判断"，先执行循环体，再判断条件。即使条件一开始为 false，循环体也已执行过一次。',
+      tags: ['嵌套循环'],
+      explanation: '这正是嵌套循环的执行规则：外层走一步，内层走一圈。总执行次数 = 外层次数 × 内层次数。',
     },
     {
       id: 18,
       type: 'trueFalse',
-      stem: '表达式 5 / 2 的计算结果是 2.5。',
+      stem: '在循环体内修改循环变量的值，不会改变循环执行的次数。',
       answer: 'B',
       score: 2,
-      tags: ['整数除法'],
-      explanation: '两个 int 相除结果是 int，5/2=2（小数部分舍去），想得到 2.5 需写成 5.0/2。',
+      tags: ['循环变量', '循环次数'],
+      explanation: '在循环体里改动循环变量（比如让 i 多加一次）会直接影响循环次数，甚至造成死循环。一般不建议在循环体内手动修改循环变量。',
     },
     {
       id: 19,
       type: 'trueFalse',
-      stem: '在 C++ 中，= 用于赋值，== 用于判断是否相等。',
+      stem: '求 1 到 n 的累加和，既可以用 for 循环实现，也可以用 while 循环实现。',
       answer: 'A',
       score: 2,
-      tags: ['赋值运算符', '关系运算'],
-      explanation: '= 是赋值运算符，== 是关系（比较）运算符，两者功能完全不同，不能混用。',
+      tags: ['for', 'while', '循环'],
+      explanation: 'for 和 while 可以相互转换，任何 for 循环都能改写成 while 循环，反之亦然。for 更适合已知循环次数，while 更适合按条件结束。',
     },
     {
       id: 20,
       type: 'trueFalse',
-      stem: 'if 语句后面只能跟一条语句，不能跟多条语句。',
-      answer: 'B',
+      stem: 'do-while 循环的循环体至少会执行一次。',
+      answer: 'A',
       score: 2,
-      tags: ['分支结构', 'if'],
-      explanation: '用花括号 {} 把多条语句括起来组成复合语句，if 就可以控制多条语句。',
+      tags: ['do-while', '循环'],
+      explanation: 'do-while 是"先执行、后判断"，即使条件一开始就不成立，循环体也已经跑过一次了。这是它和 while 最大的区别。',
     },
   ],
   programming: [
     {
       id: 21,
       type: 'programming',
-      stem: '【判断质数】输入一个正整数 n，判断它是否为质数。质数是指大于 1，且只能被 1 和它本身整除的数。如果是质数输出 Yes，否则输出 No。',
+      stem: '【累加求和】输入一个正整数 n，计算并输出 1 + 2 + 3 + ... + n 的和。',
       inputFormat: '一个正整数 n',
-      outputFormat: 'Yes 或 No',
-      sampleInput: '7',
-      sampleOutput: 'Yes',
+      outputFormat: '一个整数，表示 1 到 n 的累加和',
+      sampleInput: '100',
+      sampleOutput: '5050',
       testCases: [
-        { input: '7', output: 'Yes' },
-        { input: '1', output: 'No' },
-        { input: '4', output: 'No' },
-        { input: '2', output: 'Yes' },
-        { input: '97', output: 'Yes' },
-      ],
-      referenceCode: `#include <iostream>
-using namespace std;
-int main() {
-    int n;
-    cin >> n;
-    if(n <= 1) { cout << "No" << endl; return 0; }
-    for(int i = 2; i * i <= n; i++) {
-        if(n % i == 0) { cout << "No" << endl; return 0; }
-    }
-    cout << "Yes" << endl;
-    return 0;
-}`,
-      score: 20,
-      tags: ['循环', '分支', '取模', '质数'],
-      explanation: '考点：for 循环、if 分支、取模判断整除。易错点：① 1 不是质数，要先单独判断；② 只要在 2 到 sqrt(n) 之间找到一个能整除的数，n 就不是质数，可以提前结束。',
-    },
-    {
-      id: 22,
-      type: 'programming',
-      stem: '【阶乘求和】输入一个正整数 n，计算 1! + 2! + ... + n! 的值并输出。',
-      inputFormat: '一个正整数 n',
-      outputFormat: '一个整数，表示阶乘之和',
-      sampleInput: '3',
-      sampleOutput: '9',
-      testCases: [
-        { input: '3', output: '9' },
+        { input: '100', output: '5050' },
+        { input: '10', output: '55' },
         { input: '1', output: '1' },
-        { input: '5', output: '153' },
-        { input: '0', output: '0' },
+        { input: '5', output: '15' },
+        { input: '50', output: '1275' },
       ],
       referenceCode: `#include <iostream>
 using namespace std;
 int main() {
-    int n;
+    int n, sum = 0;
     cin >> n;
-    long long sum = 0, fac = 1;
-    for(int i = 1; i <= n; i++) {
-        fac *= i;   // fac 累乘得到 i!
-        sum += fac; // sum 累加 i!
+    for (int i = 1; i <= n; i++) {
+        sum += i;
     }
     cout << sum << endl;
     return 0;
 }`,
       score: 20,
-      tags: ['循环', '累乘', '累加'],
-      explanation: '考点：循环、累乘、累加。易错点：① 用一个变量 fac 边乘边加，避免每项都重新从 1 累乘；② 阶乘增长很快，结果较大时用 long long 存储防止溢出。',
+      tags: ['for循环', '累加', '顺序'],
+      explanation: '考点：for 循环、累加器。易错点：① sum 必须初始化为 0；② 循环条件写成 i <= n（包含 n 本身），写成 i < n 会少加最后一项；③ 数据范围：n=100 时结果 5050，int 完全够用。',
+    },
+    {
+      id: 22,
+      type: 'programming',
+      stem: '【最大值与最小值】输入 n 个整数，找出其中的最大值和最小值并输出。',
+      inputFormat: '第一行：一个整数 n，表示数字个数\n第二行：n 个整数（用空格隔开）',
+      outputFormat: '两个整数：最大值和最小值，用空格隔开',
+      sampleInput: '5\n3 9 1 7 5',
+      sampleOutput: '9 1',
+      testCases: [
+        { input: '5\n3 9 1 7 5', output: '9 1' },
+        { input: '1\n42', output: '42 42' },
+        { input: '4\n-1 -5 -3 -2', output: '-1 -5' },
+        { input: '3\n0 0 0', output: '0 0' },
+        { input: '6\n10 20 5 8 15 3', output: '20 3' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int n, x, mx, mn;
+    cin >> n;
+    for (int i = 1; i <= n; i++) {
+        cin >> x;
+        if (i == 1) {
+            mx = x;
+            mn = x;
+        } else {
+            if (x > mx) mx = x;
+            if (x < mn) mn = x;
+        }
+    }
+    cout << mx << " " << mn << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['循环', '打擂台', '求最值'],
+      explanation: '考点：for 循环、打擂台求最值。易错点：① 最大值和最小值要各用一个变量保存，不能共用一个；② 用第一个数给 mx、mn 初始化（i==1 时），比猜一个"很大的数"更稳妥，也能正确处理全是负数的情况；③ n=1 时最大值和最小值相同，程序要能输出 "42 42"。',
     },
   ],
 };
 
 // ============================================================
 // C/C++ 一级 · 综合模拟卷（四）
-// 侧重：进制转换 / 存储单位 / 嵌套循环 / break·continue /
-//       数字位处理 / 水仙花数
+// 侧重：考纲五模块全覆盖（程序开发流程 / main·头文件·注释 /
+//       标识符·const / cin·cout·endl·printf / 多变量输入输出 /
+//       取模符号·整数除法对比·abs / if 条件写法 / 循环结合取模）
 // ============================================================
 export const examMock4: Exam = {
   id: 'exam-mock-04-cpp1',
@@ -857,537 +867,278 @@ export const examMock4: Exam = {
   examDate: '2026-08',
   totalScore: 100,
   passingScore: 60,
-  duration: 60, // 60分钟
+  duration: 60,
   singleChoice: [
     {
       id: 1,
       type: 'singleChoice',
-      stem: '二进制数 1101 转换为十进制后是？',
-      options: { A: '13', B: '11', C: '12', D: '14' },
+      stem: '一个 C++ 程序从写完源代码到看到运行结果，正确的步骤顺序是？',
+      options: {
+        A: '写源代码 → 编译 → 链接 → 运行',
+        B: '编译 → 写源代码 → 链接 → 运行',
+        C: '写源代码 → 链接 → 编译 → 运行',
+        D: '运行 → 编译 → 链接 → 写源代码',
+      },
       answer: 'A',
       score: 4,
-      tags: ['进制转换', '二进制'],
-      explanation: '1101 = 1×2³ + 1×2² + 0×2¹ + 1×2⁰ = 8 + 4 + 0 + 1 = 13。',
+      tags: ['程序开发流程', '编译', '链接'],
+      explanation: '完整流程是：编写源代码（.cpp）→ 编译（翻译成机器能懂的目标文件）→ 链接（把目标文件和用到的库组合起来）→ 运行（执行最终的可执行文件）。顺序不能乱。',
     },
     {
       id: 2,
       type: 'singleChoice',
-      stem: '十进制数 8 转换为二进制后是？',
-      options: { A: '1000', B: '111', C: '1010', D: '110' },
-      answer: 'A',
+      stem: '程序开头写的 #include <iostream>，作用是？',
+      options: {
+        A: '在程序中加入注释',
+        B: '引入输入输出库，让 cin、cout 可以使用',
+        C: '定义 main 函数',
+        D: '让程序运行速度更快',
+      },
+      answer: 'B',
       score: 4,
-      tags: ['进制转换', '二进制'],
-      explanation: '8 = 1×2³，二进制表示为 1000。',
+      tags: ['头文件', '#include'],
+      explanation: 'iostream 是输入输出流头文件，里面包含了 cin、cout 的定义。#include 的作用就是把头文件的内容"复制"进来。不写它，cin 和 cout 就无法使用。',
     },
     {
       id: 3,
       type: 'singleChoice',
-      stem: '1KB 等于多少字节？',
-      options: { A: '1024', B: '1000', C: '512', D: '2048' },
+      stem: '下列四组变量名中，全部合法的一组是？',
+      options: {
+        A: 'sum_1、_a、Int',
+        B: '3abc、x、y_2',
+        C: 'int、double、num',
+        D: 'my-name、b2、c',
+      },
       answer: 'A',
       score: 4,
-      tags: ['存储单位'],
-      explanation: '计算机存储单位按 1024 进位：1KB = 1024 字节（B）。',
+      tags: ['标识符', '命名规则'],
+      explanation: '标识符只能由字母、数字、下划线组成，不能以数字开头，不能用关键字。B 组 3abc 数字开头；C 组 int、double 是关键字（Int 首字母大写就不是关键字了，C++ 区分大小写）；D 组 my-name 含减号。A 组全部合法（_a 以下划线开头是允许的）。',
     },
     {
       id: 4,
       type: 'singleChoice',
-      stem: '执行以下嵌套循环，一共会输出多少个星号 *？',
-      code: 'for(int i = 1; i <= 3; i++) {\n    for(int j = 1; j <= i; j++)\n        cout << "*";\n    cout << endl;\n}',
-      options: { A: '6', B: '3', C: '9', D: '5' },
+      stem: '执行以下代码，输出结果是？',
+      code: 'int a = 3;\na = a + 4;\na = a * 2;\ncout << a;',
+      options: { A: '14', B: '7', C: '6', D: '24' },
       answer: 'A',
       score: 4,
-      tags: ['循环', '嵌套循环'],
-      explanation: 'i=1 输出 1 个，i=2 输出 2 个，i=3 输出 3 个，总共 1+2+3=6 个星号。',
+      tags: ['变量赋值', '顺序结构'],
+      explanation: 'a = a + 4 是"用 a 现在的值 3 加上 4，再存回 a"，a 变成 7；接着 a = a * 2 让 a 变成 14。变量可以被反复赋值，新值会覆盖旧值，程序严格从上往下执行。',
     },
     {
       id: 5,
       type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'for(int i = 1; ; i++) {\n    if(i > 3) break;\n    cout << i;\n}',
-      options: { A: '123', B: '1234', C: '12', D: '12345' },
+      stem: '执行以下代码，从键盘输入 3 和 5（用空格隔开），输出结果是？',
+      code: 'int a, b;\ncin >> a >> b;\ncout << a + b << " " << a * b;',
+      options: { A: '8 15', B: '35 15', C: '8 8', D: '3 5' },
       answer: 'A',
       score: 4,
-      tags: ['循环', 'break'],
-      explanation: 'i 从 1 开始递增，i≤3 时输出 i；i=4 时执行 break 跳出循环，所以输出 123。',
+      tags: ['多变量输入', 'cin', '格式匹配'],
+      explanation: 'cin >> a >> b 连续读入两个数，输入时用空格隔开即可自动分配给 a 和 b。输出：3+5=8 和 3×5=15，中间用空格隔开，即 "8 15"。',
     },
     {
       id: 6,
       type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'for(int i = 1; i <= 5; i++) {\n    if(i % 2 == 0) continue;\n    cout << i;\n}',
-      options: { A: '135', B: '12345', C: '24', D: '13524' },
+      stem: '下列 printf 语句中，能正确输出整数 25 的是？',
+      options: {
+        A: 'printf("%d", 25);',
+        B: 'printf("%c", 25);',
+        C: 'printf("%f", 25);',
+        D: 'printf("%s", 25);',
+      },
       answer: 'A',
       score: 4,
-      tags: ['循环', 'continue'],
-      explanation: 'continue 跳过偶数：i 为 1、3、5 时输出，i 为 2、4 时被跳过，结果为 135。',
+      tags: ['printf', '格式符'],
+      explanation: '%d 对应整数；%c 对应单个字符；%f 对应小数（25 会显示成 25.000000）；%s 对应字符串。要输出整数就用 %d。',
     },
     {
       id: 7,
       type: 'singleChoice',
       stem: '执行以下代码，输出结果是？',
-      code: 'int n = 123;\ncout << n % 10;',
-      options: { A: '3', B: '2', C: '1', D: '123' },
+      code: 'cout << 9 / 2 << " " << 9.0 / 2;',
+      options: { A: '4 4.5', B: '4.5 4.5', C: '4 4', D: '4.5 4' },
       answer: 'A',
       score: 4,
-      tags: ['取模运算', '数字位'],
-      explanation: '任何整数 % 10 得到的都是它的个位数，123 % 10 = 3。',
+      tags: ['整数除法', '浮点除法'],
+      explanation: '9 和 2 都是 int，整数除法直接舍弃小数，得 4；9.0 是浮点数，9.0/2 做浮点除法，得 4.5。区分整数除法和浮点除法：只要有一个操作数是小数，就按小数除。',
     },
     {
       id: 8,
       type: 'singleChoice',
-      stem: 'C++ 表达式 1 + 2 * 3 - 4 / 2 的计算结果是？',
-      options: { A: '5', B: '7', C: '3', D: '6' },
+      stem: '执行以下代码，输出结果是？',
+      code: 'cout << -7 % 3;',
+      options: { A: '-1', B: '1', C: '2', D: '-2' },
       answer: 'A',
       score: 4,
-      tags: ['运算符优先级'],
-      explanation: '先算乘除：2×3=6，4/2=2；再从左到右算加减：1+6-2=5。',
+      tags: ['取模', '符号'],
+      explanation: 'C++ 中取模结果的符号跟被除数（% 左边的数）一致。-7 = 3 × (-2) + (-1)，所以 -7 % 3 = -1。记住口诀：余数符号跟着被除数走。',
     },
     {
       id: 9,
       type: 'singleChoice',
       stem: '执行以下代码，输出结果是？',
-      code: 'cout << (int)\'0\';',
-      options: { A: '48', B: '0', C: '49', D: '32' },
+      code: 'int a = -8, b = 5;\ncout << abs(a) - abs(b);',
+      options: { A: '3', B: '-3', C: '13', D: '-13' },
       answer: 'A',
       score: 4,
-      tags: ['ASCII', '类型转换'],
-      explanation: '字符 0 的 ASCII 码是 48，(int) 把字符转为它的 ASCII 码值输出。',
+      tags: ['数学函数', 'abs'],
+      explanation: 'abs(x) 求绝对值：abs(-8)=8，abs(5)=5，8-5=3。abs 只会"去掉负号"，不会改变正数和零。',
     },
     {
       id: 10,
       type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'int x = 3;\ncout << (x > 2 && x < 5);',
-      options: { A: '1', B: '0', C: 'true', D: '3' },
-      answer: 'A',
+      stem: '关于 if 语句的条件写法，下列正确的是？',
+      options: {
+        A: 'if (a ≥ b)',
+        B: 'if (a >= b)',
+        C: 'if a >= b',
+        D: 'if (a => b)',
+      },
+      answer: 'B',
       score: 4,
-      tags: ['逻辑运算', '关系运算'],
-      explanation: 'x=3，3>2 为真，3<5 为真，真 && 真 = 真，在 C++ 中真用 1 表示，输出 1。',
+      tags: ['if', '条件表达式', '关系运算符'],
+      explanation: '条件必须写在圆括号内；"大于等于"要写成两个符号 >=（键盘上没有 ≥，不能直接用）；=> 是错误顺序。合法的关系运算符只有：>、<、>=、<=、==、!=。',
     },
   ],
   trueFalse: [
     {
       id: 11,
       type: 'trueFalse',
-      stem: '二进制数中只使用 0 和 1 两个数字。',
+      stem: 'main 函数是 C++ 程序的入口，程序总是从 main 函数开始执行。',
       answer: 'A',
       score: 2,
-      tags: ['二进制'],
-      explanation: '二进制是逢二进一的计数系统，每一位只能是 0 或 1。',
+      tags: ['main函数', '程序入口'],
+      explanation: 'main 是程序的唯一入口，操作系统启动程序时就是去调用 main 函数。无论 main 写在文件的什么位置，程序都从它开始执行。',
     },
     {
       id: 12,
       type: 'trueFalse',
-      stem: '1 MB 等于 1000 KB。',
+      stem: '多行注释 /* */ 里面还可以再嵌套一层 /* */。',
       answer: 'B',
       score: 2,
-      tags: ['存储单位'],
-      explanation: '存储单位按 1024 进位，1MB = 1024KB，不是 1000。',
+      tags: ['注释', '嵌套'],
+      explanation: '注释不能嵌套。编译器遇到第一个 */ 就认为注释结束了，后面多出来的 */ 会变成语法错误。例如 /* /* 注释 */ */ 是错的。',
     },
     {
       id: 13,
       type: 'trueFalse',
-      stem: '计算机内部的所有数据都是以二进制形式存储的。',
-      answer: 'A',
+      stem: 'cout << endl 和 cout << "\\n" 的效果完全一样，没有任何区别。',
+      answer: 'B',
       score: 2,
-      tags: ['二进制'],
-      explanation: '计算机只识别高低电平（0 和 1），所有数据最终都以二进制存储和处理。',
+      tags: ['endl', '换行'],
+      explanation: 'endl = 换行 + 刷新输出缓冲区（让内容立刻显示出来）；"\\n" 只负责换行。多数情况下效果相同，但它们不是"完全一样"。',
     },
     {
       id: 14,
       type: 'trueFalse',
-      stem: 'break 和 continue 语句都可以用在循环中。',
+      stem: 'const int N = 10; 之后执行 N = 20; 程序会编译报错。',
       answer: 'A',
       score: 2,
-      tags: ['循环', 'break', 'continue'],
-      explanation: 'break 用于跳出整个循环，continue 用于跳过本次循环剩余语句，两者都常用在循环中。',
+      tags: ['const', '常量'],
+      explanation: 'const 修饰的常量只能在定义时赋值，之后任何修改它的尝试都会导致编译错误。这就是"常量"的含义：定义后值不能改变。',
     },
     {
       id: 15,
       type: 'trueFalse',
-      stem: 'C++ 允许一个 while 循环的循环体为空。',
+      stem: '变量名可以以下划线开头，例如 _sum 是合法的变量名。',
       answer: 'A',
       score: 2,
-      tags: ['循环', 'while'],
-      explanation: '循环体可以为空语句。如 while(n--); 只靠判断和自减来消耗循环，语法上是合法的。',
+      tags: ['标识符', '命名规则'],
+      explanation: '标识符不能以"数字"开头，但可以以"字母"或"下划线"开头，所以 _sum、sum_1 都合法，而 2sum 非法。',
     },
     {
       id: 16,
       type: 'trueFalse',
-      stem: '十进制数 15 的二进制表示是 1110。',
+      stem: '在 C++ 中，% 运算符的两边可以是任意类型的数，比如 7.5 % 2 也是对的。',
       answer: 'B',
       score: 2,
-      tags: ['进制转换'],
-      explanation: '15 = 8+4+2+1 = 1×2³+1×2²+1×2¹+1×2⁰，二进制是 1111。1110 是十进制 14。',
+      tags: ['取模', '%'],
+      explanation: '% 只能用于整数（两边都必须是整数），7.5 % 2 会直接编译报错。另外记住：余数的符号跟被除数一致。',
     },
     {
       id: 17,
       type: 'trueFalse',
-      stem: '表达式 5 % 2 的值是 1。',
+      stem: '一个程序如果没有分支和循环，就会从上到下依次执行每一条语句。',
       answer: 'A',
       score: 2,
-      tags: ['取模运算'],
-      explanation: '5 ÷ 2 = 2 余 1，% 取余数，所以 5 % 2 = 1。',
+      tags: ['顺序结构'],
+      explanation: '顺序结构是最基本的程序结构：没有 if、没有循环时，语句严格按照书写顺序从上到下一条条执行，不会跳过也不会回头。',
     },
     {
       id: 18,
       type: 'trueFalse',
-      stem: '在嵌套循环中，内层循环执行完一遍后，外层循环才继续执行下一次。',
+      stem: '链接（Link）这一步的作用，是把编译生成的文件和程序用到的库文件组合成最终的可执行文件。',
       answer: 'A',
       score: 2,
-      tags: ['嵌套循环'],
-      explanation: '嵌套循环先执行完内层循环的全部，再回到外层循环进行下一轮，外层循环体每执行一次，内层就完整执行一遍。',
+      tags: ['程序开发流程', '链接'],
+      explanation: '编译只把源代码翻译成目标文件，程序里用到的 cout、cin 等功能的实现存放在标准库里，链接负责把它们"拼装"成能直接运行的可执行文件。',
     },
     {
       id: 19,
       type: 'trueFalse',
-      stem: 'C++ 中 endl 和 \'\\n\' 都能实现换行。',
+      stem: '执行 cout << "3+5=" << 3 + 5; 会输出 3+5=8。',
       answer: 'A',
       score: 2,
-      tags: ['输入输出', '换行'],
-      explanation: 'endl 和换行符 \\n 都能换行。区别是 endl 还会刷新输出缓冲区，\\n 不刷新。',
+      tags: ['输出格式', '字符串原样输出'],
+      explanation: '双引号里的 "3+5=" 是字符串，原样输出；后面的 3 + 5 没有引号，是算式，输出计算结果 8。合起来就是 3+5=8。',
     },
     {
       id: 20,
       type: 'trueFalse',
-      stem: '32 位系统中，int 类型通常占 4 个字节。',
+      stem: '执行以下代码后，变量 c 的值是 5。\ncode: int c = 0;\nfor (int i = 1; i <= 20; i++)\n    if (i % 4 == 0) c++;',
       answer: 'A',
       score: 2,
-      tags: ['数据类型', '存储'],
-      explanation: '在大多数 32 位/64 位系统中，int 占 4 个字节（32 位），取值范围约 -21 亿 ~ 21 亿。',
+      tags: ['循环', '取模', '计数'],
+      explanation: '这段代码统计 1~20 中 4 的倍数的个数：4、8、12、16、20，共 5 个，所以 c = 5。"循环 + 取模判断"是编程题最常用的套路。',
     },
   ],
   programming: [
     {
       id: 21,
       type: 'programming',
-      stem: '【水仙花数】输入一个三位数 n，判断它是否为水仙花数。水仙花数是指一个三位数，其各位数字的立方和等于它本身。是则输出 Yes，否则输出 No。',
-      inputFormat: '一个三位整数 n',
-      outputFormat: 'Yes 或 No',
-      sampleInput: '153',
-      sampleOutput: 'Yes',
-      testCases: [
-        { input: '153', output: 'Yes' },
-        { input: '370', output: 'Yes' },
-        { input: '100', output: 'No' },
-        { input: '407', output: 'Yes' },
-        { input: '123', output: 'No' },
-      ],
-      referenceCode: `#include <iostream>
-using namespace std;
-int main() {
-    int n;
-    cin >> n;
-    int a = n / 100;       // 百位
-    int b = n / 10 % 10;   // 十位
-    int c = n % 10;        // 个位
-    if(a * a * a + b * b * b + c * c * c == n)
-        cout << "Yes" << endl;
-    else
-        cout << "No" << endl;
-    return 0;
-}`,
-      score: 20,
-      tags: ['数字位', '分支结构', '循环'],
-      explanation: '考点：数字各位的拆分（整除、取模）、if 分支判断。易错点：① 百位用 n/100、十位用 n/10%10、个位用 n%10；② 判断条件是各位立方和等于原数。',
-    },
-    {
-      id: 22,
-      type: 'programming',
-      stem: '【数字反转】输入一个正整数 n，输出它倒过来的数字（去掉前导零）。例如 123 变成 321，120 变成 21。',
+      stem: '【7 的倍数求和】输入一个正整数 n，计算并输出 1 到 n 之间（包含 n）所有 7 的倍数的和。如果没有 7 的倍数，输出 0。',
       inputFormat: '一个正整数 n',
-      outputFormat: '反转后的整数',
-      sampleInput: '123',
-      sampleOutput: '321',
+      outputFormat: '一个整数，表示 1~n 中所有 7 的倍数的和',
+      sampleInput: '30',
+      sampleOutput: '70',
       testCases: [
-        { input: '123', output: '321' },
-        { input: '120', output: '21' },
-        { input: '1000', output: '1' },
-        { input: '5', output: '5' },
-        { input: '908', output: '809' },
+        { input: '30', output: '70' },
+        { input: '7', output: '7' },
+        { input: '6', output: '0' },
+        { input: '100', output: '735' },
+        { input: '14', output: '21' },
       ],
       referenceCode: `#include <iostream>
 using namespace std;
 int main() {
-    int n;
+    int n, sum = 0;
     cin >> n;
-    int res = 0;
-    while(n > 0) {
-        res = res * 10 + n % 10; // 每次取个位拼到 res 后面
-        n /= 10;                  // 去掉个位
+    for (int i = 1; i <= n; i++) {
+        if (i % 7 == 0) {
+            sum += i;
+        }
     }
-    cout << res << endl;
+    cout << sum << endl;
     return 0;
 }`,
       score: 20,
-      tags: ['循环', '数字位', '取模'],
-      explanation: '考点：while 循环、取模与整除拆分数字位。易错点：① 用 res = res*10 + n%10 逐位"倒着拼"，天然去掉前导零；② 循环结束条件是 n>0。',
-    },
-  ],
-};
-
-// ============================================================
-// C/C++ 一级 · 综合模拟卷（五）
-// 侧重：数据类型与转换 / 数学函数 / 计数统计 /
-//       字符与ASCII / 最大公约数
-// ============================================================
-export const examMock5: Exam = {
-  id: 'exam-mock-05-cpp1',
-  name: 'C/C++一级·综合模拟卷五',
-  category: 'mock',
-  examDate: '2026-08',
-  totalScore: 100,
-  passingScore: 60,
-  duration: 60, // 60分钟
-  singleChoice: [
-    {
-      id: 1,
-      type: 'singleChoice',
-      stem: '执行以下代码后，变量 a 的值是？',
-      code: 'int a = 3.99;',
-      options: { A: '3', B: '4', C: '3.99', D: '编译报错' },
-      answer: 'A',
-      score: 4,
-      tags: ['类型转换', '整型截断'],
-      explanation: '把 3.99 赋给 int 变量时小数部分直接截断（不是四舍五入），a = 3。',
-    },
-    {
-      id: 2,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'double d = 1 / 2;\ncout << d;',
-      options: { A: '0', B: '0.5', C: '1', D: '0.0' },
-      answer: 'A',
-      score: 4,
-      tags: ['整数除法', '类型转换'],
-      explanation: '1/2 两个操作数都是 int，结果是整数 0，赋给 double 后 d=0.0，输出为 0。想得到 0.5 需写 1.0/2。',
-    },
-    {
-      id: 3,
-      type: 'singleChoice',
-      stem: 'C++ 表达式 5 % 3 + 2 * 2 的计算结果是？',
-      options: { A: '6', B: '7', C: '4', D: '5' },
-      answer: 'A',
-      score: 4,
-      tags: ['运算符优先级', '取模运算'],
-      explanation: '先算 5%3=2 和 2×2=4，再算 2+4=6。',
-    },
-    {
-      id: 4,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'cout << pow(2, 4);',
-      options: { A: '16', B: '8', C: '4', D: '32' },
-      answer: 'A',
-      score: 4,
-      tags: ['数学函数', 'pow'],
-      explanation: 'pow(x, y) 计算 x 的 y 次方，pow(2,4)=2⁴=16。',
-    },
-    {
-      id: 5,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'cout << abs(-3) + sqrt(9);',
-      options: { A: '6', B: '0', C: '9', D: '3' },
-      answer: 'A',
-      score: 4,
-      tags: ['数学函数', 'abs', 'sqrt'],
-      explanation: 'abs(-3)=3（绝对值），sqrt(9)=3（平方根），3+3=6。',
-    },
-    {
-      id: 6,
-      type: 'singleChoice',
-      stem: '执行以下代码后，变量 ch 的值是？',
-      code: 'char ch = \'A\' + 3;',
-      options: { A: 'D', B: 'C', C: 'E', D: 'a' },
-      answer: 'A',
-      score: 4,
-      tags: ['字符类型', 'ASCII'],
-      explanation: 'A 的 ASCII 是 65，65+3=68 即字符 D 的 ASCII，所以 ch = \'D\'。',
-    },
-    {
-      id: 7,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'int a = 10, b = 3;\ncout << a % b;',
-      options: { A: '1', B: '3', C: '0', D: '10' },
-      answer: 'A',
-      score: 4,
-      tags: ['取模运算'],
-      explanation: '10 ÷ 3 = 3 余 1，% 取余数，所以 10 % 3 = 1。',
-    },
-    {
-      id: 8,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'int c = 0;\nfor(int i = 1; i <= 10; i++)\n    if(i % 2 == 0) c++;\ncout << c;',
-      options: { A: '5', B: '4', C: '6', D: '10' },
-      answer: 'A',
-      score: 4,
-      tags: ['循环', '计数'],
-      explanation: '统计 1~10 中偶数的个数：2、4、6、8、10 共 5 个，所以 c=5。',
-    },
-    {
-      id: 9,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'bool b = (3 > 5);\ncout << b;',
-      options: { A: '0', B: '1', C: 'true', D: 'false' },
-      answer: 'A',
-      score: 4,
-      tags: ['逻辑运算', 'bool'],
-      explanation: '3>5 为假，b=false，输出 bool 变量时假用 0 表示，输出 0。',
-    },
-    {
-      id: 10,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'int x = 4;\ncout << x / 2.0;',
-      options: { A: '2', B: '2.0', C: '2.5', D: '0.5' },
-      answer: 'A',
-      score: 4,
-      tags: ['类型转换', '浮点除法'],
-      explanation: '2.0 是 double，x/2.0 = 2.0（浮点除法）。cout 输出 2.0 时显示为 2。',
-    },
-  ],
-  trueFalse: [
-    {
-      id: 11,
-      type: 'trueFalse',
-      stem: 'double 类型能表示的整数范围比 int 更大。',
-      answer: 'A',
-      score: 2,
-      tags: ['数据类型', 'double'],
-      explanation: 'double 是双精度浮点型，能表示的数值范围远大于 int（约 ±1.8×10³⁰⁸）。',
-    },
-    {
-      id: 12,
-      type: 'trueFalse',
-      stem: '将 char 类型变量赋值给 int 类型变量是合法的。',
-      answer: 'A',
-      score: 2,
-      tags: ['类型转换'],
-      explanation: 'char 可以隐式转换为 int，赋给 int 变量后得到的是该字符的 ASCII 码。',
-    },
-    {
-      id: 13,
-      type: 'trueFalse',
-      stem: '3 / 0 在 C++ 中会导致运行错误。',
-      answer: 'A',
-      score: 2,
-      tags: ['除零', '运行错误'],
-      explanation: '除数是 0 属于未定义行为，通常导致程序异常崩溃。',
-    },
-    {
-      id: 14,
-      type: 'trueFalse',
-      stem: 'sqrt(-1) 的返回值是 0。',
-      answer: 'B',
-      score: 2,
-      tags: ['数学函数', 'sqrt'],
-      explanation: '对负数开平方是域错误，sqrt(-1) 返回 NaN（非数值），而不是 0。',
-    },
-    {
-      id: 15,
-      type: 'trueFalse',
-      stem: 'abs() 和 fabs() 都可以用来求绝对值。',
-      answer: 'A',
-      score: 2,
-      tags: ['数学函数', 'abs', 'fabs'],
-      explanation: 'abs 用于整数求绝对值，fabs 用于浮点数求绝对值，都能得到绝对值。',
-    },
-    {
-      id: 16,
-      type: 'trueFalse',
-      stem: '在运算中，bool 类型的 true 相当于 1，false 相当于 0。',
-      answer: 'A',
-      score: 2,
-      tags: ['数据类型', 'bool'],
-      explanation: 'bool 参与数值运算时会转换为整数：true=1，false=0。',
-    },
-    {
-      id: 17,
-      type: 'trueFalse',
-      stem: 'double 是单精度浮点型。',
-      answer: 'B',
-      score: 2,
-      tags: ['数据类型'],
-      explanation: 'float 才是单精度浮点型（4 字节），double 是双精度浮点型（8 字节）。',
-    },
-    {
-      id: 18,
-      type: 'trueFalse',
-      stem: 'C++ 中字符常量用单引号，字符串常量用双引号。',
-      answer: 'A',
-      score: 2,
-      tags: ['数据类型', '字符', '字符串'],
-      explanation: '字符用单引号（如 \'A\'），字符串用双引号（如 "hello"）。',
-    },
-    {
-      id: 19,
-      type: 'trueFalse',
-      stem: 'cout << (int)3.99; 的输出结果是 3。',
-      answer: 'A',
-      score: 2,
-      tags: ['类型转换', '强制转换'],
-      explanation: '(int) 强制类型转换会截断小数部分，3.99 转为 3。',
-    },
-    {
-      id: 20,
-      type: 'trueFalse',
-      stem: '使用 pow、sqrt、abs 等数学函数需要包含 <cmath> 头文件。',
-      answer: 'A',
-      score: 2,
-      tags: ['数学函数', '头文件'],
-      explanation: '这些数学函数声明在 <cmath> 中，使用时需要 #include <cmath>。',
-    },
-  ],
-  programming: [
-    {
-      id: 21,
-      type: 'programming',
-      stem: '【最大公约数】输入两个正整数 a 和 b，求它们的最大公约数（GCD）并输出。',
-      inputFormat: '两个正整数 a 和 b（用空格隔开）',
-      outputFormat: '一个整数，表示最大公约数',
-      sampleInput: '12 18',
-      sampleOutput: '6',
-      testCases: [
-        { input: '12 18', output: '6' },
-        { input: '8 12', output: '4' },
-        { input: '7 13', output: '1' },
-        { input: '100 100', output: '100' },
-        { input: '15 20', output: '5' },
-      ],
-      referenceCode: `#include <iostream>
-using namespace std;
-int main() {
-    int a, b;
-    cin >> a >> b;
-    while(b != 0) {
-        int t = a % b; // 辗转相除：求余数
-        a = b;
-        b = t;
-    }
-    cout << a << endl;
-    return 0;
-}`,
-      score: 20,
-      tags: ['循环', '辗转相除法', '最大公约数'],
-      explanation: '考点：while 循环、取模、辗转相除法。易错点：① 辗转相除的核心是"不断用除数当被除数、余数当除数"；② 当余数为 0 时，此时的被除数就是最大公约数。',
+      tags: ['循环', '取模', '累加', '分支'],
+      explanation: '考点：for 循环遍历 1~n、取模判断 7 的倍数（i % 7 == 0）、条件累加。易错点：① sum 必须初始化为 0；② n=6 时一个 7 的倍数都没有，输出 0，程序要能正确处理这种"空"的情况；③ 循环变量要从 1 开始（从 0 开始也没错，但 0 也满足 %7==0，加 0 不影响结果）。',
     },
     {
       id: 22,
       type: 'programming',
-      stem: '【求和与平均值】输入 n 个整数，输出它们的和与平均值（平均值保留两位小数），两者用空格隔开。',
-      inputFormat: '第一行：一个整数 n\n第二行：n 个整数（用空格隔开）',
-      outputFormat: '和 与 平均值，用空格隔开，平均值保留两位小数',
-      sampleInput: '3\n1 2 3',
-      sampleOutput: '6 2.00',
+      stem: '【平均分计算】输入 n 个学生的成绩（整数），计算并输出他们的平均分，结果保留 1 位小数。',
+      inputFormat: '第一行：一个整数 n，表示学生人数\n第二行：n 个整数成绩（用空格隔开）',
+      outputFormat: '一个实数，表示平均分，保留 1 位小数',
+      sampleInput: '4\n80 90 85 95',
+      sampleOutput: '87.5',
       testCases: [
-        { input: '3\n1 2 3', output: '6 2.00' },
-        { input: '1\n5', output: '5 5.00' },
-        { input: '4\n10 20 30 40', output: '100 25.00' },
+        { input: '4\n80 90 85 95', output: '87.5' },
+        { input: '3\n70 80 90', output: '80.0' },
+        { input: '1\n100', output: '100.0' },
+        { input: '5\n1 2 3 4 5', output: '3.0' },
+        { input: '3\n1 2 4', output: '2.3' },
       ],
       referenceCode: `#include <iostream>
 #include <iomanip>
@@ -1395,304 +1146,19 @@ using namespace std;
 int main() {
     int n, x, sum = 0;
     cin >> n;
-    for(int i = 1; i <= n; i++) {
+    for (int i = 1; i <= n; i++) {
         cin >> x;
         sum += x;
     }
-    cout << sum << " " << fixed << setprecision(2) << (double)sum / n << endl;
+    cout << fixed << setprecision(1) << sum * 1.0 / n << endl;
     return 0;
 }`,
       score: 20,
-      tags: ['循环', '累加', '格式化输出'],
-      explanation: '考点：循环累加、求平均值、保留两位小数。易错点：① 平均值要用 (double)sum/n 转为浮点再除，否则整数相除会丢小数；② 保留两位小数需要 fixed << setprecision(2)，需包含 <iomanip>。',
+      tags: ['循环', '累加', '整数除法', '格式化输出'],
+      explanation: '考点：for 循环累加、整数除法 vs 浮点除法、保留小数。最大的陷阱在最后一步：sum 和 n 都是 int，直接写 sum / n 是整数除法，350/4 会得到 87 而不是 87.5！必须先把其中一个变成小数（写 sum * 1.0 / n 或把 sum 定义成 double）。保留 1 位小数用 fixed << setprecision(1)，需包含 <iomanip>。',
     },
   ],
 };
 
-// ============================================================
-// C/C++ 一级 · 综合模拟卷（六）
-// 侧重：全考点综合冲刺（程序结构 / 变量交换 / 三目运算 /
-//       斐波那契 / 奇偶统计）
-// ============================================================
-export const examMock6: Exam = {
-  id: 'exam-mock-06-cpp1',
-  name: 'C/C++一级·综合模拟卷六',
-  category: 'mock',
-  examDate: '2026-08',
-  totalScore: 100,
-  passingScore: 60,
-  duration: 60, // 60分钟
-  singleChoice: [
-    {
-      id: 1,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'int a = 2, b = 3;\ncout << a * b + a;',
-      options: { A: '8', B: '9', C: '6', D: '11' },
-      answer: 'A',
-      score: 4,
-      tags: ['运算', '运算符优先级'],
-      explanation: '先算乘法 2×3=6，再算加法 6+2=8。',
-    },
-    {
-      id: 2,
-      type: 'singleChoice',
-      stem: '执行以下代码后，变量 x 的值是？',
-      code: 'int x = 1, y = 2;\nint t = x;\nx = y;\ny = t;',
-      options: { A: '2', B: '1', C: '0', D: '3' },
-      answer: 'A',
-      score: 4,
-      tags: ['变量交换', '顺序结构'],
-      explanation: '经典三变量交换：t 暂存 x(1)，x 被赋为 y(2)，y 被赋为 t(1)，最终 x=2。',
-    },
-    {
-      id: 3,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'cout << 20 / 6;',
-      options: { A: '3', B: '4', C: '3.33', D: '2' },
-      answer: 'A',
-      score: 4,
-      tags: ['整数除法'],
-      explanation: '两个 int 相除结果取商：20/6=3（余 2），小数部分舍去。',
-    },
-    {
-      id: 4,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'int i = 1, s = 0;\nwhile(i <= 4) {\n    s += i * i;\n    i++;\n}\ncout << s;',
-      options: { A: '30', B: '10', C: '55', D: '16' },
-      answer: 'A',
-      score: 4,
-      tags: ['循环', '累加'],
-      explanation: 's 累加 1²+2²+3²+4² = 1+4+9+16 = 30。',
-    },
-    {
-      id: 5,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'int a = 7;\ncout << (a > 5 && a < 10);',
-      options: { A: '1', B: '0', C: '7', D: 'true' },
-      answer: 'A',
-      score: 4,
-      tags: ['逻辑运算', '关系运算'],
-      explanation: '7>5 为真，7<10 为真，真 && 真 = 真，输出 1。',
-    },
-    {
-      id: 6,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'cout << 100 % 7;',
-      options: { A: '2', B: '3', C: '1', D: '14' },
-      answer: 'A',
-      score: 4,
-      tags: ['取模运算'],
-      explanation: '100 ÷ 7 = 14 余 2，% 取余数，所以 100 % 7 = 2。',
-    },
-    {
-      id: 7,
-      type: 'singleChoice',
-      stem: '执行以下嵌套循环后，变量 c 的值是？',
-      code: 'int c = 0;\nfor(int i = 1; i <= 4; i++)\n    for(int j = 1; j <= 4; j++)\n        c++;\ncout << c;',
-      options: { A: '16', B: '8', C: '4', D: '32' },
-      answer: 'A',
-      score: 4,
-      tags: ['循环', '嵌套循环'],
-      explanation: '外层 4 次，内层每次 4 次，总次数 = 4 × 4 = 16。',
-    },
-    {
-      id: 8,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'char ch = \'B\';\ncout << (int)ch;',
-      options: { A: '66', B: 'B', C: '65', D: '98' },
-      answer: 'A',
-      score: 4,
-      tags: ['ASCII', '类型转换'],
-      explanation: '大写 B 的 ASCII 码是 66，(int) 把字符转为 ASCII 码值输出。',
-    },
-    {
-      id: 9,
-      type: 'singleChoice',
-      stem: '执行以下代码，输出结果是？',
-      code: 'int n = 3;\ncout << (n % 2 == 1 ? "奇" : "偶");',
-      options: { A: '奇', B: '偶', C: '1', D: '0' },
-      answer: 'A',
-      score: 4,
-      tags: ['三目运算', '取模'],
-      explanation: '三目运算符 条件?值1:值2：3%2=1，条件成立，输出"奇"。',
-    },
-    {
-      id: 10,
-      type: 'singleChoice',
-      stem: 'C++ 表达式 2 + 2 * 2 - 2 / 2 的计算结果是？',
-      options: { A: '5', B: '6', C: '4', D: '7' },
-      answer: 'A',
-      score: 4,
-      tags: ['运算符优先级'],
-      explanation: '先算乘除：2×2=4，2/2=1；再从左到右算加减：2+4-1=5。',
-    },
-  ],
-  trueFalse: [
-    {
-      id: 11,
-      type: 'trueFalse',
-      stem: '一个完整的 C++ 程序必须包含 main 函数。',
-      answer: 'A',
-      score: 2,
-      tags: ['main函数', '程序结构'],
-      explanation: 'main 是程序入口，一个可执行程序必须有且只有一个 main 函数。',
-    },
-    {
-      id: 12,
-      type: 'trueFalse',
-      stem: 'C++ 中的变量可以不声明就直接使用。',
-      answer: 'B',
-      score: 2,
-      tags: ['变量定义'],
-      explanation: '变量必须先声明（定义）再使用，否则编译器报"未声明标识符"错误。',
-    },
-    {
-      id: 13,
-      type: 'trueFalse',
-      stem: 'a = a + 1; 和 a++; 的效果相同。',
-      answer: 'A',
-      score: 2,
-      tags: ['自增运算', '赋值'],
-      explanation: '两者都是让 a 的值加 1，效果相同。',
-    },
-    {
-      id: 14,
-      type: 'trueFalse',
-      stem: 'for(;;) 是无限循环。',
-      answer: 'A',
-      score: 2,
-      tags: ['循环', '无限循环'],
-      explanation: 'for 三个部分都省略时，循环条件视为恒真，构成死循环，除非循环体内用 break 跳出。',
-    },
-    {
-      id: 15,
-      type: 'trueFalse',
-      stem: '一个源文件中可以包含多条 #include 语句。',
-      answer: 'A',
-      score: 2,
-      tags: ['预处理', '头文件'],
-      explanation: '可以根据需要包含多个头文件，如同时 #include <iostream> 和 #include <cmath>。',
-    },
-    {
-      id: 16,
-      type: 'trueFalse',
-      stem: 'C++ 是区分大小写的语言。',
-      answer: 'A',
-      score: 2,
-      tags: ['程序结构'],
-      explanation: 'C++ 区分大小写，例如变量 a 和 A 是两个不同的标识符，main 写成 Main 会出错。',
-    },
-    {
-      id: 17,
-      type: 'trueFalse',
-      stem: 'cout << 3 + 4 * 2; 的输出结果是 14。',
-      answer: 'B',
-      score: 2,
-      tags: ['运算符优先级'],
-      explanation: '先算乘法 4×2=8，再算 3+8=11，不是 14。',
-    },
-    {
-      id: 18,
-      type: 'trueFalse',
-      stem: 'for(int i = 0; i < 5; i++){...} 循环结束后，i 仍可以在循环外继续使用。',
-      answer: 'B',
-      score: 2,
-      tags: ['循环', '作用域'],
-      explanation: '在 for 的括号里定义的 i 作用域仅在循环内，循环结束后 i 已被销毁，循环外不能使用。',
-    },
-    {
-      id: 19,
-      type: 'trueFalse',
-      stem: 'C++ 中 1.5 默认是 double 类型。',
-      answer: 'A',
-      score: 2,
-      tags: ['数据类型'],
-      explanation: 'C++ 中浮点字面量默认是 double 类型；要表示 float 需写成 1.5f。',
-    },
-    {
-      id: 20,
-      type: 'trueFalse',
-      stem: '程序中的注释会影响程序的运行结果。',
-      answer: 'B',
-      score: 2,
-      tags: ['注释'],
-      explanation: '注释是给人看的说明，编译时会被忽略，不影响运行结果。',
-    },
-  ],
-  programming: [
-    {
-      id: 21,
-      type: 'programming',
-      stem: '【斐波那契数列】斐波那契数列：1, 1, 2, 3, 5, 8, ...，前两项为 1，从第三项起每项等于前两项之和。输入 n，输出第 n 项的值。',
-      inputFormat: '一个正整数 n',
-      outputFormat: '一个整数，表示斐波那契数列第 n 项',
-      sampleInput: '10',
-      sampleOutput: '55',
-      testCases: [
-        { input: '1', output: '1' },
-        { input: '2', output: '1' },
-        { input: '3', output: '2' },
-        { input: '10', output: '55' },
-        { input: '20', output: '6765' },
-      ],
-      referenceCode: `#include <iostream>
-using namespace std;
-int main() {
-    int n;
-    cin >> n;
-    if(n == 1 || n == 2) { cout << 1 << endl; return 0; }
-    int a = 1, b = 1, c;
-    for(int i = 3; i <= n; i++) {
-        c = a + b; // 当前项 = 前两项之和
-        a = b;     // 前一项前移
-        b = c;     // 当前项前移
-    }
-    cout << b << endl;
-    return 0;
-}`,
-      score: 20,
-      tags: ['循环', '斐波那契', '递推'],
-      explanation: '考点：循环、递推思想。易错点：① 前两项要单独处理；② 用两个变量滚动更新（a、b 分别表示前两项），避免数组。',
-    },
-    {
-      id: 22,
-      type: 'programming',
-      stem: '【奇偶统计】输入 n 个整数，统计其中奇数的个数和偶数的个数，用空格隔开输出。',
-      inputFormat: '第一行：一个整数 n\n第二行：n 个整数（用空格隔开）',
-      outputFormat: '两个整数：奇数的个数 和 偶数的个数，用空格隔开',
-      sampleInput: '5\n1 2 3 4 5',
-      sampleOutput: '3 2',
-      testCases: [
-        { input: '5\n1 2 3 4 5', output: '3 2' },
-        { input: '1\n2', output: '0 1' },
-        { input: '4\n1 3 5 7', output: '4 0' },
-      ],
-      referenceCode: `#include <iostream>
-using namespace std;
-int main() {
-    int n, x;
-    cin >> n;
-    int odd = 0, even = 0;
-    for(int i = 1; i <= n; i++) {
-        cin >> x;
-        if(x % 2 == 0) even++; // 偶数
-        else odd++;            // 奇数
-    }
-    cout << odd << " " << even << endl;
-    return 0;
-}`,
-      score: 20,
-      tags: ['循环', '分支', '取模', '计数'],
-      explanation: '考点：循环输入、if 分支、取模判断奇偶、计数。易错点：① 用 x%2==0 判断偶数；② 两个计数变量要先初始化为 0。',
-    },
-  ],
-};
 
-// 所有模拟卷列表
-export const mockExams: Exam[] = [examMock1, examMock2, examMock3, examMock4, examMock5, examMock6];
+export const mockExams: Exam[] = [examMock1, examMock2, examMock3, examMock4];
