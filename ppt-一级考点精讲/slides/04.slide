@@ -1,0 +1,56 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2' }}>
+  {/* A 区标题 */}
+  <Box style={{ height: 120, padding: '28px 70px 0 70px' }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>满分 100，这样拆</Text>
+    <Box style={{ width: 64, height: 6, background: '#F97316', borderRadius: 3, marginTop: 10 }} />
+  </Box>
+  {/* B 区 */}
+  <Box style={{ height: 540, padding: '24px 70px 0 70px', flexDirection: 'row', gap: 50 }}>
+    {/* 左：巨型数字锚点 */}
+    <Box style={{ width: 330, justifyContent: 'center', gap: 10 }}>
+      <Text style={{ fontSize: 120, fontWeight: 'bold', color: '#F97316', lineHeight: 1 }}>100</Text>
+      <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#1A1A1A' }}>满分 · 60 分及格</Text>
+      <Text style={{ fontSize: 18, color: '#64748B', lineHeight: 1.6 }}>三种题型组合考核，<br />不再是只拼编程题。</Text>
+    </Box>
+    {/* 右：三条分值条 */}
+    <Box style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', gap: 26 }}>
+      <Box style={{ flexDirection: 'column', gap: 8 }}>
+        <Box style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>单选题 · 10 题 × 4 分</Text>
+          <Text style={{ fontSize: 36, fontWeight: 'bold', color: '#F97316' }}>40 分</Text>
+        </Box>
+        <Box style={{ width: 560, height: 26, background: '#F97316', borderRadius: 13 }} />
+        <Text style={{ fontSize: 16, color: '#64748B' }}>考基础概念、语法规则、程序运行结果 —— 靠记忆和细心</Text>
+      </Box>
+      <Box style={{ flexDirection: 'column', gap: 8 }}>
+        <Box style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>判断题 · 10 题 × 2 分</Text>
+          <Text style={{ fontSize: 36, fontWeight: 'bold', color: '#EC4899' }}>20 分</Text>
+        </Box>
+        <Box style={{ width: 280, height: 26, background: '#EC4899', borderRadius: 13 }} />
+        <Text style={{ fontSize: 16, color: '#64748B' }}>考易错语法、概念误区 —— 一不小心就掉坑</Text>
+      </Box>
+      <Box style={{ flexDirection: 'column', gap: 8 }}>
+        <Box style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>编程题 · 2 题 × 20 分</Text>
+          <Text style={{ fontSize: 36, fontWeight: 'bold', color: '#1E293B' }}>40 分</Text>
+        </Box>
+        <Box style={{ width: 560, height: 26, background: '#1E293B', borderRadius: 13 }} />
+        <Text style={{ fontSize: 16, color: '#64748B' }}>考输入输出、运算、分支、循环 —— 必须上机写代码</Text>
+      </Box>
+      <Box style={{ background: 'rgba(236,72,153,0.10)', borderRadius: 12, padding: '14px 22px', marginTop: 4 }}>
+        <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#1A1A1A' }}>结论：编程题占 40 分，接近半壁江山 —— <span style={{ color: '#EC4899' }}>决定你过不过的是编程题</span></Text>
+      </Box>
+    </Box>
+  </Box>
+  {/* C 区页脚 */}
+  <Box style={{ height: 60, padding: '0 70px 20px 70px', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <Box style={{ width: 32, height: 32, background: '#F97316', borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 'bold' }}>{'{ }'}</Text>
+      </Box>
+      <Text style={{ fontSize: 14, color: '#64748B' }}>C++ 一级备考第一课</Text>
+    </Box>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>04 / 15</Text>
+  </Box>
+</Slide>

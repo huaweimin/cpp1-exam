@@ -1,0 +1,17 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2', position: 'relative', overflow: 'hidden' }}>
+  {/* 右侧 55% 主视觉 */}
+  <Box style={{ position: 'absolute', top: 0, right: 0, width: 704, height: 720 }}>
+    <Image src="assets/cover_kids.png" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+  </Box>
+  {/* 左侧文字区 */}
+  <Box style={{ position: 'absolute', top: 0, left: 0, width: 576, height: 720, padding: '90px 40px 60px 70px', flexDirection: 'column', justifyContent: 'center', gap: 28, zIndex: 1 }}>
+    <Box style={{ background: '#F97316', borderRadius: 10, padding: '8px 20px', alignSelf: 'flex-start' }}>
+      <Text style={{ fontSize: 20, color: '#FFFFFF', fontWeight: 'bold', letterSpacing: 2 }}>2026 年 3 月新版考纲</Text>
+    </Box>
+    <Text style={{ fontSize: 68, fontWeight: 'bold', color: '#1A1A1A', lineHeight: 1.2 }}>C++ 一级<br />备考第一课</Text>
+    <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#EC4899' }}>高频考点 · 易错点精讲</Text>
+    <Text style={{ fontSize: 19, color: '#64748B', lineHeight: 1.6 }}>考前先把「考什么、哪里容易错」搞清楚，<br />再刷题才能事半功倍。</Text>
+  </Box>
+  {/* 底部渐变条 */}
+  <Box style={{ position: 'absolute', bottom: 0, left: 0, width: 1280, height: 12, background: 'linear-gradient(90deg, #F97316 0%, #EC4899 100%)' }} />
+</Slide>

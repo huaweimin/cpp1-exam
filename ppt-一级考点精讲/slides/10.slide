@@ -1,0 +1,45 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2', position: 'relative', overflow: 'hidden' }}>
+  {/* 装饰 */}
+  <Box style={{ position: 'absolute', top: -60, right: -60, width: 240, height: 240, background: 'rgba(249,115,22,0.10)', borderRadius: 120 }} />
+  {/* A 区标题 */}
+  <Box style={{ height: 120, padding: '28px 70px 0 70px', zIndex: 1 }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>模块 4 · 算术运算【最高频易错】</Text>
+    <Box style={{ width: 64, height: 6, background: '#EC4899', borderRadius: 3, marginTop: 10 }} />
+  </Box>
+  {/* B 区 */}
+  <Box style={{ height: 540, padding: '20px 70px 0 70px', flexDirection: 'column', gap: 26, zIndex: 1 }}>
+    {/* 巨型锚点 */}
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 50 }}>
+      <Text style={{ fontSize: 104, fontWeight: 'bold', color: '#F97316', lineHeight: 1, fontFamily: 'monospace' }}>9 / 2 = 4</Text>
+      <Box style={{ flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 27, fontWeight: 'bold', color: '#1A1A1A' }}>两个 int 相除，小数直接丢弃！</Text>
+        <Text style={{ fontSize: 19, color: '#64748B' }}>不是四舍五入，是直接砍掉 —— 这是整张卷子最容易踩的坑</Text>
+      </Box>
+    </Box>
+    {/* 三个洞察卡 */}
+    <Box style={{ flexDirection: 'row', gap: 18, flex: 1 }}>
+      <Box style={{ flex: 1, background: '#FFFFFF', borderRadius: 16, border: '2px solid #F97316', padding: '22px 24px', flexDirection: 'column', gap: 10, justifyContent: 'center' }}>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#F97316', fontFamily: 'monospace' }}>9.0 / 2 = 4.5</Text>
+        <Text style={{ fontSize: 16.5, color: '#1A1A1A', lineHeight: 1.6 }}>只要有一个数带小数点，就按<span style={{ fontWeight: 'bold' }}>小数除法</span>算，结果保留小数。</Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#FFFFFF', borderRadius: 16, border: '2px solid #EC4899', padding: '22px 24px', flexDirection: 'column', gap: 10, justifyContent: 'center' }}>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#EC4899', fontFamily: 'monospace' }}>-7 % 3 = -1</Text>
+        <Text style={{ fontSize: 16.5, color: '#1A1A1A', lineHeight: 1.6 }}>% 只能用于整数，<span style={{ fontWeight: 'bold' }}>余数的符号跟着被除数走</span>。</Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#FFFFFF', borderRadius: 16, border: '2px solid #1E293B', padding: '22px 24px', flexDirection: 'column', gap: 10, justifyContent: 'center' }}>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#1E293B', fontFamily: 'monospace' }}>abs(-8) = 8</Text>
+        <Text style={{ fontSize: 16.5, color: '#1A1A1A', lineHeight: 1.6 }}>abs() 求绝对值，只去负号；和 sqrt、pow 一样需要 cmath。</Text>
+      </Box>
+    </Box>
+  </Box>
+  {/* C 区页脚 */}
+  <Box style={{ height: 60, padding: '0 70px 20px 70px', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', zIndex: 1 }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <Box style={{ width: 32, height: 32, background: '#F97316', borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 'bold' }}>{'{ }'}</Text>
+      </Box>
+      <Text style={{ fontSize: 14, color: '#64748B' }}>C++ 一级备考第一课</Text>
+    </Box>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>10 / 15</Text>
+  </Box>
+</Slide>

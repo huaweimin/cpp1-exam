@@ -1,0 +1,59 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2' }}>
+  {/* A 区标题 */}
+  <Box style={{ height: 120, padding: '28px 70px 0 70px' }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>易错点 TOP5 —— 这些坑每年都有人踩</Text>
+    <Box style={{ width: 64, height: 6, background: '#EC4899', borderRadius: 3, marginTop: 10 }} />
+  </Box>
+  {/* B 区：左锚点 + 右榜单 */}
+  <Box style={{ height: 540, padding: '22px 70px 0 70px', flexDirection: 'row', gap: 44 }}>
+    {/* 左锚点 */}
+    <Box style={{ width: 260, justifyContent: 'center', gap: 8 }}>
+      <Text style={{ fontSize: 96, fontWeight: 'bold', lineHeight: 1, backgroundImage: 'linear-gradient(135deg, #F97316 0%, #EC4899 100%)', backgroundClip: 'text', color: 'transparent' }}>TOP5</Text>
+      <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1A1A1A' }}>最容易丢分的五个坑</Text>
+      <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.6 }}>全是历年真题里反复出现的陷阱，考前过一遍，考场上多拿 10 分。</Text>
+    </Box>
+    {/* 右榜单 */}
+    <Box style={{ flex: 1, flexDirection: 'column', gap: 13, justifyContent: 'center' }}>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 18, background: '#FFFFFF', borderRadius: 12, border: '1px solid #F1E9DF', padding: '13px 20px' }}>
+        <Box style={{ width: 44, height: 44, background: '#F97316', borderRadius: 22, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#FFFFFF' }}>1</Text>
+        </Box>
+        <Text style={{ fontSize: 18.5, color: '#1A1A1A', lineHeight: 1.5 }}><span style={{ fontWeight: 'bold' }}>7 / 2 = 3，不是 3.5</span> —— 整数除法直接丢弃小数，要 3.5 得写 7.0 / 2</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 18, background: '#FFFFFF', borderRadius: 12, border: '1px solid #F1E9DF', padding: '13px 20px' }}>
+        <Box style={{ width: 44, height: 44, background: '#F97316', borderRadius: 22, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#FFFFFF' }}>2</Text>
+        </Box>
+        <Text style={{ fontSize: 18.5, color: '#1A1A1A', lineHeight: 1.5 }}><span style={{ fontWeight: 'bold' }}>= 是赋值，== 才是判断相等</span> —— if 里写成 = 是最常见的低级错误</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 18, background: '#FFFFFF', borderRadius: 12, border: '1px solid #F1E9DF', padding: '13px 20px' }}>
+        <Box style={{ width: 44, height: 44, background: '#EC4899', borderRadius: 22, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#FFFFFF' }}>3</Text>
+        </Box>
+        <Text style={{ fontSize: 18.5, color: '#1A1A1A', lineHeight: 1.5 }}><span style={{ fontWeight: 'bold' }}>if 不带花括号只管一条语句</span> —— 缩进好看不代表归它管，后面的话照样执行</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 18, background: '#FFFFFF', borderRadius: 12, border: '1px solid #F1E9DF', padding: '13px 20px' }}>
+        <Box style={{ width: 44, height: 44, background: '#EC4899', borderRadius: 22, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#FFFFFF' }}>4</Text>
+        </Box>
+        <Text style={{ fontSize: 18.5, color: '#1A1A1A', lineHeight: 1.5 }}><span style={{ fontWeight: 'bold' }}>-7 % 3 = -1</span> —— 余数的符号跟被除数一致；% 的两边必须都是整数</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 18, background: '#FFFFFF', borderRadius: 12, border: '1px solid #F1E9DF', padding: '13px 20px' }}>
+        <Box style={{ width: 44, height: 44, background: '#1E293B', borderRadius: 22, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#FFFFFF' }}>5</Text>
+        </Box>
+        <Text style={{ fontSize: 18.5, color: '#1A1A1A', lineHeight: 1.5 }}><span style={{ fontWeight: 'bold' }}>{'endl 和 "' + String.fromCharCode(92, 0x200B, 110) + '" 不是完全一样'}</span> —— endl 换行还要刷新缓冲区；注释也不能嵌套</Text>
+      </Box>
+    </Box>
+  </Box>
+  {/* C 区页脚 */}
+  <Box style={{ height: 60, padding: '0 70px 20px 70px', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <Box style={{ width: 32, height: 32, background: '#F97316', borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 'bold' }}>{'{ }'}</Text>
+      </Box>
+      <Text style={{ fontSize: 14, color: '#64748B' }}>C++ 一级备考第一课</Text>
+    </Box>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>13 / 15</Text>
+  </Box>
+</Slide>

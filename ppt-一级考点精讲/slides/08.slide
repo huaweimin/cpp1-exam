@@ -1,0 +1,68 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2' }}>
+  {/* A 区标题 */}
+  <Box style={{ height: 120, padding: '28px 70px 0 70px' }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>模块 2 · 变量与标识符</Text>
+    <Box style={{ width: 64, height: 6, background: '#F97316', borderRadius: 3, marginTop: 10 }} />
+  </Box>
+  {/* B 区 60:40 双栏 */}
+  <Box style={{ height: 540, padding: '26px 70px 0 70px', flexDirection: 'row', gap: 34 }}>
+    {/* 左 60% 规则 */}
+    <Box style={{ width: 620, flexDirection: 'column', gap: 16, justifyContent: 'center' }}>
+      <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
+        <Box style={{ width: 40, height: 40, background: '#F97316', borderRadius: 20, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Text style={{ fontSize: 19, color: '#FFFFFF', fontWeight: 'bold' }}>1</Text>
+        </Box>
+        <Box style={{ flexDirection: 'column', gap: 3 }}>
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>只能由字母、数字、下划线组成</Text>
+          <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.5 }}>不能出现 + - * / 等符号，my-name 这种带减号的名字非法。</Text>
+        </Box>
+      </Box>
+      <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
+        <Box style={{ width: 40, height: 40, background: '#F97316', borderRadius: 20, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Text style={{ fontSize: 19, color: '#FFFFFF', fontWeight: 'bold' }}>2</Text>
+        </Box>
+        <Box style={{ flexDirection: 'column', gap: 3 }}>
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>不能以数字开头，区分大小写</Text>
+          <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.5 }}>2abc 非法；num 和 Num 是两个不同的变量（单选必考）。</Text>
+        </Box>
+      </Box>
+      <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
+        <Box style={{ width: 40, height: 40, background: '#F97316', borderRadius: 20, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Text style={{ fontSize: 19, color: '#FFFFFF', fontWeight: 'bold' }}>3</Text>
+        </Box>
+        <Box style={{ flexDirection: 'column', gap: 3 }}>
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>不能用关键字当名字</Text>
+          <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.5 }}>int、double、const 这些是 C++ 的「保留词」，不能占用。</Text>
+        </Box>
+      </Box>
+      <Box style={{ background: '#FFFFFF', borderRadius: 14, border: '1px solid #F1E9DF', padding: '18px 22px', marginTop: 6 }}>
+        <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#1A1A1A' }}>基础类型重点：<span style={{ color: '#F97316' }}>int 整型</span></Text>
+        <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.6, marginTop: 6 }}>
+          int 存整数（如 10、-3）；double 存小数（如 3.14）；bool 存 true / false。
+          <br />const 常量：<span style={{ color: '#EC4899', fontWeight: 'bold' }}>定义后值不能修改</span>，N = 20 会直接编译报错（判断易错）。
+        </Text>
+      </Box>
+    </Box>
+    {/* 右 40% 正误对照 */}
+    <Box style={{ flex: 1, flexDirection: 'column', gap: 16, justifyContent: 'center' }}>
+      <Box style={{ background: '#FFFFFF', borderRadius: 16, border: '2px solid #22C55E', padding: '20px 24px', flexDirection: 'column', gap: 10 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#22C55E' }}>✓ 合法的变量名</Text>
+        <Text style={{ fontSize: 18, color: '#1A1A1A', fontFamily: 'monospace', lineHeight: 1.8 }}>sum_1<br />_score（下划线开头可以）<br />Int（大写 I 不是关键字）</Text>
+      </Box>
+      <Box style={{ background: '#FFFFFF', borderRadius: 16, border: '2px solid #EF4444', padding: '20px 24px', flexDirection: 'column', gap: 10 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#EF4444' }}>✗ 非法的变量名</Text>
+        <Text style={{ fontSize: 18, color: '#1A1A1A', fontFamily: 'monospace', lineHeight: 1.8 }}>2abc（数字开头）<br />int（关键字）<br />my-name（带减号）</Text>
+      </Box>
+    </Box>
+  </Box>
+  {/* C 区页脚 */}
+  <Box style={{ height: 60, padding: '0 70px 20px 70px', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <Box style={{ width: 32, height: 32, background: '#F97316', borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 'bold' }}>{'{ }'}</Text>
+      </Box>
+      <Text style={{ fontSize: 14, color: '#64748B' }}>C++ 一级备考第一课</Text>
+    </Box>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>08 / 15</Text>
+  </Box>
+</Slide>

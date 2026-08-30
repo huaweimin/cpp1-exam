@@ -1,0 +1,70 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2' }}>
+  {/* A 区标题 */}
+  <Box style={{ height: 120, padding: '28px 70px 0 70px' }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>一级头文件速查 —— 什么时候必须写</Text>
+    <Box style={{ width: 64, height: 6, background: '#F97316', borderRadius: 3, marginTop: 10 }} />
+  </Box>
+  {/* B 区 55:45 双栏 */}
+  <Box style={{ height: 540, padding: '24px 70px 0 70px', flexDirection: 'row', gap: 30 }}>
+    {/* 左：头文件表 */}
+    <Box style={{ width: 620, flexDirection: 'column', gap: 10 }}>
+      <Box style={{ flexDirection: 'row', gap: 14, background: '#1E293B', borderRadius: 10, padding: '10px 20px', alignItems: 'center' }}>
+        <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#FFFFFF', width: 170 }}>头文件</Text>
+        <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#FFFFFF' }}>什么时候必须写</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', gap: 14, background: '#FFFFFF', borderRadius: 10, border: '1px solid #F1E9DF', padding: '13px 20px', alignItems: 'center' }}>
+        <Text style={{ fontSize: 16.5, fontWeight: 'bold', color: '#F97316', fontFamily: 'monospace', width: 170 }}>{'<iostream>'}</Text>
+        <Text style={{ fontSize: 16.5, color: '#1A1A1A' }}>cin、cout、endl —— 90% 编程题必写</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', gap: 14, background: '#FFFFFF', borderRadius: 10, border: '1px solid #F1E9DF', padding: '13px 20px', alignItems: 'center' }}>
+        <Text style={{ fontSize: 16.5, fontWeight: 'bold', color: '#F97316', fontFamily: 'monospace', width: 170 }}>{'<cstdio>'}</Text>
+        <Text style={{ fontSize: 16.5, color: '#1A1A1A' }}>printf / scanf</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', gap: 14, background: '#FFFFFF', borderRadius: 10, border: '1px solid #F1E9DF', padding: '13px 20px', alignItems: 'center' }}>
+        <Text style={{ fontSize: 16.5, fontWeight: 'bold', color: '#F97316', fontFamily: 'monospace', width: 170 }}>{'<cstdlib>'}</Text>
+        <Text style={{ fontSize: 16.5, color: '#1A1A1A' }}>整数 abs()</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', gap: 14, background: '#FFFFFF', borderRadius: 10, border: '1px solid #F1E9DF', padding: '13px 20px', alignItems: 'center' }}>
+        <Text style={{ fontSize: 16.5, fontWeight: 'bold', color: '#F97316', fontFamily: 'monospace', width: 170 }}>{'<iomanip>'}</Text>
+        <Text style={{ fontSize: 16.5, color: '#1A1A1A' }}>setprecision()（保留小数）</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', gap: 14, background: '#FFFFFF', borderRadius: 10, border: '1px solid #F1E9DF', padding: '13px 20px', alignItems: 'center' }}>
+        <Text style={{ fontSize: 16.5, fontWeight: 'bold', color: '#F97316', fontFamily: 'monospace', width: 170 }}>{'<cmath>'}</Text>
+        <Text style={{ fontSize: 16.5, color: '#1A1A1A' }}>fabs、sqrt 等数学函数，编程几乎不用，只考选择</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', gap: 14, background: 'rgba(249,115,22,0.12)', borderRadius: 10, border: '2px solid #F97316', padding: '13px 20px', alignItems: 'center' }}>
+        <Text style={{ fontSize: 16.5, fontWeight: 'bold', color: '#F97316', fontFamily: 'monospace', width: 170 }}>{'<bits/stdc++.h>'}</Text>
+        <Text style={{ fontSize: 16.5, color: '#1A1A1A' }}><span style={{ fontWeight: 'bold' }}>万能头文件</span>：一个顶上面全部，懒人必备（考试环境 Dev-C++ 支持用它）</Text>
+      </Box>
+    </Box>
+    {/* 右：坑点 */}
+    <Box style={{ flex: 1, flexDirection: 'column', gap: 14 }}>
+      <Box style={{ background: 'rgba(236,72,153,0.10)', borderRadius: 14, border: '2px solid #EC4899', padding: '18px 22px', flexDirection: 'column', gap: 8 }}>
+        <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#EC4899' }}>⚠ 最容易记混的一对</Text>
+        <Text style={{ fontSize: 16.5, color: '#1A1A1A', lineHeight: 1.7 }}>
+          <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>fixed</span> —— 不需要 iomanip
+          <br /><span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>setprecision(数字)</span> —— 必须 iomanip
+          <br /><span style={{ color: '#64748B' }}>很多学生以为 fixed 要头文件，其实是 setprecision() 要。</span>
+        </Text>
+      </Box>
+      <Box style={{ background: '#FFFFFF', borderRadius: 14, border: '1px solid #F1E9DF', padding: '18px 22px', flexDirection: 'column', gap: 8 }}>
+        <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#F97316' }}>上机试一试（课堂演示）</Text>
+        <Text style={{ fontSize: 16, color: '#1A1A1A', lineHeight: 1.7 }}>
+          写 <span style={{ fontFamily: 'monospace' }}>{'fixed << setprecision(2)'}</span>，
+          然后删掉 <span style={{ fontFamily: 'monospace' }}>{'#include <iomanip>'}</span>——
+          看编译器报红色错误，印象比背十遍都深。
+        </Text>
+      </Box>
+    </Box>
+  </Box>
+  {/* C 区页脚 */}
+  <Box style={{ height: 60, padding: '0 70px 20px 70px', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <Box style={{ width: 32, height: 32, background: '#F97316', borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 'bold' }}>{'{ }'}</Text>
+      </Box>
+      <Text style={{ fontSize: 14, color: '#64748B' }}>C++ 一级备考第一课</Text>
+    </Box>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>07 / 15</Text>
+  </Box>
+</Slide>

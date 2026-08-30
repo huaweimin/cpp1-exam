@@ -1,0 +1,50 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2' }}>
+  {/* A 区标题 */}
+  <Box style={{ height: 120, padding: '28px 70px 0 70px' }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>今天讲什么</Text>
+    <Box style={{ width: 64, height: 6, background: '#F97316', borderRadius: 3, marginTop: 10 }} />
+  </Box>
+  {/* B 区目录 */}
+  <Box style={{ height: 540, padding: '30px 70px 0 70px', flexDirection: 'row', gap: 40 }}>
+    <Box style={{ width: 300, justifyContent: 'center', gap: 16 }}>
+      <Text style={{ fontSize: 46, fontWeight: 'bold', color: '#F97316' }}>3 个部分</Text>
+      <Text style={{ fontSize: 19, color: '#64748B', lineHeight: 1.7 }}>一节课带你摸清<br />一级考试的底细，<br />少走弯路不踩坑。</Text>
+    </Box>
+    <Box style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', gap: 26 }}>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 24, background: '#FFFFFF', borderRadius: 16, padding: '26px 30px', border: '1px solid #F1E9DF' }}>
+        <Text style={{ fontSize: 44, fontWeight: 'bold', color: '#F97316' }}>01</Text>
+        <Box style={{ width: 4, height: 64, background: '#F97316', borderRadius: 2 }} />
+        <Box style={{ flexDirection: 'column', gap: 6 }}>
+          <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#1A1A1A' }}>考试怎么考</Text>
+          <Text style={{ fontSize: 17, color: '#64748B' }}>题型、分值、答题时间，一张图看明白</Text>
+        </Box>
+      </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 24, background: '#FFFFFF', borderRadius: 16, padding: '26px 30px', border: '1px solid #F1E9DF' }}>
+        <Text style={{ fontSize: 44, fontWeight: 'bold', color: '#F97316' }}>02</Text>
+        <Box style={{ width: 4, height: 64, background: '#EC4899', borderRadius: 2 }} />
+        <Box style={{ flexDirection: 'column', gap: 6 }}>
+          <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#1A1A1A' }}>五大模块精讲</Text>
+          <Text style={{ fontSize: 17, color: '#64748B' }}>程序基础 / 变量标识符 / 输入输出 / 算术运算 / 三大结构</Text>
+        </Box>
+      </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 24, background: '#FFFFFF', borderRadius: 16, padding: '26px 30px', border: '1px solid #F1E9DF' }}>
+        <Text style={{ fontSize: 44, fontWeight: 'bold', color: '#F97316' }}>03</Text>
+        <Box style={{ width: 4, height: 64, background: '#1E293B', borderRadius: 2 }} />
+        <Box style={{ flexDirection: 'column', gap: 6 }}>
+          <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#1A1A1A' }}>易错点与备考</Text>
+          <Text style={{ fontSize: 17, color: '#64748B' }}>最容易丢分的 5 个坑 + 考前提醒清单</Text>
+        </Box>
+      </Box>
+    </Box>
+  </Box>
+  {/* C 区页脚 */}
+  <Box style={{ height: 60, padding: '0 70px 20px 70px', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <Box style={{ width: 32, height: 32, background: '#F97316', borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 'bold' }}>{'{ }'}</Text>
+      </Box>
+      <Text style={{ fontSize: 14, color: '#64748B' }}>C++ 一级备考第一课</Text>
+    </Box>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>02 / 15</Text>
+  </Box>
+</Slide>

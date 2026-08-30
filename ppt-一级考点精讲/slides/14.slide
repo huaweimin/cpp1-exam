@@ -1,0 +1,61 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2' }}>
+  {/* A 区标题 */}
+  <Box style={{ height: 120, padding: '28px 70px 0 70px' }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>考前提醒 —— 细节决定成败</Text>
+    <Box style={{ width: 64, height: 6, background: '#F97316', borderRadius: 3, marginTop: 10 }} />
+  </Box>
+  {/* B 区 60:40 */}
+  <Box style={{ height: 540, padding: '26px 70px 0 70px', flexDirection: 'row', gap: 40 }}>
+    {/* 左 60% 格式要求 */}
+    <Box style={{ width: 620, flexDirection: 'column', gap: 16, justifyContent: 'center' }}>
+      <Box style={{ background: '#FFFFFF', borderRadius: 14, border: '1px solid #F1E9DF', borderLeft: '6px solid #EC4899', padding: '18px 22px', flexDirection: 'column', gap: 5 }}>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>输出格式必须和题目完全一致</Text>
+        <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.6 }}>大小写、空格、标点、换行都要一模一样 —— <span style={{ fontWeight: 'bold', color: '#EC4899' }}>多一个空格、少一个换行，直接扣分</span>。交卷前逐字符对照样例输出。</Text>
+      </Box>
+      <Box style={{ background: '#FFFFFF', borderRadius: 14, border: '1px solid #F1E9DF', borderLeft: '6px solid #F97316', padding: '18px 22px', flexDirection: 'column', gap: 5 }}>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>提前熟悉 Dev-C++ 全流程</Text>
+        <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.6 }}>新建文件 → 写代码 → 编译 → 运行，考试是上机实操，软件不熟会白白浪费时间。</Text>
+      </Box>
+      <Box style={{ background: '#FFFFFF', borderRadius: 14, border: '1px solid #F1E9DF', borderLeft: '6px solid #F97316', padding: '18px 22px', flexDirection: 'column', gap: 5 }}>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>客观题逐项排除，杜绝概念混淆</Text>
+        <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.6 }}>单选的迷惑选项很刁钻，拿不准就逐个排掉明显错的，再对比剩下两个。</Text>
+      </Box>
+    </Box>
+    {/* 右 40% 时间条 SVG */}
+    <Box style={{ flex: 1, background: '#FFFFFF', borderRadius: 16, border: '1px solid #F1E9DF', padding: '26px 26px', flexDirection: 'column', justifyContent: 'center', gap: 16 }}>
+      <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>答题时间这样分</Text>
+      <svg width={380} height={54} viewBox='0 0 380 54'>
+        <rect x='0' y='10' width='95' height='34' rx='8' fill='#F97316' />
+        <text x='47' y='32' fontSize='15' fontWeight='bold' fill='#FFFFFF' textAnchor='middle'>20min</text>
+        <rect x='103' y='10' width='190' height='34' rx='8' fill='#EC4899' />
+        <text x='198' y='32' fontSize='15' fontWeight='bold' fill='#FFFFFF' textAnchor='middle'>40min</text>
+        <rect x='301' y='10' width='48' height='34' rx='8' fill='#1E293B' />
+        <text x='325' y='32' fontSize='13' fontWeight='bold' fill='#FFFFFF' textAnchor='middle'>10</text>
+      </svg>
+      <Box style={{ flexDirection: 'column', gap: 10 }}>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <Box style={{ width: 14, height: 14, background: '#F97316', borderRadius: 4 }} />
+          <Text style={{ fontSize: 16, color: '#1A1A1A' }}>客观题：单选 + 判断，20 分钟内搞定</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <Box style={{ width: 14, height: 14, background: '#EC4899', borderRadius: 4 }} />
+          <Text style={{ fontSize: 16, color: '#1A1A1A' }}>编程题：2 道大题，40 分钟完成</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <Box style={{ width: 14, height: 14, background: '#1E293B', borderRadius: 4 }} />
+          <Text style={{ fontSize: 16, color: '#1A1A1A' }}>预留 5~10 分钟：重点检查格式和语法</Text>
+        </Box>
+      </Box>
+    </Box>
+  </Box>
+  {/* C 区页脚 */}
+  <Box style={{ height: 60, padding: '0 70px 20px 70px', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <Box style={{ width: 32, height: 32, background: '#F97316', borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 'bold' }}>{'{ }'}</Text>
+      </Box>
+      <Text style={{ fontSize: 14, color: '#64748B' }}>C++ 一级备考第一课</Text>
+    </Box>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>14 / 15</Text>
+  </Box>
+</Slide>

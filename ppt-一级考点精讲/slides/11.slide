@@ -1,0 +1,55 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2' }}>
+  {/* A 区标题 */}
+  <Box style={{ height: 120, padding: '28px 70px 0 70px' }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>模块 5 · 程序三大结构</Text>
+    <Box style={{ width: 64, height: 6, background: '#F97316', borderRadius: 3, marginTop: 10 }} />
+  </Box>
+  {/* B 区 60:40 */}
+  <Box style={{ height: 540, padding: '26px 70px 0 70px', flexDirection: 'row', gap: 34 }}>
+    {/* 左 60% 三结构 */}
+    <Box style={{ width: 620, flexDirection: 'column', gap: 16, justifyContent: 'center' }}>
+      <Box style={{ background: '#FFFFFF', borderRadius: 14, border: '1px solid #F1E9DF', borderLeft: '6px solid #F97316', padding: '18px 22px', flexDirection: 'column', gap: 5 }}>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>顺序结构 —— 从上到下依次执行</Text>
+        <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.55 }}>没有 if、没有循环时，代码一行一行往下走，不会跳过也不会回头。</Text>
+      </Box>
+      <Box style={{ background: '#FFFFFF', borderRadius: 14, border: '1px solid #F1E9DF', borderLeft: '6px solid #EC4899', padding: '18px 22px', flexDirection: 'column', gap: 5 }}>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>分支结构 —— if 条件表达式写法</Text>
+        <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.55 }}>条件必须写在圆括号里；「大于等于」要写 <span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: '#EC4899' }}>{'>='}</span>，键盘上打不出 ≥；判断相等用 ==。</Text>
+      </Box>
+      <Box style={{ background: '#FFFFFF', borderRadius: 14, border: '1px solid #F1E9DF', borderLeft: '6px solid #F97316', padding: '18px 22px', flexDirection: 'column', gap: 5 }}>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>简单循环 —— 循环规律 + 取模运算</Text>
+        <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.55 }}>for / while 都要会；<span style={{ fontWeight: 'bold', color: '#F97316' }}>「循环 + 取模」是编程题的核心套路</span>：判断倍数、统计、累加全靠它。</Text>
+      </Box>
+    </Box>
+    {/* 右 40% 代码块 */}
+    <Box style={{ flex: 1, flexDirection: 'column', gap: 12, justifyContent: 'center' }}>
+      <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#1A1A1A' }}>编程题核心套路 · 看懂这段就够</Text>
+      <CodeBlock
+        code={`int n, sum = 0;
+cin >> n;
+for (int i = 1; i <= n; i++) {
+    if (i % 7 == 0) {
+        sum += i;   // 是 7 的倍数就累加
+    }
+}
+cout << sum << endl;`}
+        language='cpp'
+        width={420}
+        fontSize={15}
+      />
+      <Box style={{ background: 'rgba(249,115,22,0.12)', borderRadius: 10, padding: '12px 16px' }}>
+        <Text style={{ fontSize: 16, color: '#1A1A1A', lineHeight: 1.6 }}><span style={{ fontWeight: 'bold', color: '#F97316' }}>i % 7 == 0</span> 判断 i 是不是 7 的倍数 —— 统计个数、求和、找偶数，全是这个套路。</Text>
+      </Box>
+    </Box>
+  </Box>
+  {/* C 区页脚 */}
+  <Box style={{ height: 60, padding: '0 70px 20px 70px', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <Box style={{ width: 32, height: 32, background: '#F97316', borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 'bold' }}>{'{ }'}</Text>
+      </Box>
+      <Text style={{ fontSize: 14, color: '#64748B' }}>C++ 一级备考第一课</Text>
+    </Box>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>11 / 15</Text>
+  </Box>
+</Slide>

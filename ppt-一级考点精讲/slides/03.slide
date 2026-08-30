@@ -1,0 +1,12 @@
+<Slide style={{ width: 1280, height: 720, background: 'linear-gradient(135deg, #F97316 0%, #EC4899 100%)', position: 'relative', overflow: 'hidden' }}>
+  {/* 装饰圆 */}
+  <Box style={{ position: 'absolute', top: -80, right: -60, width: 320, height: 320, background: 'rgba(255,255,255,0.12)', borderRadius: 160 }} />
+  <Box style={{ position: 'absolute', bottom: -100, left: 120, width: 260, height: 260, background: 'rgba(255,255,255,0.10)', borderRadius: 130 }} />
+  <Box style={{ position: 'absolute', top: 140, left: 640, width: 90, height: 90, background: 'rgba(255,255,255,0.15)', borderRadius: 45 }} />
+  {/* 主内容 */}
+  <Box style={{ width: 1280, height: 720, padding: '0 110px', flexDirection: 'column', justifyContent: 'center', gap: 20, zIndex: 1 }}>
+    <Text style={{ fontSize: 150, fontWeight: 'bold', color: 'rgba(255,255,255,0.35)', lineHeight: 1 }}>01</Text>
+    <Text style={{ fontSize: 62, fontWeight: 'bold', color: '#FFFFFF' }}>考试怎么考</Text>
+    <Text style={{ fontSize: 24, color: 'rgba(255,255,255,0.9)' }}>题型分值先摸清 —— 知己知彼，复习才有方向</Text>
+  </Box>
+</Slide>

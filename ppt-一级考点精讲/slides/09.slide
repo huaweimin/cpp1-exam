@@ -1,0 +1,64 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2' }}>
+  {/* A 区标题 */}
+  <Box style={{ height: 120, padding: '28px 70px 0 70px' }}>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#1A1A1A' }}>模块 3 · 输入输出语句</Text>
+    <Box style={{ width: 64, height: 6, background: '#F97316', borderRadius: 3, marginTop: 10 }} />
+  </Box>
+  {/* B 区 4 卡横排 */}
+  <Box style={{ height: 540, padding: '26px 70px 26px 70px', flexDirection: 'row', gap: 18 }}>
+    <Box style={{ flex: 1, background: '#FFFFFF', borderRadius: 16, border: '1px solid #F1E9DF', borderTop: '5px solid #F97316', padding: '22px 20px', flexDirection: 'column', gap: 10 }}>
+      <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#F97316', fontFamily: 'monospace' }}>{'>> <<'}</Text>
+      <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>cin 与 cout</Text>
+      <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.6, flex: 1 }}>
+        cin <span style={{ fontWeight: 'bold' }}>＞＞</span> 读输入，cout <span style={{ fontWeight: 'bold' }}>＜＜</span> 做输出。
+        <br />使用前要 <span style={{ fontFamily: 'monospace' }}>#include {'<iostream>'}</span>。
+      </Text>
+      <Box style={{ background: '#1E293B', borderRadius: 8, padding: '10px 12px' }}>
+        <Text style={{ fontSize: 13.5, color: '#F8FAFC', fontFamily: 'monospace' }}>cin {'>'}{'}'} a;<br />cout {'<'}{'<'} a;</Text>
+      </Box>
+    </Box>
+    <Box style={{ flex: 1, background: '#FFFFFF', borderRadius: 16, border: '1px solid #F1E9DF', borderTop: '5px solid #EC4899', padding: '22px 20px', flexDirection: 'column', gap: 10 }}>
+      <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#EC4899', fontFamily: 'monospace' }}>endl</Text>
+      <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>{'endl 与 "' + String.fromCharCode(92, 0x200B, 110) + '"'}</Text>
+      <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.6, flex: 1 }}>
+        endl = <span style={{ fontWeight: 'bold', color: '#1A1A1A' }}>换行 + 刷新缓冲区</span>。
+        <br />{'"' + String.fromCharCode(92, 0x200B, 110) + '"'} 只负责换行。
+        <br />判断题最爱考「两者完全没区别」—— 是错的！
+      </Text>
+      <Box style={{ background: '#1E293B', borderRadius: 8, padding: '10px 12px' }}>
+        <Text style={{ fontSize: 13.5, color: '#F8FAFC', fontFamily: 'monospace' }}>cout {'<'}{'<'} 1 {'<'}{'<'} endl;</Text>
+      </Box>
+    </Box>
+    <Box style={{ flex: 1, background: '#FFFFFF', borderRadius: 16, border: '1px solid #F1E9DF', borderTop: '5px solid #F97316', padding: '22px 20px', flexDirection: 'column', gap: 10 }}>
+      <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#F97316', fontFamily: 'monospace' }}>%d</Text>
+      <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>printf 基础格式</Text>
+      <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.6, flex: 1 }}>
+        %d 输出<span style={{ fontWeight: 'bold' }}>整数</span>，%f 输出小数，%c 输出字符。
+        <br />格式符和后面的数要一一对应。
+      </Text>
+      <Box style={{ background: '#1E293B', borderRadius: 8, padding: '10px 12px' }}>
+        <Text style={{ fontSize: 13.5, color: '#F8FAFC', fontFamily: 'monospace' }}>printf({'"%d"'} , 25);</Text>
+      </Box>
+    </Box>
+    <Box style={{ flex: 1, background: '#FFFFFF', borderRadius: 16, border: '1px solid #F1E9DF', borderTop: '5px solid #EC4899', padding: '22px 20px', flexDirection: 'column', gap: 10 }}>
+      <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#EC4899', fontFamily: 'monospace' }}>a b c</Text>
+      <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A1A1A' }}>多变量连续输入</Text>
+      <Text style={{ fontSize: 16, color: '#64748B', lineHeight: 1.6, flex: 1 }}>
+        连写多个 {'>'}{'}'} 一次读多个数，输入时<span style={{ fontWeight: 'bold' }}>用空格隔开</span>，自动按顺序分配。
+      </Text>
+      <Box style={{ background: '#1E293B', borderRadius: 8, padding: '10px 12px' }}>
+        <Text style={{ fontSize: 13.5, color: '#F8FAFC', fontFamily: 'monospace' }}>cin {'>'}{'}'} a {'>'}{'}'} b {'>'}{'}'} c;</Text>
+      </Box>
+    </Box>
+  </Box>
+  {/* C 区页脚 */}
+  <Box style={{ height: 60, padding: '0 70px 20px 70px', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <Box style={{ width: 32, height: 32, background: '#F97316', borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 'bold' }}>{'{ }'}</Text>
+      </Box>
+      <Text style={{ fontSize: 14, color: '#64748B' }}>C++ 一级备考第一课</Text>
+    </Box>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>09 / 15</Text>
+  </Box>
+</Slide>
