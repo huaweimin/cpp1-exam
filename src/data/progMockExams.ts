@@ -368,5 +368,542 @@ int main() {
   ],
 };
 
+// ============================================================
+// 编程专项模拟卷（三）· 必考专题
+// 难度梯度：★ → ★★ → ★★★ → ★★★ → ★★★★
+// 覆盖考点：char 字符类型 / 分支求最值 / 数位分离逆序 / 闰年多分支逻辑 / while 循环拆位累加
+// 组卷说明：对标真题编程题难度（温度转换·体温记录·重复数列），补齐一级考纲中
+//           尚未被前两卷覆盖的 char、while 循环、闰年逻辑等必考专题
+// ============================================================
+export const progMock3: Exam = {
+  id: 'exam-prog-mock-03-cpp1',
+  name: 'C/C++一级·编程专项模拟卷三（必考专题）',
+  category: 'mock',
+  examDate: '2026-09',
+  totalScore: 100,
+  passingScore: 60,
+  duration: 90, // 5 道编程题，建议 90 分钟
+  singleChoice: [],
+  trueFalse: [],
+  programming: [
+    {
+      id: 9021,
+      type: 'programming',
+      stem: '输入一个大写英文字母（A ~ Z），输出它对应的小写字母。',
+      inputFormat: '一个大写英文字母（A ~ Z）。',
+      outputFormat: '对应的小写字母。',
+      sampleInput: 'A',
+      sampleOutput: 'a',
+      testCases: [
+        { input: 'A', output: 'a' },
+        { input: 'Z', output: 'z' },
+        { input: 'M', output: 'm' },
+        { input: 'C', output: 'c' },
+        { input: 'K', output: 'k' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    char ch;
+    cin >> ch;
+    // 大写字母与小写字母的 ASCII 码相差固定的偏移量
+    ch = ch - 'A' + 'a';
+    cout << ch << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['char类型', 'ASCII码', '顺序结构'],
+      explanation: '考点：char 字符类型 + ASCII 码运算。小写字母的 ASCII 码比对应大写字母大 32，用 ch - \'A\' + \'a\' 把大写字母换算成小写。也可以用 ch + 32 实现，二者等价。注意：变量要用 char 声明，不能用 int。',
+    },
+    {
+      id: 9022,
+      type: 'programming',
+      stem: '输入三个整数，请输出其中最大的那个数。',
+      inputFormat: '一行，三个整数，以空格分隔。',
+      outputFormat: '一个整数，即三个数中的最大值。',
+      sampleInput: '3 5 2',
+      sampleOutput: '5',
+      testCases: [
+        { input: '3 5 2', output: '5' },
+        { input: '10 10 1', output: '10' },
+        { input: '-3 -1 -2', output: '-1' },
+        { input: '0 0 0', output: '0' },
+        { input: '7 3 8', output: '8' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+    int maxv = a;
+    if (b > maxv) maxv = b;
+    if (c > maxv) maxv = c;
+    cout << maxv << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['分支结构', 'if判断', '求最值'],
+      explanation: '考点：用分支结构求最值。思路：先假设第一个数 a 是最大值，存入变量 maxv，然后依次用 b、c 和 maxv 比较，谁更大就把谁更新为 maxv。注意两点：① 两个数相等时条件 b > maxv 不成立，maxv 保持不变，结果仍正确；② 要能正确处理负数。',
+    },
+    {
+      id: 9023,
+      type: 'programming',
+      stem: '输入一个三位正整数，将其各位数字倒过来重新组成一个数并输出。例如输入 123，输出 321。',
+      inputFormat: '一个三位正整数（100 ~ 999）。',
+      outputFormat: '一个整数，表示倒序后得到的新数。',
+      sampleInput: '123',
+      sampleOutput: '321',
+      testCases: [
+        { input: '123', output: '321' },
+        { input: '100', output: '1' },
+        { input: '700', output: '7' },
+        { input: '520', output: '25' },
+        { input: '305', output: '503' },
+        { input: '999', output: '999' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    int ge = n % 10;        // 个位
+    int shi = n / 10 % 10;  // 十位
+    int bai = n / 100;      // 百位
+    cout << ge * 100 + shi * 10 + bai << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['数位分离', '取模', '整除'],
+      explanation: '考点：数位分离。个位 = n % 10，十位 = n / 10 % 10，百位 = n / 100。倒序后的新数 = 个位×100 + 十位×10 + 百位。易错点：像 100、520 这样的数，倒序后前导零会自然消失，直接按整数输出 1、25 即可，不要尝试补零。',
+    },
+    {
+      id: 9024,
+      type: 'programming',
+      stem: '输入一个年份，判断它是不是闰年，是闰年输出 YES，否则输出 NO。\n\n闰年判断规则：能被 4 整除但不能被 100 整除的年份是闰年；或者能被 400 整除的年份也是闰年。',
+      inputFormat: '一个整数，表示年份。',
+      outputFormat: '如果该年是闰年输出 YES，否则输出 NO。',
+      sampleInput: '2020',
+      sampleOutput: 'YES',
+      testCases: [
+        { input: '2020', output: 'YES' },
+        { input: '2000', output: 'YES' },
+        { input: '1900', output: 'NO' },
+        { input: '2100', output: 'NO' },
+        { input: '2024', output: 'YES' },
+        { input: '2021', output: 'NO' },
+        { input: '1600', output: 'YES' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int y;
+    cin >> y;
+    if ((y % 4 == 0 && y % 100 != 0) || y % 400 == 0) {
+        cout << "YES" << endl;
+    } else {
+        cout << "NO" << endl;
+    }
+    return 0;
+}`,
+      score: 20,
+      tags: ['分支结构', '逻辑运算', '取模'],
+      explanation: '考点：逻辑运算 &&（与）、||（或）和取模 %。闰年条件要写成 (y % 4 == 0 && y % 100 != 0) || y % 400 == 0，两层判断缺一不可。易错点：整百年（如 1900、2100）能被 100 整除但不能被 400 整除，是平年，必须用 && 排除掉，很多同学会漏掉这层。',
+    },
+    {
+      id: 9025,
+      type: 'programming',
+      stem: '输入一个非负整数 n，输出它的各位数字之和。例如输入 123，输出 6（即 1 + 2 + 3）。',
+      inputFormat: '一个非负整数 n。',
+      outputFormat: '一个整数，表示 n 的各位数字之和。',
+      sampleInput: '123',
+      sampleOutput: '6',
+      testCases: [
+        { input: '123', output: '6' },
+        { input: '0', output: '0' },
+        { input: '1000', output: '1' },
+        { input: '123456', output: '21' },
+        { input: '999999', output: '54' },
+        { input: '7', output: '7' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    int sum = 0;
+    while (n > 0) {
+        sum += n % 10;  // 取出个位并累加
+        n /= 10;        // 去掉个位
+    }
+    cout << sum << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['while循环', '数位分离', '累加器'],
+      explanation: '考点：while 循环 + 循环中的数位分离。循环体每次：① 用 n % 10 取出当前个位，累加到 sum；② 用 n /= 10 去掉个位；直到 n 变成 0 循环结束。易错点：① sum 必须初始化为 0，否则结果是乱码；② 输入 0 时循环体一次都不执行，sum 保持 0，结果正好正确。',
+    },
+  ],
+};
+
+// ============================================================
+// 编程专项模拟卷（四）· 基础巩固
+// 难度梯度：★ → ★★ → ★★ → ★★ → ★★★
+// 覆盖考点：变量交换 / 算术表达式 / 整数除法与浮点 / abs 数学函数 / 逻辑或分支
+// 组卷说明：对标真题最基础题型（交换a和b / 计算(a+b)*c / A除以B / 输出绝对值 /
+//           有一门课不及格），全部不含循环，专攻「输入→处理→输出」三步走
+// ============================================================
+export const progMock4: Exam = {
+  id: 'exam-prog-mock-04-cpp1',
+  name: 'C/C++一级·编程专项模拟卷四（基础巩固）',
+  category: 'mock',
+  examDate: '2026-09',
+  totalScore: 100,
+  passingScore: 60,
+  duration: 90, // 5 道编程题，建议 90 分钟
+  singleChoice: [],
+  trueFalse: [],
+  programming: [
+    {
+      id: 9031,
+      type: 'programming',
+      stem: '输入两个整数 a 和 b，交换它们的值后，先输出 a 再输出 b，中间用一个空格分隔。',
+      inputFormat: '一行，两个整数 a 和 b，以空格分隔。',
+      outputFormat: '一行，交换后依次输出 a 和 b，中间用 1 个空格分隔。',
+      sampleInput: '3 5',
+      sampleOutput: '5 3',
+      testCases: [
+        { input: '3 5', output: '5 3' },
+        { input: '1 2', output: '2 1' },
+        { input: '-1 4', output: '4 -1' },
+        { input: '0 0', output: '0 0' },
+        { input: '7 7', output: '7 7' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int a, b;
+    cin >> a >> b;
+    int t = a;
+    a = b;
+    b = t;
+    cout << a << " " << b << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['顺序结构', '变量交换', '三变量法'],
+      explanation: '考点：用第三个变量 t 交换两个变量的值，三步：t = a; a = b; b = t。易错点：不能直接写 a = b; b = a;，那样 a 原来的值会先被覆盖丢失，最终两个都变成 b。两个数相等时结果不变，依然正确。',
+    },
+    {
+      id: 9032,
+      type: 'programming',
+      stem: '输入三个整数 a、b、c，计算 (a + b) × c 的值并输出。',
+      inputFormat: '一行，三个整数 a、b、c，以空格分隔。',
+      outputFormat: '一个整数，即 (a + b) × c 的结果。',
+      sampleInput: '2 3 5',
+      sampleOutput: '25',
+      testCases: [
+        { input: '2 3 5', output: '25' },
+        { input: '1 1 1', output: '2' },
+        { input: '0 0 0', output: '0' },
+        { input: '10 20 3', output: '90' },
+        { input: '-2 3 4', output: '4' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+    cout << (a + b) * c << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['算术运算', '多变量输入', '运算符优先级'],
+      explanation: '考点：一次读入三个变量 + 含括号的表达式求值。易错点：表达式必须写 (a + b) * c，括号不能省略——若写成 a + b * c 会先算 b * c 再加 a，结果完全不同。负数和 0 都要能正确计算。',
+    },
+    {
+      id: 9033,
+      type: 'programming',
+      stem: '输入两个整数 A 和 B（B ≠ 0），计算 A ÷ B 的值并输出，结果保留两位小数。',
+      inputFormat: '一行，两个整数 A 和 B（B ≠ 0），以空格分隔。',
+      outputFormat: '一个浮点数，表示 A ÷ B 的结果，保留两位小数。',
+      sampleInput: '5 2',
+      sampleOutput: '2.50',
+      testCases: [
+        { input: '5 2', output: '2.50' },
+        { input: '1 3', output: '0.33' },
+        { input: '10 4', output: '2.50' },
+        { input: '7 2', output: '3.50' },
+        { input: '0 5', output: '0.00' },
+        { input: '2 1', output: '2.00' },
+        { input: '100 3', output: '33.33' },
+      ],
+      referenceCode: `#include <iostream>
+#include <iomanip>
+using namespace std;
+int main() {
+    int a, b;
+    cin >> a >> b;
+    double ans = (double)a / b;
+    cout << fixed << setprecision(2) << ans << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['浮点数', '整数除法', '类型转换', 'setprecision'],
+      explanation: '考点：整数相除得到的是整数（会舍去小数），要得到小数必须先把其中一个转成 double：写 (double)a / b。再用 fixed << setprecision(2) 保留两位小数。易错点：① 直接写 a / b 时 5 / 2 得到 2 而不是 2.5；② 忘记加头文件 #include <iomanip>。',
+    },
+    {
+      id: 9034,
+      type: 'programming',
+      stem: '输入一个整数 n，输出它的绝对值。',
+      inputFormat: '一个整数 n。',
+      outputFormat: '一个非负整数，即 n 的绝对值。',
+      sampleInput: '-5',
+      sampleOutput: '5',
+      testCases: [
+        { input: '-5', output: '5' },
+        { input: '5', output: '5' },
+        { input: '0', output: '0' },
+        { input: '-100', output: '100' },
+        { input: '-1', output: '1' },
+      ],
+      referenceCode: `#include <iostream>
+#include <cmath>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    cout << abs(n) << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['数学函数', 'abs', '顺序结构'],
+      explanation: '考点：数学函数 abs() 求绝对值，需要 #include <cmath>。也可以用 if 判断实现：if (n < 0) n = -n。易错点：① 忘记包含 <cmath> 头文件；② 用 if 判断时把条件 n < 0 误写成 n > 0。注意 0 的绝对值还是 0。',
+    },
+    {
+      id: 9035,
+      type: 'programming',
+      stem: '输入小明语文和数学两门课的成绩，判断是否至少有一门课不及格（低于 60 分）。如果至少有一门不及格，输出 YES，否则输出 NO。',
+      inputFormat: '一行，两个整数，分别表示语文和数学成绩（0 ≤ 成绩 ≤ 100）。',
+      outputFormat: '如果至少有一门不及格输出 YES，否则输出 NO。',
+      sampleInput: '55 80',
+      sampleOutput: 'YES',
+      testCases: [
+        { input: '55 80', output: 'YES' },
+        { input: '60 60', output: 'NO' },
+        { input: '90 95', output: 'NO' },
+        { input: '59 100', output: 'YES' },
+        { input: '100 0', output: 'YES' },
+        { input: '0 0', output: 'YES' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int a, b;
+    cin >> a >> b;
+    if (a < 60 || b < 60) {
+        cout << "YES" << endl;
+    } else {
+        cout << "NO" << endl;
+    }
+    return 0;
+}`,
+      score: 20,
+      tags: ['分支结构', '逻辑运算', 'if-else'],
+      explanation: '考点：逻辑或 || 表示「至少一个成立」。条件写 a < 60 || b < 60，意思是语文不及格 或 数学不及格。易错点：① 60 分是及格，条件用 < 60 不能写成 <= 60；② 把 ||（或）误写成 &&（与），那样会变成「两门都不及格」才输出 YES。',
+    },
+  ],
+};
+
+// ============================================================
+// 编程专项模拟卷（五）· 循环与分支
+// 难度梯度：★★ → ★★★ → ★★★ → ★★ → ★★★★
+// 覆盖考点：for 循环累加 / 循环拆位计数 / while 模拟 / 字符判断 / 双重循环打印图形
+// 组卷说明：对标真题进阶题型（奇数求和 / 数1的个数 / 3n+1猜想 / 大写字母判断 /
+//           字符三角形），引入循环、数位筛选与图形打印
+// ============================================================
+export const progMock5: Exam = {
+  id: 'exam-prog-mock-05-cpp1',
+  name: 'C/C++一级·编程专项模拟卷五（循环与分支）',
+  category: 'mock',
+  examDate: '2026-09',
+  totalScore: 100,
+  passingScore: 60,
+  duration: 90, // 5 道编程题，建议 90 分钟
+  singleChoice: [],
+  trueFalse: [],
+  programming: [
+    {
+      id: 9041,
+      type: 'programming',
+      stem: '输入一个正整数 n，求 1 到 n 之间所有奇数的和。',
+      inputFormat: '一个正整数 n。',
+      outputFormat: '一个整数，即 1 到 n 之间所有奇数之和。',
+      sampleInput: '10',
+      sampleOutput: '25',
+      testCases: [
+        { input: '10', output: '25' },
+        { input: '1', output: '1' },
+        { input: '2', output: '1' },
+        { input: '5', output: '9' },
+        { input: '7', output: '16' },
+        { input: '100', output: '2500' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    int sum = 0;
+    for (int i = 1; i <= n; i++) {
+        if (i % 2 == 1) {
+            sum += i;
+        }
+    }
+    cout << sum << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['for循环', '取模', '累加器', '奇偶判断'],
+      explanation: '考点：for 循环 + 取模判断奇偶 + 累加器。三步：① 累加变量 sum 初始化为 0；② 循环 i 从 1 到 n；③ 若 i % 2 == 1（奇数）则累加到 sum。易错点：① sum 不初始化结果会乱；② 判断奇数用 i % 2 == 1，1、3、5 是奇数，2、4 是偶数。',
+    },
+    {
+      id: 9042,
+      type: 'programming',
+      stem: '输入一个正整数 n，统计从 1 到 n（包含 1 和 n）所有整数中，数字「1」一共出现了多少次。例如 n = 12 时，出现的数字 1 有：1、10、11（包含两个 1）、12，共 5 次。',
+      inputFormat: '一个正整数 n（n ≤ 10000）。',
+      outputFormat: '一个整数，表示数字 1 出现的总次数。',
+      sampleInput: '12',
+      sampleOutput: '5',
+      testCases: [
+        { input: '12', output: '5' },
+        { input: '1', output: '1' },
+        { input: '10', output: '2' },
+        { input: '20', output: '12' },
+        { input: '100', output: '21' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    int count = 0;
+    for (int i = 1; i <= n; i++) {
+        int x = i;
+        while (x > 0) {
+            if (x % 10 == 1) {
+                count++;
+            }
+            x /= 10;
+        }
+    }
+    cout << count << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['循环嵌套', '数位分离', '计数器', 'while循环'],
+      explanation: '考点：外层 for 遍历 1 到 n，内层 while 拆出每个数的每一位，判断是否为 1 并计数。易错点：① 内层循环要用临时变量 x 拆位，不能直接用 i，否则会破坏外层循环；② 数字 11 含有两个 1，要一位一位数清楚；③ 计数器 count 必须初始化为 0。',
+    },
+    {
+      id: 9043,
+      type: 'programming',
+      stem: '角谷猜想：对于任意一个大于 1 的正整数 n，如果 n 是偶数就把它除以 2；如果 n 是奇数就把它变成 3n + 1。如此反复，n 最终会变成 1。请你输入一个大于 1 的正整数 n，输出 n 变成 1 的过程中一共经过了多少步。',
+      inputFormat: '一个大于 1 的正整数 n。',
+      outputFormat: '一个整数，表示 n 变为 1 所需的步数。',
+      sampleInput: '6',
+      sampleOutput: '8',
+      testCases: [
+        { input: '6', output: '8' },
+        { input: '2', output: '1' },
+        { input: '5', output: '5' },
+        { input: '3', output: '7' },
+        { input: '10', output: '6' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    int step = 0;
+    while (n != 1) {
+        if (n % 2 == 0) {
+            n = n / 2;
+        } else {
+            n = 3 * n + 1;
+        }
+        step++;
+    }
+    cout << step << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['while循环', '循环模拟', '变量更新', '奇偶判断'],
+      explanation: '考点：while 循环 + 变量更新模拟。循环条件用 n != 1，每轮判断 n 的奇偶：偶数 n = n / 2，奇数 n = 3 * n + 1，然后步数 step 加 1。易错点：① step 必须在每次变换后加 1，不要放在循环外；② 3 * n + 1 里乘法优先，本身就会先乘后加，不会算错。',
+    },
+    {
+      id: 9044,
+      type: 'programming',
+      stem: '输入一个字符，判断它是否为大写英文字母（A ~ Z）。如果是大写字母，输出 YES，否则输出 NO。',
+      inputFormat: '一个字符。',
+      outputFormat: '如果该字符是大写字母输出 YES，否则输出 NO。',
+      sampleInput: 'A',
+      sampleOutput: 'YES',
+      testCases: [
+        { input: 'A', output: 'YES' },
+        { input: 'Z', output: 'YES' },
+        { input: 'a', output: 'NO' },
+        { input: '5', output: 'NO' },
+        { input: 'M', output: 'YES' },
+        { input: '*', output: 'NO' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    char ch;
+    cin >> ch;
+    if (ch >= 'A' && ch <= 'Z') {
+        cout << "YES" << endl;
+    } else {
+        cout << "NO" << endl;
+    }
+    return 0;
+}`,
+      score: 20,
+      tags: ['char类型', '分支结构', '逻辑运算', '字符判断'],
+      explanation: '考点：字符比较 + 逻辑与 &&。判断大写字母的条件是 ch >= \'A\' && ch <= \'Z\'。易错点：① 字符要用单引号 \'A\'，不能写成双引号 "A"；② 两个条件要用 && 连接，不能只写一个；③ 小写字母、数字、符号都不是大写字母，应输出 NO。',
+    },
+    {
+      id: 9045,
+      type: 'programming',
+      stem: '输入一个正整数 n，输出一个 n 行、由字符 * 组成的直角三角形：第一行 1 个 *，第二行 2 个 *，……，第 n 行 n 个 *。',
+      inputFormat: '一个正整数 n。',
+      outputFormat: 'n 行字符，第 i 行输出 i 个 *。',
+      sampleInput: '3',
+      sampleOutput: '*\n**\n***',
+      testCases: [
+        { input: '3', output: '*\n**\n***' },
+        { input: '1', output: '*' },
+        { input: '2', output: '*\n**' },
+        { input: '5', output: '*\n**\n***\n****\n*****' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= i; j++) {
+            cout << "*";
+        }
+        cout << endl;
+    }
+    return 0;
+}`,
+      score: 20,
+      tags: ['双重循环', '嵌套循环', '图形打印'],
+      explanation: '考点：双重循环打印图形。外层循环控制行数 i（1 到 n），内层循环控制每行字符个数 j（1 到 i），每行输出完后用 endl 换行。易错点：① 内外两层循环缺一不可，内层条件 j <= i 让每行比上一行多一个星号；② 每行结束必须换行，否则会全部挤在一行；③ n = 1 时只输出一行一个星号。',
+    },
+  ],
+};
+
 // 编程专项模拟卷列表
-export const progMockExams: Exam[] = [progMock1, progMock2];
+export const progMockExams: Exam[] = [progMock1, progMock2, progMock3, progMock4, progMock5];
