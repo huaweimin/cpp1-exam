@@ -1,5 +1,6 @@
 import type { Exam } from '../types/exam';
 import { mockExams } from './mockExams';
+import { progMockExams } from './progMockExams';
 
 // 2026年6月电子学会 C/C++ 一级真题
 export const exam2026_06: Exam = {
@@ -550,5 +551,5 @@ int main() {
   ],
 };
 
-// 所有考试列表（真题 + 模拟卷）
-export const allExams: Exam[] = [exam2026_06, exam2026_03, ...mockExams];
+// 所有考试列表（真题 + 综合模拟卷 + 编程专项模拟卷）
+export const allExams: Exam[] = [exam2026_06, exam2026_03, ...mockExams, ...progMockExams];

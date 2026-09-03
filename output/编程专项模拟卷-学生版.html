@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>C/C++一级 编程专项模拟卷（学生版）</title>
+<style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; background: #e9edf2; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; color: #1a1a1a; }
+    .paper { width: 210mm; min-height: 297mm; margin: 0 auto 14mm; padding: 16mm 14mm; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.12); }
+    .p-head { border-bottom: 2.5px solid #1a1a1a; padding-bottom: 6px; margin-bottom: 12px; }
+    .p-title { font-size: 21px; font-weight: 800; text-align: center; letter-spacing: 1px; }
+    .p-sub { font-size: 12px; color: #555; text-align: center; margin-top: 4px; }
+    .p-info { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 10px; font-size: 12.5px; color: #333; }
+    .p-info .fill { border-bottom: 1px solid #333; padding: 0 4px; min-width: 100px; }
+    .p-tip { margin-top: 8px; font-size: 11.5px; color: #666; background: #f6f8fa; border-left: 3px solid #999; padding: 6px 9px; line-height: 1.6; }
+    .q { border: 1px solid #d5d9de; border-radius: 4px; margin-top: 13px; page-break-inside: avoid; }
+    .q-head { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #f2f4f7; border-bottom: 1px solid #d5d9de; }
+    .q-no { font-size: 13px; font-weight: 800; background: #1a1a1a; color: #fff; padding: 1px 8px; border-radius: 3px; }
+    .q-title { font-size: 14px; font-weight: 700; }
+    .q-meta { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .stars { color: #d98026; font-size: 12px; letter-spacing: 1px; }
+    .tag { font-size: 10.5px; color: #777; border: 1px solid #ccc; border-radius: 3px; padding: 0 5px; }
+    .q-body { padding: 8px 11px 11px; }
+    .sec { margin-bottom: 7px; }
+    .sec-t { display: inline-block; font-size: 11.5px; font-weight: 700; color: #fff; background: #5a6472; padding: 1px 7px; border-radius: 3px; margin-bottom: 3px; }
+    .sec-c { font-size: 12.5px; line-height: 1.75; color: #222; }
+    pre { margin: 0; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 11.5px; line-height: 1.55; white-space: pre-wrap; word-break: break-all; }
+    pre.code { background: #f7f8fa; border: 1px solid #e1e4e8; border-radius: 4px; padding: 8px 10px; font-size: 11.5px; line-height: 1.6; white-space: pre; overflow-x: auto; }
+    .s-table { border-collapse: collapse; width: 100%; font-size: 11.5px; }
+    .s-table th, .s-table td { border: 1px solid #d5d9de; padding: 4px 7px; vertical-align: top; }
+    .s-table th { background: #f2f4f7; width: 50%; font-weight: 700; text-align: left; font-size: 11px; }
+    .sample .s-table th { background: #eef4ea; }
+    .code-area { margin-top: 8px; border: 1px dashed #b9c0c9; border-radius: 4px; min-height: 122px; position: relative; background: repeating-linear-gradient(#fff, #fff 21px, #f4f7fb 21px, #f4f7fb 22px); }
+    .code-hint { position: absolute; top: 4px; left: 8px; font-size: 10.5px; color: #a8b0ba; }
+    .toolbar { position: fixed; top: 14px; right: 14px; display: flex; gap: 8px; z-index: 99; }
+    .toolbar button { padding: 8px 16px; font-size: 13px; border: none; border-radius: 6px; background: #1a1a1a; color: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+    .toolbar button.alt { background: #fff; color: #1a1a1a; border: 1px solid #ccc; }
+    .toolbar button:hover { opacity: .85; }
+    @media print {
+      body { background: #fff; }
+      .paper { margin: 0; box-shadow: none; width: 100%; min-height: auto; page-break-after: always; padding: 12mm 10mm; }
+      .toolbar { display: none; }
+      .q { page-break-inside: avoid; }
+    }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="window.print()">打印 / 导出 PDF</button>
+</div>
+    <section class="paper">
+      <div class="p-head">
+        <div class="p-title">C/C++ 一级 · 编程专项模拟卷（一）</div>
+        <div class="p-sub">基础过关 · 难度 ★ → ★★★</div>
+        <div class="p-info">
+          <span>满分：100 分</span><span>及格：60 分</span><span>建议用时：90 分钟</span>
+          <span class="fill">姓名：____________</span><span class="fill">得分：____________</span>
+        </div>
+        <div class="p-tip">说明：本卷共 5 道编程题，每题 20 分，难度由易到难递增。请把每题的完整 C++ 代码写在题目下方的空白处。</div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 1 题</span>
+          <span class="q-title">我是小小程序员</span>
+          <span class="q-meta">
+            <span class="stars">★☆☆☆☆</span>
+            <span class="tag">「2025.03一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">参加考试的宝宝们都是小程序员啦！请你编写一个程序，直接在屏幕上输出“我是小小程序员”这句话的汉语拼音。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">本题没有输入。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">在一行中输出 wo shi xiao xiao cheng xu yuan</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>（无输入）</pre></td><td><pre>wo shi xiao xiao cheng xu yuan</pre></td></tr></table>
+          </div></div>
+          <div class="code-area"><span class="code-hint">在此处书写你的 C++ 代码：</span></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 2 题</span>
+          <span class="q-title">加一</span>
+          <span class="q-meta">
+            <span class="stars">★★☆☆☆</span>
+            <span class="tag">「2022.12一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">输入一个整数 x，输出这个整数加 1 后的值，即 x + 1 的值。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一个整数 x（0 ≤ x ≤ 1000）。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一个整数，即 x + 1 的结果。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>9</pre></td><td><pre>10</pre></td></tr></table>
+          </div></div>
+          <div class="code-area"><span class="code-hint">在此处书写你的 C++ 代码：</span></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 3 题</span>
+          <span class="q-title">长方形面积</span>
+          <span class="q-meta">
+            <span class="stars">★★☆☆☆</span>
+            <span class="tag">「2023.03一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">给出一个长方形的长和宽，求该长方形的面积。假设长为 a，宽为 b，则面积 S = a × b。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一行，两个正整数 a 和 b，以空格分隔，分别表示长方形的长和宽。长和宽都不大于 1000。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一个整数，即长方形的面积。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>4 3</pre></td><td><pre>12</pre></td></tr></table>
+          </div></div>
+          <div class="code-area"><span class="code-hint">在此处书写你的 C++ 代码：</span></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 4 题</span>
+          <span class="q-title">温度转换</span>
+          <span class="q-meta">
+            <span class="stars">★★★☆☆</span>
+            <span class="tag">[CIE 202606 一级 T1] 真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">输入一个摄氏温度值 C，将其转换为华氏温度 F 并输出，转换公式为：F = C × 9 ÷ 5 + 32。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一行，一个小数，表示摄氏温度 C。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一行，输出转换后的华氏温度，保留两位小数。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>0.00</pre></td><td><pre>32.00</pre></td></tr></table>
+          </div></div>
+          <div class="code-area"><span class="code-hint">在此处书写你的 C++ 代码：</span></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 5 题</span>
+          <span class="q-title">成绩判定</span>
+          <span class="q-meta">
+            <span class="stars">★★★☆☆</span>
+            <span class="tag">「2022.09一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">给定一门课的考试分数，如果分数大于等于 60，则该门课成绩合格，记为 &quot;P&quot;，否则成绩不合格，记为 &quot;F&quot;。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一个整数 s，表示这门课的分数（0 ≤ s ≤ 100）。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">如果成绩合格，输出字母 P，否则输出字母 F。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>59</pre></td><td><pre>F</pre></td></tr></table>
+          </div></div>
+          <div class="code-area"><span class="code-hint">在此处书写你的 C++ 代码：</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="paper">
+      <div class="p-head">
+        <div class="p-title">C/C++ 一级 · 编程专项模拟卷（二）</div>
+        <div class="p-sub">能力提升 · 难度 ★★★ → ★★★★★</div>
+        <div class="p-info">
+          <span>满分：100 分</span><span>及格：60 分</span><span>建议用时：90 分钟</span>
+          <span class="fill">姓名：____________</span><span class="fill">得分：____________</span>
+        </div>
+        <div class="p-tip">说明：本卷共 5 道编程题，每题 20 分，难度由易到难递增。请把每题的完整 C++ 代码写在题目下方的空白处。</div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 1 题</span>
+          <span class="q-title">成绩等级转换</span>
+          <span class="q-meta">
+            <span class="stars">★★★☆☆</span>
+            <span class="tag">「2023.03一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">小明想将自己的百分制成绩转换为等级制，请你帮他完成这样的转换。转换规则为：<br><br>A：90 ~ 100<br>B：77 ~ 89<br>C：67 ~ 76<br>D：60 ~ 66<br>E：0 ~ 59</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一个 0 ~ 100 的整数。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">输出转换后的等级，一个 A ~ E 的大写字母。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>85</pre></td><td><pre>B</pre></td></tr></table>
+          </div></div>
+          <div class="code-area"><span class="code-hint">在此处书写你的 C++ 代码：</span></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 2 题</span>
+          <span class="q-title">整数的立方和</span>
+          <span class="q-meta">
+            <span class="stars">★★★☆☆</span>
+            <span class="tag">「2022.12一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">给定一个正整数 k，求 1 到 k 的立方和 m，即 m = 1³ + 2³ + 3³ + … + k³。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一行，包含 1 个整数 k。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一行，即 1 到 k 的立方和。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>5</pre></td><td><pre>225</pre></td></tr></table>
+          </div></div>
+          <div class="code-area"><span class="code-hint">在此处书写你的 C++ 代码：</span></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 3 题</span>
+          <span class="q-title">奇偶分家</span>
+          <span class="q-meta">
+            <span class="stars">★★★★☆</span>
+            <span class="tag">「2024.12一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">给定 N 个正整数，请统计其中奇数和偶数各有多少个？</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">第一行：一个正整数 N（N ≤ 1000）；<br>第二行：N 个非负整数，以空格分隔。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一行，先后输出奇数的个数、偶数的个数，中间以 1 个空格分隔。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>9
+88 74 101 26 15 0 34 22 77</pre></td><td><pre>3 6</pre></td></tr></table>
+          </div></div>
+          <div class="code-area"><span class="code-hint">在此处书写你的 C++ 代码：</span></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 4 题</span>
+          <span class="q-title">自整除数</span>
+          <span class="q-meta">
+            <span class="stars">★★★★☆</span>
+            <span class="tag">「2022.12一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">对一个整数 n，如果它各个数位上的数字相加得到的数 m 能整除 n，则称 n 为自整除数。例如 21，2 + 1 = 3，21 ÷ 3 = 6 没有余数，所以 21 是自整除数。现请你求出从 10 到 n 之间的所有自整除数。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一行，一个整数 n（10 ≤ n &lt; 100）。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">多行，按从小到大的顺序输出所有大于等于 10、小于等于 n 的自整除数，每行一个。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>47</pre></td><td><pre>10
+12
+18
+20
+21
+24
+27
+30
+36
+40
+42
+45</pre></td></tr></table>
+          </div></div>
+          <div class="code-area"><span class="code-hint">在此处书写你的 C++ 代码：</span></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 5 题</span>
+          <span class="q-title">金币</span>
+          <span class="q-meta">
+            <span class="stars">★★★★★</span>
+            <span class="tag">经典真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">国王将金币作为工资发放给忠诚的骑士，发放规律如下：<br><br>第 1 天，骑士收到 1 枚金币；<br>之后 2 天（第 2、3 天），每天收到 2 枚金币；<br>之后 3 天（第 4、5、6 天），每天收到 3 枚金币；<br>之后 4 天（第 7、8、9、10 天），每天收到 4 枚金币；<br>……<br><br>这种发放模式一直延续下去：当连续 N 天每天收到 N 枚金币后，骑士会在之后的连续 N + 1 天里，每天收到 N + 1 枚金币。请计算在前 k 天里，骑士一共获得了多少金币。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一个正整数 k，表示发放金币的天数。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一个正整数，即前 k 天骑士收到的金币总数。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>6</pre></td><td><pre>14</pre></td></tr></table>
+          </div></div>
+          <div class="code-area"><span class="code-hint">在此处书写你的 C++ 代码：</span></div>
+        </div>
+      </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>C/C++一级 编程专项模拟卷（教师版 · 含答案）</title>
+<style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; background: #e9edf2; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; color: #1a1a1a; }
+    .paper { width: 210mm; min-height: 297mm; margin: 0 auto 14mm; padding: 16mm 14mm; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.12); }
+    .p-head { border-bottom: 2.5px solid #1a1a1a; padding-bottom: 6px; margin-bottom: 12px; }
+    .p-title { font-size: 21px; font-weight: 800; text-align: center; letter-spacing: 1px; }
+    .p-sub { font-size: 12px; color: #555; text-align: center; margin-top: 4px; }
+    .p-info { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 10px; font-size: 12.5px; color: #333; }
+    .p-info .fill { border-bottom: 1px solid #333; padding: 0 4px; min-width: 100px; }
+    .p-tip { margin-top: 8px; font-size: 11.5px; color: #666; background: #f6f8fa; border-left: 3px solid #999; padding: 6px 9px; line-height: 1.6; }
+    .q { border: 1px solid #d5d9de; border-radius: 4px; margin-top: 13px; page-break-inside: avoid; }
+    .q-head { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #f2f4f7; border-bottom: 1px solid #d5d9de; }
+    .q-no { font-size: 13px; font-weight: 800; background: #1a1a1a; color: #fff; padding: 1px 8px; border-radius: 3px; }
+    .q-title { font-size: 14px; font-weight: 700; }
+    .q-meta { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .stars { color: #d98026; font-size: 12px; letter-spacing: 1px; }
+    .tag { font-size: 10.5px; color: #777; border: 1px solid #ccc; border-radius: 3px; padding: 0 5px; }
+    .q-body { padding: 8px 11px 11px; }
+    .sec { margin-bottom: 7px; }
+    .sec-t { display: inline-block; font-size: 11.5px; font-weight: 700; color: #fff; background: #5a6472; padding: 1px 7px; border-radius: 3px; margin-bottom: 3px; }
+    .sec-c { font-size: 12.5px; line-height: 1.75; color: #222; }
+    pre { margin: 0; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 11.5px; line-height: 1.55; white-space: pre-wrap; word-break: break-all; }
+    pre.code { background: #f7f8fa; border: 1px solid #e1e4e8; border-radius: 4px; padding: 8px 10px; font-size: 11.5px; line-height: 1.6; white-space: pre; overflow-x: auto; }
+    .s-table { border-collapse: collapse; width: 100%; font-size: 11.5px; }
+    .s-table th, .s-table td { border: 1px solid #d5d9de; padding: 4px 7px; vertical-align: top; }
+    .s-table th { background: #f2f4f7; width: 50%; font-weight: 700; text-align: left; font-size: 11px; }
+    .sample .s-table th { background: #eef4ea; }
+    .code-area { margin-top: 8px; border: 1px dashed #b9c0c9; border-radius: 4px; min-height: 122px; position: relative; background: repeating-linear-gradient(#fff, #fff 21px, #f4f7fb 21px, #f4f7fb 22px); }
+    .code-hint { position: absolute; top: 4px; left: 8px; font-size: 10.5px; color: #a8b0ba; }
+    .toolbar { position: fixed; top: 14px; right: 14px; display: flex; gap: 8px; z-index: 99; }
+    .toolbar button { padding: 8px 16px; font-size: 13px; border: none; border-radius: 6px; background: #1a1a1a; color: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+    .toolbar button.alt { background: #fff; color: #1a1a1a; border: 1px solid #ccc; }
+    .toolbar button:hover { opacity: .85; }
+    @media print {
+      body { background: #fff; }
+      .paper { margin: 0; box-shadow: none; width: 100%; min-height: auto; page-break-after: always; padding: 12mm 10mm; }
+      .toolbar { display: none; }
+      .q { page-break-inside: avoid; }
+    }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="window.print()">打印 / 导出 PDF</button>
+</div>
+    <section class="paper">
+      <div class="p-head">
+        <div class="p-title">C/C++ 一级 · 编程专项模拟卷（一）</div>
+        <div class="p-sub">基础过关 · 难度 ★ → ★★★</div>
+        <div class="p-info">
+          <span>满分：100 分</span><span>及格：60 分</span><span>建议用时：90 分钟</span>
+          <span class="fill">姓名：____________</span><span class="fill">得分：____________</span>
+        </div>
+        <div class="p-tip">说明：本卷共 5 道编程题，每题 20 分，难度由易到难递增。请把每题的完整 C++ 代码写在题目下方的空白处。</div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 1 题</span>
+          <span class="q-title">我是小小程序员</span>
+          <span class="q-meta">
+            <span class="stars">★☆☆☆☆</span>
+            <span class="tag">「2025.03一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">参加考试的宝宝们都是小程序员啦！请你编写一个程序，直接在屏幕上输出“我是小小程序员”这句话的汉语拼音。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">本题没有输入。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">在一行中输出 wo shi xiao xiao cheng xu yuan</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>（无输入）</pre></td><td><pre>wo shi xiao xiao cheng xu yuan</pre></td></tr></table>
+          </div></div>
+          <div class="sec"><span class="sec-t">参考代码</span><div class="sec-c"><pre class="code">#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    cout &lt;&lt; &quot;wo shi xiao xiao cheng xu yuan&quot; &lt;&lt; endl;
+    return 0;
+}</pre></div></div>
+          <div class="sec"><span class="sec-t">思路与易错点</span><div class="sec-c">考点：C++ 程序的基本框架和 cout 输出。这是最基础的题，只需要一个 main 函数 + 一条 cout 语句。注意拼音之间用空格隔开，全部小写，最后不要多输出内容。</div></div>
+          <div class="sec"><span class="sec-t">全部测试数据</span><div class="sec-c">
+            <table class="s-table"><tr><th>输入</th><th>输出</th></tr>
+<tr><td><pre>（无输入）</pre></td><td><pre>wo shi xiao xiao cheng xu yuan</pre></td></tr>
+</table></div></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 2 题</span>
+          <span class="q-title">加一</span>
+          <span class="q-meta">
+            <span class="stars">★★☆☆☆</span>
+            <span class="tag">「2022.12一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">输入一个整数 x，输出这个整数加 1 后的值，即 x + 1 的值。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一个整数 x（0 ≤ x ≤ 1000）。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一个整数，即 x + 1 的结果。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>9</pre></td><td><pre>10</pre></td></tr></table>
+          </div></div>
+          <div class="sec"><span class="sec-t">参考代码</span><div class="sec-c"><pre class="code">#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    int x;
+    cin &gt;&gt; x;
+    cout &lt;&lt; x + 1 &lt;&lt; endl;
+    return 0;
+}</pre></div></div>
+          <div class="sec"><span class="sec-t">思路与易错点</span><div class="sec-c">考点：cin 读入一个整数、做加法、cout 输出结果。这是&quot;输入—处理—输出&quot;三步走的最基础模型，务必记牢这个套路。</div></div>
+          <div class="sec"><span class="sec-t">全部测试数据</span><div class="sec-c">
+            <table class="s-table"><tr><th>输入</th><th>输出</th></tr>
+<tr><td><pre>9</pre></td><td><pre>10</pre></td></tr>
+<tr><td><pre>0</pre></td><td><pre>1</pre></td></tr>
+<tr><td><pre>1000</pre></td><td><pre>1001</pre></td></tr>
+<tr><td><pre>99</pre></td><td><pre>100</pre></td></tr>
+<tr><td><pre>1</pre></td><td><pre>2</pre></td></tr>
+</table></div></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 3 题</span>
+          <span class="q-title">长方形面积</span>
+          <span class="q-meta">
+            <span class="stars">★★☆☆☆</span>
+            <span class="tag">「2023.03一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">给出一个长方形的长和宽，求该长方形的面积。假设长为 a，宽为 b，则面积 S = a × b。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一行，两个正整数 a 和 b，以空格分隔，分别表示长方形的长和宽。长和宽都不大于 1000。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一个整数，即长方形的面积。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>4 3</pre></td><td><pre>12</pre></td></tr></table>
+          </div></div>
+          <div class="sec"><span class="sec-t">参考代码</span><div class="sec-c"><pre class="code">#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    int a, b;
+    cin &gt;&gt; a &gt;&gt; b;
+    cout &lt;&lt; a * b &lt;&lt; endl;
+    return 0;
+}</pre></div></div>
+          <div class="sec"><span class="sec-t">思路与易错点</span><div class="sec-c">考点：一次读入多个数据（cin &gt;&gt; a &gt;&gt; b 可以连续读）。注意结果是整数，直接用 int 计算即可；a 和 b 最大 1000，乘积最大 1000000，int 完全装得下。</div></div>
+          <div class="sec"><span class="sec-t">全部测试数据</span><div class="sec-c">
+            <table class="s-table"><tr><th>输入</th><th>输出</th></tr>
+<tr><td><pre>4 3</pre></td><td><pre>12</pre></td></tr>
+<tr><td><pre>1 1</pre></td><td><pre>1</pre></td></tr>
+<tr><td><pre>10 5</pre></td><td><pre>50</pre></td></tr>
+<tr><td><pre>100 100</pre></td><td><pre>10000</pre></td></tr>
+<tr><td><pre>7 8</pre></td><td><pre>56</pre></td></tr>
+</table></div></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 4 题</span>
+          <span class="q-title">温度转换</span>
+          <span class="q-meta">
+            <span class="stars">★★★☆☆</span>
+            <span class="tag">[CIE 202606 一级 T1] 真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">输入一个摄氏温度值 C，将其转换为华氏温度 F 并输出，转换公式为：F = C × 9 ÷ 5 + 32。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一行，一个小数，表示摄氏温度 C。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一行，输出转换后的华氏温度，保留两位小数。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>0.00</pre></td><td><pre>32.00</pre></td></tr></table>
+          </div></div>
+          <div class="sec"><span class="sec-t">参考代码</span><div class="sec-c"><pre class="code">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+using namespace std;
+int main() {
+    double c;
+    cin &gt;&gt; c;
+    double f = c * 9 / 5 + 32;
+    cout &lt;&lt; fixed &lt;&lt; setprecision(2) &lt;&lt; f &lt;&lt; endl;
+    return 0;
+}</pre></div></div>
+          <div class="sec"><span class="sec-t">思路与易错点</span><div class="sec-c">考点：double 类型 + 保留两位小数。三个易错点：① 温度可能是小数，必须用 double 存，不能用 int；② 公式里 9 / 5 如果两边都写成整数会变成整除得 1，要写成 9.0 / 5 或者 c * 9 / 5（c 是 double 时会自动转成浮点运算）；③ 保留两位小数要写 fixed &lt;&lt; setprecision(2)，并且加头文件 #include &lt;iomanip&gt;。</div></div>
+          <div class="sec"><span class="sec-t">全部测试数据</span><div class="sec-c">
+            <table class="s-table"><tr><th>输入</th><th>输出</th></tr>
+<tr><td><pre>0.00</pre></td><td><pre>32.00</pre></td></tr>
+<tr><td><pre>100.00</pre></td><td><pre>212.00</pre></td></tr>
+<tr><td><pre>37.00</pre></td><td><pre>98.60</pre></td></tr>
+<tr><td><pre>-40.00</pre></td><td><pre>-40.00</pre></td></tr>
+<tr><td><pre>36.50</pre></td><td><pre>97.70</pre></td></tr>
+<tr><td><pre>25.50</pre></td><td><pre>77.90</pre></td></tr>
+</table></div></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 5 题</span>
+          <span class="q-title">成绩判定</span>
+          <span class="q-meta">
+            <span class="stars">★★★☆☆</span>
+            <span class="tag">「2022.09一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">给定一门课的考试分数，如果分数大于等于 60，则该门课成绩合格，记为 &quot;P&quot;，否则成绩不合格，记为 &quot;F&quot;。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一个整数 s，表示这门课的分数（0 ≤ s ≤ 100）。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">如果成绩合格，输出字母 P，否则输出字母 F。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>59</pre></td><td><pre>F</pre></td></tr></table>
+          </div></div>
+          <div class="sec"><span class="sec-t">参考代码</span><div class="sec-c"><pre class="code">#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    int s;
+    cin &gt;&gt; s;
+    if (s &gt;= 60) {
+        cout &lt;&lt; &quot;P&quot; &lt;&lt; endl;
+    } else {
+        cout &lt;&lt; &quot;F&quot; &lt;&lt; endl;
+    }
+    return 0;
+}</pre></div></div>
+          <div class="sec"><span class="sec-t">思路与易错点</span><div class="sec-c">考点：if-else 双分支。注意临界值：题目说&quot;大于等于 60&quot;合格，所以 60 分要输出 P，判断条件写 s &gt;= 60，不能漏掉等号。这是考试最常见的扣分点。</div></div>
+          <div class="sec"><span class="sec-t">全部测试数据</span><div class="sec-c">
+            <table class="s-table"><tr><th>输入</th><th>输出</th></tr>
+<tr><td><pre>59</pre></td><td><pre>F</pre></td></tr>
+<tr><td><pre>60</pre></td><td><pre>P</pre></td></tr>
+<tr><td><pre>100</pre></td><td><pre>P</pre></td></tr>
+<tr><td><pre>0</pre></td><td><pre>F</pre></td></tr>
+<tr><td><pre>85</pre></td><td><pre>P</pre></td></tr>
+</table></div></div>
+        </div>
+      </div>
+    </section>
+    <section class="paper">
+      <div class="p-head">
+        <div class="p-title">C/C++ 一级 · 编程专项模拟卷（二）</div>
+        <div class="p-sub">能力提升 · 难度 ★★★ → ★★★★★</div>
+        <div class="p-info">
+          <span>满分：100 分</span><span>及格：60 分</span><span>建议用时：90 分钟</span>
+          <span class="fill">姓名：____________</span><span class="fill">得分：____________</span>
+        </div>
+        <div class="p-tip">说明：本卷共 5 道编程题，每题 20 分，难度由易到难递增。请把每题的完整 C++ 代码写在题目下方的空白处。</div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 1 题</span>
+          <span class="q-title">成绩等级转换</span>
+          <span class="q-meta">
+            <span class="stars">★★★☆☆</span>
+            <span class="tag">「2023.03一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">小明想将自己的百分制成绩转换为等级制，请你帮他完成这样的转换。转换规则为：<br><br>A：90 ~ 100<br>B：77 ~ 89<br>C：67 ~ 76<br>D：60 ~ 66<br>E：0 ~ 59</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一个 0 ~ 100 的整数。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">输出转换后的等级，一个 A ~ E 的大写字母。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>85</pre></td><td><pre>B</pre></td></tr></table>
+          </div></div>
+          <div class="sec"><span class="sec-t">参考代码</span><div class="sec-c"><pre class="code">#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    int s;
+    cin &gt;&gt; s;
+    if (s &gt;= 90) {
+        cout &lt;&lt; &quot;A&quot; &lt;&lt; endl;
+    } else if (s &gt;= 77) {
+        cout &lt;&lt; &quot;B&quot; &lt;&lt; endl;
+    } else if (s &gt;= 67) {
+        cout &lt;&lt; &quot;C&quot; &lt;&lt; endl;
+    } else if (s &gt;= 60) {
+        cout &lt;&lt; &quot;D&quot; &lt;&lt; endl;
+    } else {
+        cout &lt;&lt; &quot;E&quot; &lt;&lt; endl;
+    }
+    return 0;
+}</pre></div></div>
+          <div class="sec"><span class="sec-t">思路与易错点</span><div class="sec-c">考点：else-if 多分支链。技巧是从高分往低分依次判断，这样每个分支只需要写一个下界条件（比如 s &gt;= 77 就已经隐含了 s &lt; 90，因为 90 以上的在前面被拦下了）。边界要反复检查：89 是 B、76 是 C、66 是 D、59 是 E。</div></div>
+          <div class="sec"><span class="sec-t">全部测试数据</span><div class="sec-c">
+            <table class="s-table"><tr><th>输入</th><th>输出</th></tr>
+<tr><td><pre>85</pre></td><td><pre>B</pre></td></tr>
+<tr><td><pre>62</pre></td><td><pre>D</pre></td></tr>
+<tr><td><pre>100</pre></td><td><pre>A</pre></td></tr>
+<tr><td><pre>90</pre></td><td><pre>A</pre></td></tr>
+<tr><td><pre>89</pre></td><td><pre>B</pre></td></tr>
+<tr><td><pre>77</pre></td><td><pre>B</pre></td></tr>
+<tr><td><pre>76</pre></td><td><pre>C</pre></td></tr>
+<tr><td><pre>67</pre></td><td><pre>C</pre></td></tr>
+<tr><td><pre>66</pre></td><td><pre>D</pre></td></tr>
+<tr><td><pre>60</pre></td><td><pre>D</pre></td></tr>
+<tr><td><pre>59</pre></td><td><pre>E</pre></td></tr>
+<tr><td><pre>0</pre></td><td><pre>E</pre></td></tr>
+</table></div></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 2 题</span>
+          <span class="q-title">整数的立方和</span>
+          <span class="q-meta">
+            <span class="stars">★★★☆☆</span>
+            <span class="tag">「2022.12一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">给定一个正整数 k，求 1 到 k 的立方和 m，即 m = 1³ + 2³ + 3³ + … + k³。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一行，包含 1 个整数 k。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一行，即 1 到 k 的立方和。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>5</pre></td><td><pre>225</pre></td></tr></table>
+          </div></div>
+          <div class="sec"><span class="sec-t">参考代码</span><div class="sec-c"><pre class="code">#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    int k;
+    cin &gt;&gt; k;
+    long long sum = 0;
+    for (int i = 1; i &lt;= k; i++) {
+        sum += (long long)i * i * i;
+    }
+    cout &lt;&lt; sum &lt;&lt; endl;
+    return 0;
+}</pre></div></div>
+          <div class="sec"><span class="sec-t">思路与易错点</span><div class="sec-c">考点：for 循环 + 累加器。三步：① 定义累加变量 sum 并初始化为 0（这一步最容易忘，不初始化结果会是乱码）；② 循环变量 i 从 1 走到 k；③ 每次把 i*i*i 加到 sum 上。注意 i*i*i 要用 1LL * i * i * i 或先转 long long，避免数据大时溢出。</div></div>
+          <div class="sec"><span class="sec-t">全部测试数据</span><div class="sec-c">
+            <table class="s-table"><tr><th>输入</th><th>输出</th></tr>
+<tr><td><pre>5</pre></td><td><pre>225</pre></td></tr>
+<tr><td><pre>1</pre></td><td><pre>1</pre></td></tr>
+<tr><td><pre>10</pre></td><td><pre>3025</pre></td></tr>
+<tr><td><pre>3</pre></td><td><pre>36</pre></td></tr>
+<tr><td><pre>100</pre></td><td><pre>25502500</pre></td></tr>
+<tr><td><pre>2</pre></td><td><pre>9</pre></td></tr>
+</table></div></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 3 题</span>
+          <span class="q-title">奇偶分家</span>
+          <span class="q-meta">
+            <span class="stars">★★★★☆</span>
+            <span class="tag">「2024.12一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">给定 N 个正整数，请统计其中奇数和偶数各有多少个？</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">第一行：一个正整数 N（N ≤ 1000）；<br>第二行：N 个非负整数，以空格分隔。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一行，先后输出奇数的个数、偶数的个数，中间以 1 个空格分隔。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>9
+88 74 101 26 15 0 34 22 77</pre></td><td><pre>3 6</pre></td></tr></table>
+          </div></div>
+          <div class="sec"><span class="sec-t">参考代码</span><div class="sec-c"><pre class="code">#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    int odd = 0, even = 0;
+    for (int i = 1; i &lt;= n; i++) {
+        int x;
+        cin &gt;&gt; x;
+        if (x % 2 == 1) {
+            odd++;
+        } else {
+            even++;
+        }
+    }
+    cout &lt;&lt; odd &lt;&lt; &quot; &quot; &lt;&lt; even &lt;&lt; endl;
+    return 0;
+}</pre></div></div>
+          <div class="sec"><span class="sec-t">思路与易错点</span><div class="sec-c">考点：循环里嵌套 if 判断，用两个计数器分别统计。要点：① 要先读 N，再用 for 循环读 N 个数，这是固定套路；② 判断奇偶用 x % 2 == 1 是奇数，x % 2 == 0 是偶数；③ 注意 0 是偶数（0 % 2 == 0）；④ 输出顺序是&quot;奇数个数 偶数个数&quot;，不要写反。</div></div>
+          <div class="sec"><span class="sec-t">全部测试数据</span><div class="sec-c">
+            <table class="s-table"><tr><th>输入</th><th>输出</th></tr>
+<tr><td><pre>9
+88 74 101 26 15 0 34 22 77</pre></td><td><pre>3 6</pre></td></tr>
+<tr><td><pre>1
+0</pre></td><td><pre>0 1</pre></td></tr>
+<tr><td><pre>1
+7</pre></td><td><pre>1 0</pre></td></tr>
+<tr><td><pre>5
+1 2 3 4 5</pre></td><td><pre>3 2</pre></td></tr>
+<tr><td><pre>3
+0 0 0</pre></td><td><pre>0 3</pre></td></tr>
+<tr><td><pre>4
+2 4 6 8</pre></td><td><pre>0 4</pre></td></tr>
+</table></div></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 4 题</span>
+          <span class="q-title">自整除数</span>
+          <span class="q-meta">
+            <span class="stars">★★★★☆</span>
+            <span class="tag">「2022.12一级」真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">对一个整数 n，如果它各个数位上的数字相加得到的数 m 能整除 n，则称 n 为自整除数。例如 21，2 + 1 = 3，21 ÷ 3 = 6 没有余数，所以 21 是自整除数。现请你求出从 10 到 n 之间的所有自整除数。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一行，一个整数 n（10 ≤ n &lt; 100）。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">多行，按从小到大的顺序输出所有大于等于 10、小于等于 n 的自整除数，每行一个。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>47</pre></td><td><pre>10
+12
+18
+20
+21
+24
+27
+30
+36
+40
+42
+45</pre></td></tr></table>
+          </div></div>
+          <div class="sec"><span class="sec-t">参考代码</span><div class="sec-c"><pre class="code">#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    for (int i = 10; i &lt;= n; i++) {
+        int m = i / 10 + i % 10;
+        if (i % m == 0) {
+            cout &lt;&lt; i &lt;&lt; endl;
+        }
+    }
+    return 0;
+}</pre></div></div>
+          <div class="sec"><span class="sec-t">思路与易错点</span><div class="sec-c">考点：两位数拆位 + 整除判断。因为 n &lt; 100，所有数都是两位数，拆位非常简单：十位 = i / 10，个位 = i % 10，两者相加得 m，再用 i % m == 0 判断能否整除。注意 m 一定大于 0（最小是 1，如 10 → 1+0=1），不会出现除以 0 的情况。</div></div>
+          <div class="sec"><span class="sec-t">全部测试数据</span><div class="sec-c">
+            <table class="s-table"><tr><th>输入</th><th>输出</th></tr>
+<tr><td><pre>47</pre></td><td><pre>10
+12
+18
+20
+21
+24
+27
+30
+36
+40
+42
+45</pre></td></tr>
+<tr><td><pre>99</pre></td><td><pre>10
+12
+18
+20
+21
+24
+27
+30
+36
+40
+42
+45
+48
+50
+54
+60
+63
+70
+72
+80
+81
+84
+90</pre></td></tr>
+<tr><td><pre>20</pre></td><td><pre>10
+12
+18
+20</pre></td></tr>
+<tr><td><pre>11</pre></td><td><pre>10</pre></td></tr>
+<tr><td><pre>55</pre></td><td><pre>10
+12
+18
+20
+21
+24
+27
+30
+36
+40
+42
+45
+48
+50
+54</pre></td></tr>
+</table></div></div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-head">
+          <span class="q-no">第 5 题</span>
+          <span class="q-title">金币</span>
+          <span class="q-meta">
+            <span class="stars">★★★★★</span>
+            <span class="tag">经典真题改编</span>
+          </span>
+        </div>
+        <div class="q-body">
+          <div class="sec"><span class="sec-t">题目描述</span><div class="sec-c">国王将金币作为工资发放给忠诚的骑士，发放规律如下：<br><br>第 1 天，骑士收到 1 枚金币；<br>之后 2 天（第 2、3 天），每天收到 2 枚金币；<br>之后 3 天（第 4、5、6 天），每天收到 3 枚金币；<br>之后 4 天（第 7、8、9、10 天），每天收到 4 枚金币；<br>……<br><br>这种发放模式一直延续下去：当连续 N 天每天收到 N 枚金币后，骑士会在之后的连续 N + 1 天里，每天收到 N + 1 枚金币。请计算在前 k 天里，骑士一共获得了多少金币。</div></div>
+          <div class="sec"><span class="sec-t">输入格式</span><div class="sec-c">一个正整数 k，表示发放金币的天数。</div></div>
+          <div class="sec"><span class="sec-t">输出格式</span><div class="sec-c">一个正整数，即前 k 天骑士收到的金币总数。</div></div>
+          <div class="sec sample"><span class="sec-t">样例</span><div class="sec-c">
+            <table class="s-table"><tr><th>样例输入</th><th>样例输出</th></tr>
+            <tr><td><pre>6</pre></td><td><pre>14</pre></td></tr></table>
+          </div></div>
+          <div class="sec"><span class="sec-t">参考代码</span><div class="sec-c"><pre class="code">#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    int k;
+    cin &gt;&gt; k;
+    int sum = 0;   // 金币总数
+    int day = 0;   // 已经发了多少天
+    int coin = 1;  // 当前每天发几枚
+    while (day &lt; k) {
+        for (int i = 1; i &lt;= coin &amp;&amp; day &lt; k; i++) {
+            sum += coin;
+            day++;
+        }
+        coin++;
+    }
+    cout &lt;&lt; sum &lt;&lt; endl;
+    return 0;
+}</pre></div></div>
+          <div class="sec"><span class="sec-t">思路与易错点</span><div class="sec-c">考点：双重循环模拟规律（多层循环）。思路：外层循环控制&quot;每天发几枚&quot;coin（1、2、3……），内层循环重复 coin 天，每天把 coin 加到总数上；同时用一个 day 计数器记录已经发了多少天，一旦 day 达到 k 就立刻停止。关键细节：内层循环要加 day &lt; k 的判断，否则最后一组会多发几天。</div></div>
+          <div class="sec"><span class="sec-t">全部测试数据</span><div class="sec-c">
+            <table class="s-table"><tr><th>输入</th><th>输出</th></tr>
+<tr><td><pre>6</pre></td><td><pre>14</pre></td></tr>
+<tr><td><pre>1000</pre></td><td><pre>29820</pre></td></tr>
+<tr><td><pre>1</pre></td><td><pre>1</pre></td></tr>
+<tr><td><pre>10</pre></td><td><pre>30</pre></td></tr>
+<tr><td><pre>2</pre></td><td><pre>3</pre></td></tr>
+<tr><td><pre>15</pre></td><td><pre>55</pre></td></tr>
+</table></div></div>
+        </div>
+      </div>
+    </section>
+</body>
+</html>

@@ -131,6 +131,13 @@ function ExamInner({ exam, studentName }: ExamInnerProps) {
 
   const isUrgent = remainingSec <= 300 // 5 分钟以内变红
 
+  // 分区序号：只有非空题型才占一个序号（纯编程卷显示为「一、编程题」）
+  const CN_NUM = ['一', '二', '三']
+  let secCursor = 0
+  const secNoSC = exam.singleChoice.length > 0 ? CN_NUM[secCursor++] : null
+  const secNoTF = exam.trueFalse.length > 0 ? CN_NUM[secCursor++] : null
+  const secNoProg = exam.programming.length > 0 ? CN_NUM[secCursor++] : null
+
   // 题号导航
   const renderQuestionNav = () => {
     const allQuestions = [
@@ -139,53 +146,33 @@ function ExamInner({ exam, studentName }: ExamInnerProps) {
       ...exam.programming.map((q) => ({ id: q.id, type: '编程' as const, answered: !!answers.programming[q.id]?.trim() })),
     ]
 
+    const renderGroup = (label: string) => {
+      const list = allQuestions.filter((q) => q.type === label)
+      if (list.length === 0) return null
+      return (
+        <div>
+          <Text strong className="text-gray-600 block mb-2">{label}题</Text>
+          <div className="flex flex-wrap gap-1.5">
+            {list.map((q, i) => (
+              <button
+                key={q.id}
+                className={`nav-btn ${q.answered ? 'answered' : 'unanswered'}`}
+                onClick={() => scrollToQuestion(q.id)}
+                title={`第 ${i + 1} 题`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="space-y-3">
-        <div>
-          <Text strong className="text-gray-600 block mb-2">单选题</Text>
-          <div className="flex flex-wrap gap-1.5">
-            {allQuestions.filter((q) => q.type === '单选').map((q, i) => (
-              <button
-                key={q.id}
-                className={`nav-btn ${q.answered ? 'answered' : 'unanswered'}`}
-                onClick={() => scrollToQuestion(q.id)}
-                title={`第 ${i + 1} 题`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <Text strong className="text-gray-600 block mb-2">判断题</Text>
-          <div className="flex flex-wrap gap-1.5">
-            {allQuestions.filter((q) => q.type === '判断').map((q, i) => (
-              <button
-                key={q.id}
-                className={`nav-btn ${q.answered ? 'answered' : 'unanswered'}`}
-                onClick={() => scrollToQuestion(q.id)}
-                title={`第 ${i + 1} 题`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <Text strong className="text-gray-600 block mb-2">编程题</Text>
-          <div className="flex flex-wrap gap-1.5">
-            {allQuestions.filter((q) => q.type === '编程').map((q, i) => (
-              <button
-                key={q.id}
-                className={`nav-btn ${q.answered ? 'answered' : 'unanswered'}`}
-                onClick={() => scrollToQuestion(q.id)}
-                title={`第 ${i + 1} 题`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-        </div>
+        {renderGroup('单选')}
+        {renderGroup('判断')}
+        {renderGroup('编程')}
       </div>
     )
   }
@@ -250,55 +237,61 @@ function ExamInner({ exam, studentName }: ExamInnerProps) {
         {/* 主答题区 */}
         <div className="flex-1 min-w-0">
           {/* 单选题 */}
-          <div className="mb-6">
-            <Title level={4} className="bg-blue-50 px-4 py-2 rounded-lg border-l-4 border-blue-500">
-              一、单选题（每题 4 分，共 {exam.singleChoice.length * 4} 分）
-            </Title>
-            {exam.singleChoice.map((q, i) => (
-              <QuestionCard
-                key={q.id}
-                question={q}
-                index={i + 1}
-                sectionLabel="单选题"
-                studentAnswer={answers.singleChoice[q.id]}
-                onAnswer={(v) => updateSingleChoice(q.id, v)}
-              />
-            ))}
-          </div>
+          {secNoSC && (
+            <div className="mb-6">
+              <Title level={4} className="bg-blue-50 px-4 py-2 rounded-lg border-l-4 border-blue-500">
+                {secNoSC}、单选题（每题 4 分，共 {exam.singleChoice.length * 4} 分）
+              </Title>
+              {exam.singleChoice.map((q, i) => (
+                <QuestionCard
+                  key={q.id}
+                  question={q}
+                  index={i + 1}
+                  sectionLabel="单选题"
+                  studentAnswer={answers.singleChoice[q.id]}
+                  onAnswer={(v) => updateSingleChoice(q.id, v)}
+                />
+              ))}
+            </div>
+          )}
 
           {/* 判断题 */}
-          <div className="mb-6">
-            <Title level={4} className="bg-green-50 px-4 py-2 rounded-lg border-l-4 border-green-500">
-              二、判断题（每题 2 分，共 {exam.trueFalse.length * 2} 分）
-            </Title>
-            {exam.trueFalse.map((q, i) => (
-              <QuestionCard
-                key={q.id}
-                question={q}
-                index={i + 1}
-                sectionLabel="判断题"
-                studentAnswer={answers.trueFalse[q.id]}
-                onAnswer={(v) => updateTrueFalse(q.id, v)}
-              />
-            ))}
-          </div>
+          {secNoTF && (
+            <div className="mb-6">
+              <Title level={4} className="bg-green-50 px-4 py-2 rounded-lg border-l-4 border-green-500">
+                {secNoTF}、判断题（每题 2 分，共 {exam.trueFalse.length * 2} 分）
+              </Title>
+              {exam.trueFalse.map((q, i) => (
+                <QuestionCard
+                  key={q.id}
+                  question={q}
+                  index={i + 1}
+                  sectionLabel="判断题"
+                  studentAnswer={answers.trueFalse[q.id]}
+                  onAnswer={(v) => updateTrueFalse(q.id, v)}
+                />
+              ))}
+            </div>
+          )}
 
           {/* 编程题 */}
-          <div className="mb-6">
-            <Title level={4} className="bg-orange-50 px-4 py-2 rounded-lg border-l-4 border-orange-500">
-              三、编程题（每题 20 分，共 {exam.programming.length * 20} 分）
-            </Title>
-            {exam.programming.map((q, i) => (
-              <QuestionCard
-                key={q.id}
-                question={q}
-                index={i + 1}
-                sectionLabel="编程题"
-                studentAnswer={answers.programming[q.id]}
-                onAnswer={(v) => updateProgramming(q.id, v)}
-              />
-            ))}
-          </div>
+          {secNoProg && (
+            <div className="mb-6">
+              <Title level={4} className="bg-orange-50 px-4 py-2 rounded-lg border-l-4 border-orange-500">
+                {secNoProg}、编程题（每题 20 分，共 {exam.programming.length * 20} 分）
+              </Title>
+              {exam.programming.map((q, i) => (
+                <QuestionCard
+                  key={q.id}
+                  question={q}
+                  index={i + 1}
+                  sectionLabel="编程题"
+                  studentAnswer={answers.programming[q.id]}
+                  onAnswer={(v) => updateProgramming(q.id, v)}
+                />
+              ))}
+            </div>
+          )}
 
           {/* 底部交卷按钮 */}
           <div className="text-center py-8">

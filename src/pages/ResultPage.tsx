@@ -120,6 +120,13 @@ export default function ResultPage() {
   const correctCount = objectiveDetails.filter((d) => d.isCorrect).length
   const wrongCount = objectiveDetails.filter((d) => !d.isCorrect).length
 
+  // 分区序号：只有非空题型才占一个序号（纯编程卷显示为「一、编程题解析」）
+  const CN_NUM_R = ['一', '二', '三']
+  let secCursorR = 0
+  const secNoSC = exam && exam.singleChoice.length > 0 ? CN_NUM_R[secCursorR++] : null
+  const secNoTF = exam && exam.trueFalse.length > 0 ? CN_NUM_R[secCursorR++] : null
+  const secNoProg = exam && exam.programming.length > 0 ? CN_NUM_R[secCursorR++] : null
+
   const formatDuration = (sec: number) => {
     const m = Math.floor(sec / 60)
     const s = sec % 60
@@ -249,10 +256,10 @@ export default function ResultPage() {
           </Card>
         )}
 
-        {exam && (
+        {secNoSC && exam && (
           <div className="mb-4">
             <Title level={4} className="bg-blue-50 px-4 py-2 rounded-lg border-l-4 border-blue-500">
-              📝 一、单选题解析（每题 4 分）
+              📝 {secNoSC}、单选题解析（每题 4 分）
             </Title>
             {exam.singleChoice.map((q, i) => {
               const detail = display.details.find((d) => d.questionId === q.id)!
@@ -271,10 +278,10 @@ export default function ResultPage() {
           </div>
         )}
 
-        {exam && (
+        {secNoTF && exam && (
           <div className="mb-4">
             <Title level={4} className="bg-green-50 px-4 py-2 rounded-lg border-l-4 border-green-500">
-              📝 二、判断题解析（每题 2 分）
+              📝 {secNoTF}、判断题解析（每题 2 分）
             </Title>
             {exam.trueFalse.map((q, i) => {
               const detail = display.details.find((d) => d.questionId === q.id)!
@@ -293,10 +300,10 @@ export default function ResultPage() {
           </div>
         )}
 
-        {exam && (
+        {secNoProg && exam && (
           <div className="mb-4">
             <Title level={4} className="bg-orange-50 px-4 py-2 rounded-lg border-l-4 border-orange-500">
-              📝 三、编程题解析（每题 20 分，自动评测）
+              📝 {secNoProg}、编程题解析（每题 20 分，自动评测）
             </Title>
             {exam.programming.map((q, i) => {
               const detail = display.details.find((d) => d.questionId === q.id)!
