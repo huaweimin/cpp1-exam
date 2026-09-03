@@ -53,21 +53,29 @@ export default function App() {
     window.scrollTo(0, 0)
   }, [location.pathname])
 
-  // 启动时校验登录态是否仍有效（token 过期/被注销则清除）
+  // 启动时校验登录态是否仍有效：
+  // 仅当服务器明确确认 token 失效（过期/被注销）时才清除本地登录态；
+  // 网络/服务异常导致校验失败时保留本地登录态，避免把「校验失败」误判为「已登出」
   useEffect(() => {
     if (!auth) return
     let cancelled = false
-    verifyAuth(auth.token).then((user) => {
-      if (cancelled) return
-      if (!user) {
-        clearAuth()
-        setAuth(null)
-        navigate('/login', { replace: true })
-      } else if (user.role !== auth.user.role) {
-        // 角色信息以服务器为准
-        setAuth((prev) => (prev ? { ...prev, user } : prev))
-      }
-    })
+    verifyAuth(auth.token)
+      .then((user) => {
+        if (cancelled) return
+        if (!user) {
+          clearAuth()
+          setAuth(null)
+          navigate('/login', { replace: true })
+        } else if (user.role !== auth.user.role) {
+          // 角色信息以服务器为准
+          setAuth((prev) => (prev ? { ...prev, user } : prev))
+        }
+      })
+      .catch((err) => {
+        // 网络/服务异常：无法确认失效，保留登录态，仅在控制台记录
+        if (cancelled) return
+        console.warn('[App] 启动登录态校验异常，保留本地登录态:', err)
+      })
     return () => {
       cancelled = true
     }

@@ -82,6 +82,9 @@ interface CloudResp<T> {
   message: string
 }
 
+/** 登录态失效错误：服务器明确判定 token 已过期/被注销/未登录（区别于网络等临时异常） */
+export class UnauthorizedError extends Error {}
+
 /** 统一调用云函数 action（带可选 token）。业务错误（code!==0）抛出异常。 */
 async function call<T>(
   action: string,
@@ -97,7 +100,12 @@ async function call<T>(
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   const json = (await res.json()) as CloudResp<T>
-  if (json.code !== 0) throw new Error(json.message || `code ${json.code}`)
+  if (json.code !== 0) {
+    const msg = json.message || `code ${json.code}`
+    // 服务端 requireUser 对无效/过期 token 统一返回「请先登录」，语义上即 401
+    if (msg.includes('请先登录')) throw new UnauthorizedError(msg)
+    throw new Error(msg)
+  }
   return json
 }
 
@@ -138,14 +146,27 @@ export async function logoutAccount(token: string): Promise<boolean> {
   }
 }
 
-/** 校验 token 有效性，返回当前用户；无效返回 null */
+/**
+ * 校验 token 有效性：
+ * - 返回 AuthUser：token 有效
+ * - 返回 null：token 已被服务器确认失效（过期/被注销）
+ * - 抛出异常：网络/服务异常，无法判定（调用方应保留本地登录态，勿误登出）
+ */
 export async function verifyAuth(token: string): Promise<AuthUser | null> {
   try {
     const json = await call<AuthUser>('me', {}, token)
     return json.data
   } catch (err) {
-    console.warn('[cloudSync] 登录态校验失败:', err)
-    return null
+    if (err instanceof UnauthorizedError) return null
+    // 网络/超时/网关等临时异常：重试一次（云函数冷启动偶发偏慢），仍失败则向上抛
+    try {
+      const json = await call<AuthUser>('me', {}, token)
+      return json.data
+    } catch (err2) {
+      if (err2 instanceof UnauthorizedError) return null
+      console.warn('[cloudSync] 登录态校验失败（网络异常，保留本地登录态）:', err2)
+      throw err2
+    }
   }
 }
 
