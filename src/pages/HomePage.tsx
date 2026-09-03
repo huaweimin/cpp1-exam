@@ -154,7 +154,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="h-dvh flex flex-col px-4 py-6 sm:p-6" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+    <div className="min-h-dvh overflow-y-auto flex flex-col px-4 py-6 sm:p-6" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <div className="w-full max-w-3xl flex-1 min-h-0 flex flex-col mx-auto">
         {/* 标题 */}
         <div className="text-center mb-3 sm:mb-6">
@@ -236,8 +236,8 @@ export default function HomePage() {
             <Text type="secondary" className="text-xs mb-2 block sm:hidden">{scoreInfo}</Text>
           )}
 
-          {/* 虚拟滚动列表：高度随视口自适应 */}
-          <div ref={listRef} className="flex-1 min-h-0">
+          {/* 虚拟滚动列表：高度随视口自适应；小屏给最小高度保护，避免被挤压到 0 导致空白 */}
+          <div ref={listRef} className="flex-1 min-h-[160px] sm:min-h-[240px]">
             {filteredExams.length === 0 ? (
               <Empty description="没有符合条件的试卷" className="py-10" />
             ) : listHeight > 0 ? (
