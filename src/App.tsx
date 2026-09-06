@@ -9,6 +9,7 @@ import ExamPage from './pages/ExamPage'
 import ResultPage from './pages/ResultPage'
 import TeacherPage from './pages/TeacherPage'
 import RecordsPage from './pages/RecordsPage'
+import IcpFooter from './components/IcpFooter'
 
 interface AuthState {
   token: string
@@ -138,6 +139,8 @@ export default function App() {
         {/* 未知路径 → 首页 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      {/* 网站底部悬挂 ICP 备案号（所有页面可见） */}
+      {/* <IcpFooter /> */}
     </AuthContext.Provider>
   )
 }
