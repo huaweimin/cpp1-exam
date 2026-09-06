@@ -7,6 +7,7 @@ import type { Exam } from '../types/exam';
 // 组卷原则：每卷 5 题，按难度从易到难递进排列
 //          卷一 = 基础过关（顺序结构 → 格式化输出 → 分支入门）
 //          卷二 = 能力提升（多分支 → 单层循环 → 循环嵌套分支 → 多重循环）
+//          卷三 = 高频专项（数位分离 + 字符与 ASCII，两大常考题型专项强化）
 // 每题 20 分，满分 100 分，及格 60 分；按测试点通过比例给分
 // ============================================================
 
@@ -368,5 +369,198 @@ int main() {
   ],
 };
 
+// ============================================================
+// 编程专项模拟卷（三）· 高频专项：数位分离与字符 ASCII
+// 难度梯度：★ → ★★ → ★★ → ★★★ → ★★★★
+// 覆盖考点：字符类型判断 / ASCII 大小写转换 / 三位数拆位 / 数位和（while 逐位取） / 逆序输出数字
+// ============================================================
+export const progMock3: Exam = {
+  id: 'exam-prog-mock-03-cpp1',
+  name: 'C/C++一级·编程专项模拟卷三（数位分离与字符ASCII专项）',
+  category: 'mock',
+  examDate: '2026-09',
+  totalScore: 100,
+  passingScore: 60,
+  duration: 90, // 5 道编程题，建议 90 分钟
+  singleChoice: [],
+  trueFalse: [],
+  programming: [
+    {
+      id: 9021,
+      type: 'programming',
+      stem: '输入一个字符，判断它的类型：\n\n如果是数字字符（\'0\' ~ \'9\'），输出 digit；\n如果是大写字母（\'A\' ~ \'Z\'），输出 upper；\n如果是小写字母（\'a\' ~ \'z\'），输出 lower；\n如果是其他字符，输出 other。',
+      inputFormat: '一行，一个字符 c。',
+      outputFormat: '一行，输出该字符的类型：digit / upper / lower / other。',
+      sampleInput: '5',
+      sampleOutput: 'digit',
+      testCases: [
+        { input: '5', output: 'digit' },
+        { input: '0', output: 'digit' },
+        { input: '9', output: 'digit' },
+        { input: 'A', output: 'upper' },
+        { input: 'Z', output: 'upper' },
+        { input: 'a', output: 'lower' },
+        { input: 'z', output: 'lower' },
+        { input: '+', output: 'other' },
+        { input: '%', output: 'other' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    char c;
+    cin >> c;
+    if (c >= '0' && c <= '9') {
+        cout << "digit" << endl;
+    } else if (c >= 'A' && c <= 'Z') {
+        cout << "upper" << endl;
+    } else if (c >= 'a' && c <= 'z') {
+        cout << "lower" << endl;
+    } else {
+        cout << "other" << endl;
+    }
+    return 0;
+}`,
+      score: 20,
+      tags: ['分支结构', '字符判断', 'ASCII'],
+      explanation: '考点：字符类型判断（ASCII 值比较）。核心知识：每个字符在内存里都是一个 ASCII 编号，\'0\'~\'9\' 是 48~57，\'A\'~\'Z\' 是 65~90，\'a\'~\'z\' 是 97~122。所以不用背数字，直接用 c >= \'0\' && c <= \'9\' 这样的区间判断即可。易错点：三个区间判断的顺序可以任意，但条件里的引号必须是字符引号 \'0\'，不能写成数字 0。',
+    },
+    {
+      id: 9022,
+      type: 'programming',
+      stem: '输入一个字符，进行大小写转换：\n\n如果是小写字母，输出它对应的大写字母；\n如果是大写字母，输出它对应的小写字母；\n如果不是字母，原样输出这个字符。',
+      inputFormat: '一行，一个字符 c。',
+      outputFormat: '一行，输出转换后的字符。',
+      sampleInput: 'a',
+      sampleOutput: 'A',
+      testCases: [
+        { input: 'a', output: 'A' },
+        { input: 'z', output: 'Z' },
+        { input: 'A', output: 'a' },
+        { input: 'Q', output: 'q' },
+        { input: 'm', output: 'M' },
+        { input: '3', output: '3' },
+        { input: '+', output: '+' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    char c;
+    cin >> c;
+    if (c >= 'a' && c <= 'z') {
+        cout << (char)(c - 'a' + 'A') << endl;
+    } else if (c >= 'A' && c <= 'Z') {
+        cout << (char)(c - 'A' + 'a') << endl;
+    } else {
+        cout << c << endl;
+    }
+    return 0;
+}`,
+      score: 20,
+      tags: ['分支结构', '字符运算', 'ASCII大小写转换'],
+      explanation: '考点：利用 ASCII 运算做大小写转换。关键规律：小写字母 = 大写字母 + 32，也就是 \'a\' - \'A\' = 32。所以小写转大写用 c - 32（或 c - \'a\' + \'A\'），大写转小写用 c + 32（或 c - \'A\' + \'a\'）。注意：c - 32 是一个整数，要输出字符必须加 (char) 强制转换，否则输出的是数字（如 \'a\' - 32 输出 65 而不是 A）。',
+    },
+    {
+      id: 9023,
+      type: 'programming',
+      stem: '输入一个三位正整数 n，请把它的百位数字、十位数字、个位数字依次分离出来并输出，中间用一个空格分隔。',
+      inputFormat: '一行，一个三位正整数 n（100 ≤ n ≤ 999）。',
+      outputFormat: '一行，依次输出百位、十位、个位数字，用空格分隔。',
+      sampleInput: '356',
+      sampleOutput: '3 5 6',
+      testCases: [
+        { input: '356', output: '3 5 6' },
+        { input: '100', output: '1 0 0' },
+        { input: '999', output: '9 9 9' },
+        { input: '205', output: '2 0 5' },
+        { input: '350', output: '3 5 0' },
+        { input: '789', output: '7 8 9' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    int bai = n / 100;      // 百位：整除 100
+    int shi = n / 10 % 10;  // 十位：整除 10 再对 10 取余
+    int ge  = n % 10;       // 个位：直接对 10 取余
+    cout << bai << " " << shi << " " << ge << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['数位分离', '取模运算', '整除运算'],
+      explanation: '考点：三位数数位分离（最经典的常考模型）。两个核心公式必须记牢：① 除法 / 向下取整可以"砍掉"后面的位：n / 100 得到百位，n / 10 % 10 先砍掉个位再取余得到十位；② 取模 % 可以"取出"末尾的位：n % 10 得到个位。比如 356：356/100=3，356/10=35，35%10=5，356%10=6。注意中间用空格分隔，cout << " " 别忘。',
+    },
+    {
+      id: 9024,
+      type: 'programming',
+      stem: '输入一个不超过 5 位的正整数 n，求它各个数位上的数字之和。\n\n例如 12345 的各位数字之和为 1 + 2 + 3 + 4 + 5 = 15。',
+      inputFormat: '一行，一个正整数 n（1 ≤ n ≤ 99999）。',
+      outputFormat: '一行，输出 n 的各位数字之和。',
+      sampleInput: '12345',
+      sampleOutput: '15',
+      testCases: [
+        { input: '12345', output: '15' },
+        { input: '5', output: '5' },
+        { input: '10', output: '1' },
+        { input: '99', output: '18' },
+        { input: '100', output: '1' },
+        { input: '99999', output: '45' },
+        { input: '10000', output: '1' },
+        { input: '90807', output: '24' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    int sum = 0;
+    while (n > 0) {
+        sum += n % 10;  // 取出当前末位数字，累加到 sum
+        n /= 10;        // 砍掉末位（整除 10）
+    }
+    cout << sum << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['数位分离', 'while循环', '累加器', '取模'],
+      explanation: '考点：用 while 循环逐位分离（位数不确定时的通用拆位套路）。固定公式：循环里每次 n % 10 取出末位、n /= 10 砍掉末位，直到 n 变成 0 为止。这个套路对任何位数都适用，比三位数的固定拆法更通用，务必掌握。易错点：① 累加器 sum 必须初始化为 0；② 循环条件是 n > 0，写 n >= 0 会死循环。',
+    },
+    {
+      id: 9025,
+      type: 'programming',
+      stem: '输入一个不超过 5 位的正整数 n，把它"倒过来"输出，即逆序输出。\n\n例如 123 倒过来是 321；\n120 倒过来是 021，但作为数字前导 0 要去掉，输出 21；\n100 倒过来输出 1。',
+      inputFormat: '一行，一个正整数 n（1 ≤ n ≤ 99999）。',
+      outputFormat: '一行，输出 n 的逆序数（不含前导 0）。',
+      sampleInput: '123',
+      sampleOutput: '321',
+      testCases: [
+        { input: '123', output: '321' },
+        { input: '120', output: '21' },
+        { input: '100', output: '1' },
+        { input: '5', output: '5' },
+        { input: '7890', output: '987' },
+        { input: '99999', output: '99999' },
+        { input: '450', output: '54' },
+      ],
+      referenceCode: `#include <iostream>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    int rev = 0;
+    while (n > 0) {
+        rev = rev * 10 + n % 10;  // 旧结果左移一位（乘 10），新数字放到个位
+        n /= 10;
+    }
+    cout << rev << endl;
+    return 0;
+}`,
+      score: 20,
+      tags: ['数位分离', 'while循环', '逆序输出'],
+      explanation: '考点：数位分离 + 逆序拼数（数位分离的进阶应用）。思路：仍然用 n % 10 取末位、n /= 10 砍末位，但这次不是累加，而是用 rev = rev * 10 + n % 10 把取出的数字依次"接"到结果后面。比如 123：取出 3 → rev=3；取出 2 → rev=32；取出 1 → rev=321。前导 0 不用特殊处理：120 第一取出 0，rev=0*10+0=0，继续拼自然就把前导 0 去掉了（0→02→021 作为数字就是 21）。',
+    },
+  ],
+};
+
 // 编程专项模拟卷列表
-export const progMockExams: Exam[] = [progMock1, progMock2];
+export const progMockExams: Exam[] = [progMock1, progMock2, progMock3];
