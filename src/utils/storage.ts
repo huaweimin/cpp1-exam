@@ -158,3 +158,22 @@ export function exportResultsToCSV(examId: string, examName: string): void {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// 注册申请本地冷却（防误触 + 减轻服务端压力）
+const APPLY_COOLDOWN_KEY = `${STORAGE_PREFIX}register_apply_at`;
+const APPLY_COOLDOWN_MS = 10 * 60 * 1000;
+
+// 返回剩余冷却毫秒数，0 表示可提交
+export function getApplyCooldownRemaining(): number {
+  const raw = localStorage.getItem(APPLY_COOLDOWN_KEY);
+  if (!raw) return 0;
+  const ts = Number(raw);
+  if (!Number.isFinite(ts)) return 0;
+  const remain = APPLY_COOLDOWN_MS - (Date.now() - ts);
+  return remain > 0 ? remain : 0;
+}
+
+// 记录一次成功提交时间
+export function markApplySubmitted(): void {
+  localStorage.setItem(APPLY_COOLDOWN_KEY, String(Date.now()));
+}

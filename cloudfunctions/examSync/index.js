@@ -8,10 +8,30 @@
  * 表：
  *   exam_results : 成绩记录（主键 id = studentName|examId|submittedAt）
  *   exam_users   : 用户账号（登录体系，username 主键，token 鉴权）
+ *   exam_register_applications : 注册申请（申请制注册，管理员审核后手动开通账号）
+ *
+ * 建表 SQL（部署时在 CloudBase PG 控制台执行一次）：
+ *   CREATE TABLE IF NOT EXISTS exam_register_applications (
+ *     id            text PRIMARY KEY,
+ *     username      text NOT NULL,
+ *     contact       text NOT NULL,
+ *     contact_norm  text,
+ *     reason        text NOT NULL,
+ *     status        text NOT NULL DEFAULT 'pending',
+ *     created_at    timestamptz NOT NULL DEFAULT now(),
+ *     reviewed_at   timestamptz
+ *   );
+ *   已部署旧库需追加 contact_norm 列（防刷用，联系方式归一化去重）：
+ *     ALTER TABLE exam_register_applications ADD COLUMN IF NOT EXISTS contact_norm text;
+ *     CREATE INDEX IF NOT EXISTS idx_apps_contact_norm ON exam_register_applications (contact_norm);
  *
  * event.action 支持：
  *   用户体系
+ *   - applyRegister : 公开，提交注册申请（username/contact/reason），无需登录
+ *   - listApplications    : [教师] 查询注册申请列表
+ *   - reviewApplication   : [教师] 审核注册申请（approved/rejected）
  *   - register    : 注册（username/password/role/teacherKey），返回 token
+ *     （前端已不再暴露注册入口，仅保留给管理员手动开通账号时使用）
  *   - login       : 登录，返回 token
  *   - logout      : 注销，清除 token
  *   - me          : 校验 token，返回当前用户
@@ -38,6 +58,7 @@ const db = app.rdb({ database: 'public' })
 
 const TABLE = 'exam_results'
 const USERS_TABLE = 'exam_users'
+const APPS_TABLE = 'exam_register_applications'
 
 /** 教师注册密钥：部署时通过 cloudbaserc.json envVariables 注入；未配置时用兜底值 */
 const TEACHER_REGISTER_KEY = process.env.TEACHER_REGISTER_KEY || 'Tcb-Exam-2026-Teacher'
@@ -150,6 +171,118 @@ async function handleLogout(token) {
 async function handleMe(token) {
   const user = await requireUser(token)
   return { username: user.username, role: user.role }
+}
+
+/* ==================== 注册申请（申请制注册） ==================== */
+
+/** PG 行 → 前端 RegisterApplication */
+function rowToApplication(row) {
+  if (!row) return null
+  return {
+    id: row.id,
+    username: row.username,
+    contact: row.contact,
+    reason: row.reason,
+    status: row.status || 'pending',
+    createdAt: row.created_at,
+    reviewedAt: row.reviewed_at || null,
+  }
+}
+
+/** 联系方式归一化：去空白、小写；纯数字（手机号）去掉国别前缀 +86 */
+function normalizeContact(c) {
+  let s = String(c || '').toLowerCase().replace(/\s+/g, '')
+  if (/^\d+$/.test(s)) s = s.replace(/^(\+?86)/, '')
+  return s
+}
+
+/** 提交注册申请（公开）。防刷：用户名去重 + 联系方式去重 + 10 分钟冷却窗口 */
+async function handleApplyRegister({ username, contact, reason }) {
+  const name = String(username || '').trim()
+  const tel = String(contact || '').trim()
+  const why = String(reason || '').trim()
+  if (!name) throw new Error('用户名不能为空')
+  if (name.length > 20) throw new Error('用户名最长 20 个字符')
+  if (!tel) throw new Error('联系方式不能为空')
+  if (tel.length > 50) throw new Error('联系方式最长 50 个字符')
+  if (!why) throw new Error('申请理由不能为空')
+  if (why.length > 200) throw new Error('申请理由最长 200 个字符')
+
+  const exists = await findUserByUsername(name)
+  if (exists) throw new Error('该用户名已被注册，如非本人操作请联系管理员')
+
+  // 去重 1：同一用户名存在待审申请
+  const { data: pendingByName, error: dupErr } = await db
+    .from(APPS_TABLE)
+    .select('id')
+    .eq('username', name)
+    .eq('status', 'pending')
+    .limit(1)
+  if (dupErr) throw new Error(pgError(dupErr))
+  if ((pendingByName || []).length > 0) throw new Error('该用户名已提交过申请，请等待管理员审核')
+
+  const norm = normalizeContact(tel)
+
+  // 去重 2：同一联系方式存在待审申请（换用户名也绕不过）
+  const { data: pendingByContact, error: cErr } = await db
+    .from(APPS_TABLE)
+    .select('id')
+    .eq('contact_norm', norm)
+    .eq('status', 'pending')
+    .limit(1)
+  if (cErr) throw new Error(pgError(cErr))
+  if ((pendingByContact || []).length > 0) throw new Error('该联系方式已提交过申请，请等待管理员审核')
+
+  // 冷却：取该联系方式最近一条申请，10 分钟内不允许再次提交
+  const { data: latest, error: lErr } = await db
+    .from(APPS_TABLE)
+    .select('created_at')
+    .eq('contact_norm', norm)
+    .order('created_at', { ascending: false })
+    .limit(1)
+  if (lErr) throw new Error(pgError(lErr))
+  const last = (latest || [])[0]
+  if (last && Date.now() - new Date(last.created_at).getTime() < 10 * 60 * 1000) {
+    throw new Error('提交过于频繁，请 10 分钟后再试')
+  }
+
+  const row = {
+    id: `${name}|${new Date().toISOString()}`,
+    username: name,
+    contact: tel,
+    contact_norm: norm,
+    reason: why,
+    status: 'pending',
+    created_at: new Date().toISOString(),
+  }
+  const { error: insErr } = await db.from(APPS_TABLE).insert(row)
+  if (insErr) throw new Error(pgError(insErr))
+  return { submitted: true }
+}
+
+/** 查询注册申请列表（教师专用，按申请时间倒序，最多 200 条） */
+async function handleListApplications() {
+  const { data, error } = await db
+    .from(APPS_TABLE)
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(200)
+  if (error) throw new Error(pgError(error))
+  return (data || []).map(rowToApplication).filter(Boolean)
+}
+
+/** 审核注册申请（教师专用）：status 仅允许 approved / rejected */
+async function handleReviewApplication({ id, status }) {
+  const appId = String(id || '')
+  const next = status === 'approved' || status === 'rejected' ? status : null
+  if (!appId) throw new Error('缺少申请 ID')
+  if (!next) throw new Error('审核状态不合法')
+  const { error } = await db
+    .from(APPS_TABLE)
+    .update({ status: next, reviewed_at: new Date().toISOString() })
+    .eq('id', appId)
+  if (error) throw new Error(pgError(error))
+  return { reviewed: true, status: next }
 }
 
 /* ==================== 成绩记录 ==================== */
@@ -343,7 +476,22 @@ exports.main = async (event = {}) => {
   try {
     let result
     switch (action) {
-      // ---- 用户体系（register/login/test 公开，其余需登录） ----
+      // ---- 用户体系（register/applyRegister/login/test 公开，其余需登录） ----
+      case 'applyRegister':
+        result = await handleApplyRegister(data)
+        break
+      case 'listApplications': {
+        const u = await requireUser(token)
+        if (u.role !== 'teacher') throw new Error('仅教师可查看注册申请')
+        result = await handleListApplications()
+        break
+      }
+      case 'reviewApplication': {
+        const u = await requireUser(token)
+        if (u.role !== 'teacher') throw new Error('仅教师可审核注册申请')
+        result = await handleReviewApplication(data)
+        break
+      }
       case 'register':
         result = await handleRegister(data)
         break

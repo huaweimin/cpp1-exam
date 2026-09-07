@@ -1,14 +1,22 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Table, Button, Typography, Empty, Card, Tag, Statistic, Row, Col, message, Spin } from 'antd'
-import { ArrowLeftOutlined, DownloadOutlined, ReloadOutlined, FileSearchOutlined } from '@ant-design/icons'
+import { Table, Button, Typography, Empty, Card, Tag, Statistic, Row, Col, message, Spin, Tabs, Popconfirm, Segmented, Badge } from 'antd'
+import { ArrowLeftOutlined, DownloadOutlined, ReloadOutlined, FileSearchOutlined, AuditOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons'
 import type { Exam, ExamResult } from '../types/exam'
 import { allExams } from '../data/exams'
-import { pullRecords } from '../utils/cloudSync'
+import { pullRecords, listRegisterApplications, reviewRegisterApplication } from '../utils/cloudSync'
+import type { RegisterApplication, ApplicationStatus } from '../utils/cloudSync'
 import { useAuth } from '../App'
 import RecordDetail from '../components/RecordDetail'
 
 const { Title, Text } = Typography
+
+/** 申请状态 → 展示配置 */
+const STATUS_META: Record<ApplicationStatus, { label: string; color: string }> = {
+  pending: { label: '待审核', color: 'orange' },
+  approved: { label: '已通过', color: 'green' },
+  rejected: { label: '已拒绝', color: 'red' },
+}
 
 export default function TeacherPage() {
   const { auth } = useAuth()
@@ -20,6 +28,12 @@ export default function TeacherPage() {
   const [loadFailed, setLoadFailed] = useState(false)
   // 当前正在查看完整试卷的记录，null = 显示成绩列表
   const [viewing, setViewing] = useState<ExamResult | null>(null)
+  // 注册申请（教师审核用）
+  const [applications, setApplications] = useState<RegisterApplication[]>([])
+  const [appsLoading, setAppsLoading] = useState(false)
+  const [appsLoadFailed, setAppsLoadFailed] = useState(false)
+  const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'all'>('all')
+  const [reviewingId, setReviewingId] = useState<string | null>(null)
 
   const loadFromServer = (silent = false) => {
     if (!silent) setLoading(true)
@@ -40,6 +54,45 @@ export default function TeacherPage() {
     loadFromServer()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
+
+  const loadApplications = (silent = false) => {
+    if (!silent) setAppsLoading(true)
+    setAppsLoadFailed(false)
+    listRegisterApplications(token)
+      .then((list) => {
+        if (list) {
+          setApplications(list)
+        } else {
+          setAppsLoadFailed(true)
+        }
+      })
+      .finally(() => setAppsLoading(false))
+  }
+
+  // 切到注册申请 Tab 时按需加载（首次进入也拉取，保证角标数量准确）
+  useEffect(() => {
+    loadApplications()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token])
+
+  /** 审核申请：通过/拒绝 */
+  const handleReview = async (app: RegisterApplication, status: 'approved' | 'rejected') => {
+    setReviewingId(app.id)
+    const ok = await reviewRegisterApplication(app.id, status, token)
+    setReviewingId(null)
+    if (ok) {
+      message.success(
+        status === 'approved'
+          ? `已通过 ${app.username} 的申请，请在微信中联系本人并手动开通账号`
+          : `已拒绝 ${app.username} 的申请`
+      )
+      setApplications((prev) =>
+        prev.map((a) => (a.id === app.id ? { ...a, status, reviewedAt: new Date().toISOString() } : a))
+      )
+    } else {
+      message.error('审核操作失败，请重试')
+    }
+  }
 
   const findExam = (examId: string): Exam | undefined => allExams.find((e) => e.id === examId)
 
@@ -150,6 +203,81 @@ export default function TeacherPage() {
     },
   ]
 
+  // 注册申请：按状态筛选（待审核优先展示）
+  const filteredApps = useMemo(() => {
+    const list = statusFilter === 'all' ? applications : applications.filter((a) => a.status === statusFilter)
+    const rank: Record<ApplicationStatus, number> = { pending: 0, approved: 1, rejected: 2 }
+    return [...list].sort((a, b) => rank[a.status] - rank[b.status] || b.createdAt.localeCompare(a.createdAt))
+  }, [applications, statusFilter])
+
+  const pendingCount = applications.filter((a) => a.status === 'pending').length
+
+  const appColumns = [
+    {
+      title: '用户名',
+      dataIndex: 'username',
+      key: 'username',
+      width: 120,
+    },
+    {
+      title: '联系方式',
+      dataIndex: 'contact',
+      key: 'contact',
+      width: 140,
+    },
+    {
+      title: '申请理由',
+      dataIndex: 'reason',
+      key: 'reason',
+      ellipsis: true,
+    },
+    {
+      title: '申请时间',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 160,
+      render: (val: string) => (val ? new Date(val).toLocaleString('zh-CN') : '-'),
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      width: 90,
+      render: (status: ApplicationStatus) => {
+        const meta = STATUS_META[status] ?? STATUS_META.pending
+        return <Tag color={meta.color}>{meta.label}</Tag>
+      },
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 150,
+      render: (_: unknown, record: RegisterApplication) =>
+        record.status !== 'pending' ? (
+          <Text type="secondary" className="text-xs">
+            {record.reviewedAt ? `审核于 ${new Date(record.reviewedAt).toLocaleDateString('zh-CN')}` : '已处理'}
+          </Text>
+        ) : (
+          <div className="flex gap-2">
+            <Popconfirm
+              title={`通过 ${record.username} 的申请？`}
+              description="通过后请在微信中联系本人并手动开通账号"
+              onConfirm={() => handleReview(record, 'approved')}
+            >
+              <Button type="primary" size="small" icon={<CheckOutlined />} loading={reviewingId === record.id}>
+                通过
+              </Button>
+            </Popconfirm>
+            <Popconfirm title={`拒绝 ${record.username} 的申请？`} onConfirm={() => handleReview(record, 'rejected')}>
+              <Button size="small" danger icon={<CloseOutlined />} loading={reviewingId === record.id}>
+                拒绝
+              </Button>
+            </Popconfirm>
+          </div>
+        ),
+    },
+  ]
+
   // 查看某条成绩的完整试卷（含逐题解析）
   if (viewing) {
     return (
@@ -178,6 +306,14 @@ export default function TeacherPage() {
           </Button>
         </div>
 
+        <Tabs
+          defaultActiveKey="records"
+          items={[
+            {
+              key: 'records',
+              label: '成绩管理',
+              children: (
+                <>
         {/* 全局统计 */}
         <Card className="mb-6">
           <Row gutter={[16, 16]}>
@@ -248,6 +384,75 @@ export default function TeacherPage() {
             </Card>
           ))
         )}
+                </>
+              ),
+            },
+            {
+              key: 'applications',
+              label: (
+                <span>
+                  注册申请
+                  {pendingCount > 0 && (
+                    <Badge count={pendingCount} size="small" style={{ marginLeft: 6 }} />
+                  )}
+                </span>
+              ),
+              children: (
+                <div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <Segmented
+                      value={statusFilter}
+                      onChange={(v) => setStatusFilter(v as ApplicationStatus | 'all')}
+                      options={[
+                        { label: `全部 (${applications.length})`, value: 'all' },
+                        { label: `待审核 (${pendingCount})`, value: 'pending' },
+                        { label: '已通过', value: 'approved' },
+                        { label: '已拒绝', value: 'rejected' },
+                      ]}
+                    />
+                    <Button icon={<ReloadOutlined />} loading={appsLoading} onClick={() => loadApplications()}>
+                      刷新
+                    </Button>
+                  </div>
+                  {appsLoading ? (
+                    <Card>
+                      <div className="py-12 text-center">
+                        <Spin />
+                        <div className="mt-3 text-gray-400 text-sm">正在加载注册申请…</div>
+                      </div>
+                    </Card>
+                  ) : appsLoadFailed ? (
+                    <Card>
+                      <Empty description="注册申请加载失败，请检查网络">
+                        <Button type="primary" icon={<ReloadOutlined />} onClick={() => loadApplications()}>
+                          重新加载
+                        </Button>
+                      </Empty>
+                    </Card>
+                  ) : filteredApps.length === 0 ? (
+                    <Card>
+                      <Empty description="暂无注册申请，新用户提交后会出现在这里" />
+                    </Card>
+                  ) : (
+                    <Card>
+                      <Table
+                        columns={appColumns}
+                        dataSource={filteredApps}
+                        rowKey="id"
+                        pagination={{ pageSize: 10, hideOnSinglePage: true }}
+                        size="middle"
+                        scroll={{ x: 'max-content' }}
+                      />
+                      <Text type="secondary" className="text-xs">
+                        审核通过后，请在微信中联系申请者，并为其手动开通账号
+                      </Text>
+                    </Card>
+                  )}
+                </div>
+              ),
+            },
+          ]}
+        />
       </div>
     </div>
   )

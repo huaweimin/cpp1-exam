@@ -3,6 +3,7 @@ import type { EditorProps, OnMount } from '@monaco-editor/react'
 import { Button, Input, Typography, Tag, Spin } from 'antd'
 import { PlayCircleOutlined, ReloadOutlined } from '@ant-design/icons'
 import { initMonaco } from '../utils/monacoSetup'
+import { runCppCode } from '../utils/cppRunner'
 
 const { Text } = Typography
 const { TextArea } = Input
@@ -29,8 +30,7 @@ declare global {
   }
 }
 
-// 免费公共 C++ 编译服务（gcc-head，支持 CORS，无需密钥）
-const WANDBOX_ENDPOINT = 'https://wandbox.org/api/compile.json'
+// 免费公共 C++ 编译服务（多后端容灾：Godbolt 优先，Wandbox 兜底，见 utils/cppRunner.ts）
 const RUN_TIMEOUT_MS = 15000
 
 const handleEditorMount: OnMount = (editor) => {
@@ -91,38 +91,19 @@ export default function CppSandbox({
 
     const controller = new AbortController()
     abortRef.current = controller
-    const timer = setTimeout(() => controller.abort(), RUN_TIMEOUT_MS)
 
     try {
-      const res = await fetch(WANDBOX_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          compiler: 'gcc-head',
-          code: value,
-          stdin: input,
-          'compiler-option': ['-std=c++17', '-O2'],
-        }),
-        signal: controller.signal,
-      })
-      clearTimeout(timer)
-      const data = await res.json()
+      const result = await runCppCode(value, input, RUN_TIMEOUT_MS)
 
-      if (data.compiler_error) {
-        setOutput(String(data.compiler_error))
-        setHint('编译错误，请检查语法')
-        setStatus('error')
-        return
-      }
-      if (data.program_error) {
-        const merged = `${data.program_output ?? ''}${data.program_error}`.trim()
-        setOutput(merged)
-        setHint('运行时错误')
+      if (!result.ok) {
+        // 编译错误 / 运行错误 / 双后端均不可用
+        setOutput(result.output)
+        setHint(result.error)
         setStatus('error')
         return
       }
 
-      const out = String(data.program_output ?? data.program_message ?? '')
+      const out = result.output
       setOutput(out)
       setStatus('done')
 
@@ -134,14 +115,8 @@ export default function CppSandbox({
         setHint('运行完成')
       }
     } catch (err) {
-      clearTimeout(timer)
-      if (controller.signal.aborted) {
-        setOutput('')
-        setHint('运行超时（15 秒），可能存在死循环，请检查循环退出条件')
-      } else {
-        setOutput('')
-        setHint('网络错误：无法连接编译服务，请检查网络后重试')
-      }
+      setOutput('')
+      setHint('网络错误：无法连接编译服务，请检查网络后重试')
       setStatus('error')
     }
   }

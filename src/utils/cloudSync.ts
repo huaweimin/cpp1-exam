@@ -170,6 +170,60 @@ export async function verifyAuth(token: string): Promise<AuthUser | null> {
   }
 }
 
+/* ==================== 注册申请（申请制注册） ==================== */
+
+export type ApplicationStatus = 'pending' | 'approved' | 'rejected'
+
+export interface RegisterApplication {
+  id: string
+  username: string
+  contact: string
+  reason: string
+  status: ApplicationStatus
+  createdAt: string
+  reviewedAt: string | null
+}
+
+/** 提交注册申请（无需登录）。成功返回 true，重复申请/用户名冲突会抛错。 */
+export async function submitRegisterApplication(input: {
+  username: string
+  contact: string
+  reason: string
+}): Promise<boolean> {
+  await call<{ submitted: boolean }>('applyRegister', {
+    username: input.username,
+    contact: input.contact,
+    reason: input.reason,
+  })
+  return true
+}
+
+/** 拉取注册申请列表（教师专用）。失败返回 null，调用方降级。 */
+export async function listRegisterApplications(token: string): Promise<RegisterApplication[] | null> {
+  try {
+    const json = await call<RegisterApplication[]>('listApplications', {}, token)
+    return Array.isArray(json.data) ? json.data : []
+  } catch (err) {
+    console.warn('[cloudSync] 拉取注册申请失败:', err)
+    return null
+  }
+}
+
+/** 审核注册申请（教师专用）：status 仅允许 approved / rejected。 */
+export async function reviewRegisterApplication(
+  id: string,
+  status: 'approved' | 'rejected',
+  token: string
+): Promise<boolean> {
+  try {
+    await call('reviewApplication', { id, status }, token)
+    return true
+  } catch (err) {
+    console.warn('[cloudSync] 审核注册申请失败:', err)
+    return false
+  }
+}
+
 /* ==================== 成绩记录 ==================== */
 
 /** 拉取云端全部成绩记录（教师页用）。失败返回 null，调用方降级。 */

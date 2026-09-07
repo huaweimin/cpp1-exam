@@ -310,7 +310,7 @@ export default function HomePage() {
           <div className="hidden sm:block">
             <div>开发维护：华老师</div>
             <div>邮箱：huaweimin@yeah.net</div>
-            <div>珠海 · 横琴 © 2026 C++ 一级在线考试系统</div>
+            <div>© 2026 C++ 一级在线考试系统</div>
           </div>
         </footer>
       </div>
